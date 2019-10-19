@@ -244,7 +244,7 @@ object ClimbSubsystem : FalconSubsystem() {
 
         override fun initialize() {
             stiltMotor.controller.setOutputRange(-1.0, 1.0)
-            Elevator.motor.master.talonSRX.configClosedLoopPeakOutput(0, 0.3)
+            Elevator.motor.master.talonSRX.configClosedLoopPeakOutput(0, 0.25)
             Proximal.wantedState = WantedState.Position((-15).degree)
             Elevator.wantsLowGear = true
 //            Elevator.setClimbVelocityMode()
