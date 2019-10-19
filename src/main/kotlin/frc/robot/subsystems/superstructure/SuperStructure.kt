@@ -27,7 +27,7 @@ object Superstructure : FalconSubsystem(), EmergencyHandleable, ConcurrentlyUpda
     }
 
     val kStowed
-        get() = everythingMoveTo(30.25.inch, (-70).degree, 40.degree)
+        get() = everythingMoveTo(30.25.inch + 1.2.inch, (-70).degree, 40.degree)
     val kMatchStartToStowed get() = sequential {
         +parallel {
             +ClosedLoopProximalMove((-70).degree)
