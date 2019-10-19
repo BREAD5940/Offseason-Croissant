@@ -67,7 +67,7 @@ object DriveSubsystem : TankDriveSubsystem(), EmergencyHandleable, ConcurrentlyU
             }
 
             // LQR gains
-            if (lowGear) setClosedLoopGains(0.667, 0.0) else setClosedLoopGains(1.0, 0.0)
+            if (lowGear) setClosedLoopGains(0.667, 0.0) else setClosedLoopGains(1.0 / 5.0, 0.0)
             // old gains
 //            if (lowGear) setClosedLoopGains(0.45, 0.45*20.0) else setClosedLoopGains(1.0, 0.0)
         }
@@ -96,7 +96,7 @@ object DriveSubsystem : TankDriveSubsystem(), EmergencyHandleable, ConcurrentlyU
 
         override fun setClosedLoopGains() {
             // LQR gains
-            if (lowGear) setClosedLoopGains(0.667, 0.0) else setClosedLoopGains(1.0, 0.0)
+            if (lowGear) setClosedLoopGains(0.667, 0.0) else setClosedLoopGains(1.0 / 5.0, 0.0)
 
             with(master.talonSRX) {
                 configClosedLoopPeakOutput(0, 1.0)
