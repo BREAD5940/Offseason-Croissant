@@ -40,6 +40,8 @@ object DriveSubsystem : TankDriveSubsystem(), EmergencyHandleable, ConcurrentlyU
         override val followers = listOf(FalconSRX(LEFT_PORTS[1], DefaultNativeUnitModel))
 
         init {
+            master.talonSRX.configFactoryDefault(50)
+            followers[0].talonSRX.configFactoryDefault(50)
             outputInverted = true
             followers.forEach { it.follow(master) }
             lateInit()
@@ -51,6 +53,7 @@ object DriveSubsystem : TankDriveSubsystem(), EmergencyHandleable, ConcurrentlyU
             followers[0].talonSRX.configPeakCurrentLimit(60)
             master.talonSRX.enableCurrentLimit(true)
             followers[0].talonSRX.enableCurrentLimit(true)
+
         }
 
         override fun setClosedLoopGains() {
@@ -75,6 +78,8 @@ object DriveSubsystem : TankDriveSubsystem(), EmergencyHandleable, ConcurrentlyU
         override val followers = listOf(FalconSRX(RIGHT_PORTS[1], DefaultNativeUnitModel))
 
         init {
+            master.talonSRX.configFactoryDefault(50)
+            followers[0].talonSRX.configFactoryDefault(50)
             followers.forEach { it.follow(master) }
             lateInit()
             master.talonSRX.configContinuousCurrentLimit(38)
