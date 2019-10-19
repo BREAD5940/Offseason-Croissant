@@ -57,8 +57,8 @@ object Autonomous : Updatable {
     }
 
     val possibleAutos = hashMapOf(
-            Mode.BOTTOM_ROCKET_2 to BottomRocketRoutine2()(),
-            Mode.SIDE_CARGO_SHIP to CargoShipRoutine()()
+            Mode.BOTTOM_ROCKET_2 to BottomRocketRoutine2()()//,
+//            Mode.SIDE_CARGO_SHIP to CargoShipRoutine()()
     )
     var selectedAutonomous: CommandBase = InstantCommand()
     val doNothing = selectedAutonomous
