@@ -42,6 +42,7 @@ object DriveSubsystem : TankDriveSubsystem(), EmergencyHandleable, ConcurrentlyU
         init {
             master.talonSRX.configFactoryDefault(50)
             followers[0].talonSRX.configFactoryDefault(50)
+            master.talonSRX.configClosedLoopPeriod(0, 10)
             outputInverted = true
             followers.forEach { it.follow(master) }
             lateInit()
@@ -81,6 +82,7 @@ object DriveSubsystem : TankDriveSubsystem(), EmergencyHandleable, ConcurrentlyU
             master.talonSRX.configFactoryDefault(50)
             followers[0].talonSRX.configFactoryDefault(50)
             followers.forEach { it.follow(master) }
+            master.talonSRX.configClosedLoopPeriod(0, 10)
             lateInit()
             master.talonSRX.configContinuousCurrentLimit(38)
             master.talonSRX.configPeakCurrentDuration(500)
