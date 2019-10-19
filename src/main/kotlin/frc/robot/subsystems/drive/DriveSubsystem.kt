@@ -51,19 +51,6 @@ object DriveSubsystem : TankDriveSubsystem(), EmergencyHandleable, ConcurrentlyU
             followers[0].talonSRX.configPeakCurrentLimit(60)
             master.talonSRX.enableCurrentLimit(true)
             followers[0].talonSRX.enableCurrentLimit(true)
-
-            followers.forEach {
-                with(it.talonSRX) {
-                    configClosedLoopPeakOutput(0, 1.0)
-                    configPeakOutputForward(1.0)
-                    configPeakOutputReverse(-1.0)
-                }
-            }
-            with(master.talonSRX) {
-                configClosedLoopPeakOutput(0, 1.0)
-                configPeakOutputForward(1.0)
-                configPeakOutputReverse(-1.0)
-            }
         }
 
         override fun setClosedLoopGains() {
@@ -98,19 +85,6 @@ object DriveSubsystem : TankDriveSubsystem(), EmergencyHandleable, ConcurrentlyU
             followers[0].talonSRX.configPeakCurrentLimit(60)
             master.talonSRX.enableCurrentLimit(true)
             followers[0].talonSRX.enableCurrentLimit(true)
-
-            followers.forEach {
-                with(it.talonSRX) {
-                    configClosedLoopPeakOutput(0, 1.0)
-                    configPeakOutputForward(1.0)
-                    configPeakOutputReverse(-1.0)
-                }
-            }
-            with(master.talonSRX) {
-                configClosedLoopPeakOutput(0, 1.0)
-                configPeakOutputForward(1.0)
-                configPeakOutputReverse(-1.0)
-            }
         }
 
         override fun setClosedLoopGains() {
