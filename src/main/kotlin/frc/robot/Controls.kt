@@ -44,6 +44,10 @@ object Controls : Updatable {
         // get both the buttons that are close together
         pov(90).changeOn(ClimbSubsystem.hab3prepMove).changeOn { isClimbing = true; wantsHab3Mode = true }
         pov(45).changeOn(ClimbSubsystem.hab3prepMove).changeOn { isClimbing = true; wantsHab3Mode = true }
+        pov(0).changeOn(ClimbSubsystem.hab3prepMove).changeOn { isClimbing = true; wantsHab3Mode = true }
+
+        pov(180).changeOn(Superstructure.kStraightDown)
+
     }
 
     val operatorJoy = Joystick(5)
