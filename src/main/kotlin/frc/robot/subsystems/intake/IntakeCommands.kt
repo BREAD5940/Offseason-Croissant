@@ -58,31 +58,31 @@ class IntakeCargoCommand(val releasing: Boolean) : FalconCommand(IntakeSubsystem
     }
 }
 
-class IntakeTeleopCommand : FalconCommand(IntakeSubsystem) {
-
-    override fun execute() {
-        val cargoSpeed = -cargoSource()
-        val hatchSpeed = -hatchSource()
-
-        if (abs(cargoSpeed) > 0.2) {
-            IntakeSubsystem.hatchMotorOutput = (-12).volt * cargoSpeed
-            IntakeSubsystem.cargoMotorOutput = 12.volt * cargoSpeed
-        } else {
-            IntakeSubsystem.hatchMotorOutput = 12.volt * hatchSpeed
-            IntakeSubsystem.cargoMotorOutput = 0.volt
-        }
-    }
-
-    override fun end(interrupted: Boolean) {
-        IntakeSubsystem.hatchMotorOutput = 0.volt
-        IntakeSubsystem.cargoMotorOutput = 0.volt
-    }
-
-    companion object {
-        val cargoSource by lazy { Controls.operatorFalconHID.getRawAxis(0) }
-        val hatchSource by lazy { Controls.operatorFalconHID.getRawAxis(1) }
-    }
-}
+//class IntakeTeleopCommand : FalconCommand(IntakeSubsystem) {
+//
+//    override fun execute() {
+//        val cargoSpeed = -cargoSource()
+//        val hatchSpeed = -hatchSource()
+//
+//        if (abs(cargoSpeed) > 0.2) {
+//            IntakeSubsystem.hatchMotorOutput = (-12).volt * cargoSpeed
+//            IntakeSubsystem.cargoMotorOutput = 12.volt * cargoSpeed
+//        } else {
+//            IntakeSubsystem.hatchMotorOutput = 12.volt * hatchSpeed
+//            IntakeSubsystem.cargoMotorOutput = 0.volt
+//        }
+//    }
+//
+//    override fun end(interrupted: Boolean) {
+//        IntakeSubsystem.hatchMotorOutput = 0.volt
+//        IntakeSubsystem.cargoMotorOutput = 0.volt
+//    }
+//
+//    companion object {
+//        val cargoSource by lazy { Controls.operatorFalconHID.getRawAxis(0) }
+//        val hatchSource by lazy { Controls.operatorFalconHID.getRawAxis(1) }
+//    }
+//}
 
 class IntakeCloseCommand : FalconCommand(IntakeSubsystem) {
     init {
