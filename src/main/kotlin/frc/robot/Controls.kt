@@ -34,9 +34,10 @@ object Controls : Updatable {
         // Shifting
         if (Constants.kIsRocketLeague) {
 //            button(kBumperRight).change(TeleopVisionDriveCommand(true))
-            button(kBumperRight).change(ClosedLoopVisionDriveCommand(true))
+//            button(kBumperRight).change(ClosedLoopVisionDriveCommand(true))
             button(kY).change(TeleopVisionDriveCommand(true, true))
             button(kB).change(TeleopVisionDriveCommand(true, false))
+            button(kBumperRight).change(TeleopVisionDriveCommand(true, true))
 
             button(9).changeOn { DriveSubsystem.lowGear = true }.changeOff { DriveSubsystem.lowGear = false }
 
@@ -87,7 +88,11 @@ object Controls : Updatable {
         button(9).changeOn(Superstructure.kStowed)
 
         // hatch intake
-        triggerAxisButton(GenericHID.Hand.kLeft).change(IntakeHatchCommand(false))
+                // hatches
+        val poked = Superstructure.kSlightlyOutStowed
+        val stowed = Superstructure.kStowed
+        triggerAxisButton(GenericHID.Hand.kLeft).changeOn { poked.schedule() }.changeOff { poked.cancel(); stowed.schedule() }
+                .change(IntakeHatchCommand(releasing = false))
         triggerAxisButton(GenericHID.Hand.kRight).change(IntakeHatchCommand(true))
         // cargo -- intake is a bit tricky, it'll go to the intake preset automatically
         // the lessThanAxisButton represents "intaking", and the greaterThanAxisButton represents "outtaking"
