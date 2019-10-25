@@ -29,7 +29,7 @@ object Superstructure : FalconSubsystem(), EmergencyHandleable, ConcurrentlyUpda
     val kStowed
         get() = everythingMoveTo(30.25.inch + 1.2.inch, (-70).degree, 40.degree)
 
-    val kSlightlyOutStowed get() = everythingMoveTo(31.45.inch - 2.2.inch - 3.inch, (-50).degree, 40.degree)
+    val kSlightlyOutStowed get() = everythingMoveTo(31.45.inch - 2.2.inch - 2.inch, (-50).degree, 36.degree)
 
     val kMatchStartToStowed get() = sequential {
         +parallel {

@@ -14,17 +14,17 @@ import kotlin.math.abs
 val closeIntake = InstantCommand(Runnable { IntakeSubsystem.wantsOpen = false })
 val openIntake = InstantCommand(Runnable { IntakeSubsystem.wantsOpen = true })
 
-class IntakeHatchCommand(val releasing: Boolean) : FalconCommand(IntakeSubsystem) {
+class IntakeHatchCommand(val releasing: Boolean, val shouldMutateArms: Boolean = true) : FalconCommand(IntakeSubsystem) {
 
     override fun initialize() {
-        println("intaking hatch command")
+//        println("intaking hatch command")
         IntakeSubsystem.hatchMotorOutput = 12.volt * (if (releasing) -1 else 1)
         IntakeSubsystem.cargoMotorOutput = 0.volt
-        IntakeSubsystem.wantsOpen = false // we want to be closed regardless (can't outtake or intake with it open
+        if(shouldMutateArms) IntakeSubsystem.wantsOpen = false // we want to be closed regardless (can't outtake or intake with it open
     }
 
     override fun end(interrupted: Boolean) {
-        IntakeSubsystem.wantsOpen = !releasing // we want the intake to be open if we were just intaking, and closed if we were just outtaking
+        if(shouldMutateArms) IntakeSubsystem.wantsOpen = !releasing // we want the intake to be open if we were just intaking, and closed if we were just outtaking
         IntakeSubsystem.hatchMotorOutput = 0.volt
         IntakeSubsystem.cargoMotorOutput = 0.volt
     }

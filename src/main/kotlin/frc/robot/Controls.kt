@@ -37,7 +37,7 @@ object Controls : Updatable {
 //            button(kBumperRight).change(ClosedLoopVisionDriveCommand(true))
             button(kY).change(TeleopVisionDriveCommand(true, true))
             button(kB).change(TeleopVisionDriveCommand(true, false))
-            button(kBumperRight).change(TeleopVisionDriveCommand(true, true))
+            button(kBumperRight).change(TeleopVisionDriveCommand(true, false))
 
             button(9).changeOn { DriveSubsystem.lowGear = true }.changeOff { DriveSubsystem.lowGear = false }
 
@@ -87,12 +87,27 @@ object Controls : Updatable {
         // Left Stick Button
         button(9).changeOn(Superstructure.kStowed)
 
+        // jogging
+        lessThanAxisButton(1).changeOn(ClosedLoopElevatorMove { Elevator.currentState.position + 1.inch })
+        greaterThanAxisButton(1).changeOn(ClosedLoopElevatorMove { Elevator.currentState.position - 1.inch })
+
+        // boring intake
+        lessThanAxisButton(5).change(IntakeHatchCommand(releasing = true, shouldMutateArms = false))
+        greaterThanAxisButton(5).change(
+                StartEndCommand(Runnable{IntakeSubsystem.hatchMotorOutput = 3.volt; IntakeSubsystem.wantsOpen = true},
+                        Runnable{IntakeSubsystem.setNeutral()})
+        )
+
         // hatch intake
-                // hatches
         val poked = Superstructure.kSlightlyOutStowed
         val stowed = Superstructure.kStowed
-        triggerAxisButton(GenericHID.Hand.kLeft).changeOn { poked.schedule() }.changeOff { poked.cancel(); stowed.schedule() }
-                .change(IntakeHatchCommand(releasing = false))
+        val intake = IntakeHatchCommand(false)
+        val delayedYote = StartEndCommand(Runnable{IntakeSubsystem.hatchMotorOutput = 8.volt
+            IntakeSubsystem.wantsOpen = true},
+                Runnable{IntakeSubsystem.setNeutral()}).withTimeout(0.75)
+        triggerAxisButton(GenericHID.Hand.kLeft).changeOn { poked.schedule(); intake.schedule() }
+                .changeOff { poked.cancel(); intake.cancel(); stowed.schedule(); delayedYote.schedule()
+        }.changeOn(IntakeHatchCommand(releasing = false))
         triggerAxisButton(GenericHID.Hand.kRight).change(IntakeHatchCommand(true))
         // cargo -- intake is a bit tricky, it'll go to the intake preset automatically
         // the lessThanAxisButton represents "intaking", and the greaterThanAxisButton represents "outtaking"
