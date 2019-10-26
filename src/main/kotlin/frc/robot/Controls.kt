@@ -99,7 +99,7 @@ object Controls : Updatable {
         )
 
         // hatch intake
-        val poked = Superstructure.kSlightlyOutStowed
+        val poked = Superstructure.kPokedStowed
         val stowed = Superstructure.kStowed
         val intake = IntakeHatchCommand(false)
         val delayedYote = StartEndCommand(Runnable { IntakeSubsystem.hatchMotorOutput = 8.volt

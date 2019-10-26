@@ -114,6 +114,7 @@ object Constants {
 
     val kForwardIntakeToCenter = Pose2d(-(kRobotLength / 2.0) - kIntakeProtrusionFrontExtended, kBadIntakeOffset, 0.degree) // -34
     val kForwardIntakeStowedToCenter = Pose2d(-(kRobotLength / 2.0) - 8.inch, kBadIntakeOffset, 0.degree) // -23.5
+    val kForwardIntakePokedStowedToCenter = Pose2d(-(kRobotLength / 2.0) - 8.inch - 12.7.inch, kBadIntakeOffset, 0.degree) // -23.5 TODO change this for poked out
     val kCenterToForwardIntake = Pose2d((kRobotLength / 2.0) + kIntakeProtrusionFrontExtended, -kBadIntakeOffset, 0.degree) // 34
     val kCenterToForwardIntakeStowed = Pose2d((kRobotLength / 2.0) + 8.inch, kBadIntakeOffset, 0.degree) // 23.5
     val kBackwardIntakeToCenter = Pose2d(kCenterToForwardIntake.translation.x - kCenterToElevator, -kBadIntakeOffset, 0.degree) // 29.5

@@ -1,9 +1,6 @@
 package frc.robot.auto.routines
 
-import edu.wpi.first.wpilibj2.command.InstantCommand
-import edu.wpi.first.wpilibj2.command.PrintCommand
-import edu.wpi.first.wpilibj2.command.RunCommand
-import edu.wpi.first.wpilibj2.command.WaitCommand
+import edu.wpi.first.wpilibj2.command.*
 import frc.robot.auto.Autonomous
 import frc.robot.auto.paths.TrajectoryFactory
 import frc.robot.auto.paths.TrajectoryWaypoints
@@ -51,12 +48,12 @@ class BottomRocketRoutine2 : AutoRoutine() {
                     +DriveSubsystem.notWithinRegion(TrajectoryWaypoints.kHabitatL1Platform)
                     +WaitCommand(0.5)
                     +Superstructure.kMatchStartToStowed
-                }).beforeStarting { IntakeSubsystem.hatchMotorOutput = 6.volt }.whenFinished { IntakeSubsystem.hatchMotorOutput = 0.volt }
+                }).beforeStarting { IntakeSubsystem.hatchMotorOutput = 6.volt; IntakeSubsystem.wantsOpen = true }.whenFinished { IntakeSubsystem.hatchMotorOutput = 0.volt }
             }
 
             +PointTurnCommand {
 
-//                val goalTarget = TargetTracker.getBestTarget(true)
+                    //                val goalTarget = TargetTracker.getBestTarget(true)
 //                if(goalTarget != null) {
 //                    val goal = goalTarget.averagedPose2d.translation
 //                    val error = (goal - DriveSubsystem.robotPosition.translation)
@@ -74,6 +71,7 @@ class BottomRocketRoutine2 : AutoRoutine() {
 //                (LimeLight.currentState.tx.toRotation2d() + DriveSubsystem.localization[LimeLight.currentState.timestamp].rotation) * if(Autonomous.isStartingOnLeft()) -1.0 else 1.0
 //            }
 
+            // place the hatch
             +super.followVisionAssistedTrajectory(
                     path2,
                     Autonomous.isStartingOnLeft,
@@ -106,13 +104,14 @@ class BottomRocketRoutine2 : AutoRoutine() {
                     +spline3
                     +spline4
                 }
+
                 // Take the superstructure to pickup position and arm hatch intake 3 seconds before arrival.
                 +sequential {
                     // Place hatch panel.
                     +IntakeHatchCommand(true).withTimeout(1.second)
                     +WaitCommand(3.0)
                     +parallel {
-//                        +Superstructure.kHatchLow
+                        +Superstructure.kPokedStowed
                         +IntakeHatchCommand(false).withExit { spline4.isFinished }
                     }
                 }
@@ -123,18 +122,20 @@ class BottomRocketRoutine2 : AutoRoutine() {
                     TrajectoryWaypoints.kLoadingStationReversed,
                     true,
                     Autonomous.isStartingOnLeft,
-                    isStowed = true
+                    isStowed = true, isPoked = true
             )
 
             // Part 3: Pickup hatch and go to the near side of the rocket.
             +parallel {
                 val path = DriveSubsystem.followTrajectory(path5, Autonomous.isStartingOnLeft)
                 +path
-                // Make sure the intake is holding the hatch panel.
-                +IntakeHatchCommand(false).withTimeout(4.0.second).withExit { path.isFinished }
-                // Follow the trajectory with vision correction to the near side of the rocket.
-//                +WaitCommand(0.5)
-//                +Superstructure.kStowed
+                // Make sure the intake is holding the hatch panel by opening the arms and succing it on
+                +StartEndCommand(Runnable { IntakeSubsystem.hatchMotorOutput = 8.volt
+                    IntakeSubsystem.wantsOpen = true },
+                        Runnable { IntakeSubsystem.setNeutral() }).withTimeout(0.75)
+
+                // retract the intake
+                +Superstructure.kStowed
             }
             // turn to face the goal
             +PointTurnCommand {
