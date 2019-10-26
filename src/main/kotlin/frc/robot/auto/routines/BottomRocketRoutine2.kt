@@ -67,7 +67,7 @@ class BottomRocketRoutine2 : AutoRoutine() {
 //                } else {
 //                    -151.degree.toRotation2d()
 //                }
-                (-143).degree.toRotation2d() * if(Autonomous.isStartingOnLeft()) -1.0 else 1.0
+                (-143).degree.toRotation2d() * if (Autonomous.isStartingOnLeft()) -1.0 else 1.0
             }
 
 //            +PointTurnCommand {
@@ -146,10 +146,10 @@ class BottomRocketRoutine2 : AutoRoutine() {
 //                    // plus the rotation of the dt at that timestamp
 //                    LimeLight.currentState.tx.toRotation2d() + DriveSubsystem.localization[LimeLight.currentState.timestamp].rotation
 //                } else {
-                -28.75.degree.toRotation2d() * if(Autonomous.isStartingOnLeft()) -1.0 else 1.0
+                -28.75.degree.toRotation2d() * if (Autonomous.isStartingOnLeft()) -1.0 else 1.0
 //                }
 //
-////                (-28.75).degree.toRotation2d()
+// //                (-28.75).degree.toRotation2d()
 //            }.perpetually().withExit { LimeLight.currentState.tx.absoluteValue < 2.degree }.withTimeout(3.0)
             }
 

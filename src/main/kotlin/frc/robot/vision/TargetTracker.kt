@@ -57,7 +57,7 @@ object TargetTracker : Loggable, Updatable {
             visionTargets = ArrayList(targets.asSequence()
                     .filter { it.isReal }
                     .map { it.averagedPose2d }
-                    .toList())//.also { synchronized(mutex) { it.add(augmentedPose) } }
+                    .toList()) // .also { synchronized(mutex) { it.add(augmentedPose) } }
 //            visionTargets = synchronized(mutex) { listOf(augmentedPose) }
         }
     }
@@ -66,7 +66,6 @@ object TargetTracker : Loggable, Updatable {
 //    var augmentedPose = Pose2d()
 //        get() = synchronized(mutex) { field }
 //        set(value) = synchronized(mutex) { field = value }
-
 
     fun addSamples(creationTime: Double, samples: Iterable<Pose2d>) {
         if (creationTime >= Timer.getFPGATimestamp()) return // Cannot predict the future

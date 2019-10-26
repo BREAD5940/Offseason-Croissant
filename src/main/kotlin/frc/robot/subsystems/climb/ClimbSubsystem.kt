@@ -29,7 +29,6 @@ import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitLengthModel
 import org.ghrobotics.lib.mathematics.units.nativeunit.nativeUnits
 import org.ghrobotics.lib.motors.ctre.FalconSRX
 import org.ghrobotics.lib.motors.rev.FalconMAX
-import org.ghrobotics.lib.wrappers.hid.getY
 import org.team5940.pantry.lib.MultiMotorTransmission
 import org.team5940.pantry.lib.WantedState
 import java.awt.Color

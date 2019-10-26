@@ -2,7 +2,6 @@ package frc.robot.subsystems.drive
 
 import frc.robot.Constants
 import frc.robot.Network
-import frc.robot.subsystems.sensors.LimeLight
 import frc.robot.subsystems.superstructure.Length
 import frc.robot.vision.TargetTracker
 import org.ghrobotics.lib.commands.FalconCommand
@@ -11,11 +10,10 @@ import org.ghrobotics.lib.mathematics.twodim.control.TrajectoryTrackerOutput
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2dWithCurvature
 import org.ghrobotics.lib.mathematics.twodim.geometry.Rotation2d
-import org.ghrobotics.lib.mathematics.twodim.geometry.Translation2d
 import org.ghrobotics.lib.mathematics.twodim.trajectory.types.TimedEntry
 import org.ghrobotics.lib.mathematics.twodim.trajectory.types.Trajectory
 import org.ghrobotics.lib.mathematics.units.* // ktlint-disable no-wildcard-imports
-import org.ghrobotics.lib.mathematics.units.derived.*
+import org.ghrobotics.lib.mathematics.units.derived.* // ktlint-disable no-wildcard-imports
 import org.ghrobotics.lib.utils.Source
 
 /**
@@ -24,9 +22,9 @@ import org.ghrobotics.lib.utils.Source
  * @param trajectorySource Source that contains the trajectory to follow.
  */
 class VisionAssistedTrajectoryTracker(
-        val trajectorySource: Source<Trajectory<SIUnit<Second>, TimedEntry<Pose2dWithCurvature>>>,
-        private val radiusFromEnd: Length,
-        private val useAbsoluteVision: Boolean = false
+    val trajectorySource: Source<Trajectory<SIUnit<Second>, TimedEntry<Pose2dWithCurvature>>>,
+    private val radiusFromEnd: Length,
+    private val useAbsoluteVision: Boolean = false
 ) : FalconCommand(DriveSubsystem) {
 
 //    private var visionFinished = false
@@ -69,7 +67,7 @@ class VisionAssistedTrajectoryTracker(
             val newTarget = if (!useAbsoluteVision) {
                 TargetTracker.getBestTarget(!trajectory.reversed)
             } else {
-                val reference = if(!trajectory.reversed) Constants.kCenterToForwardIntakeStowed else Constants.kBackwardIntakeToCenter
+                val reference = if (!trajectory.reversed) Constants.kCenterToForwardIntakeStowed else Constants.kBackwardIntakeToCenter
                 TargetTracker.getAbsoluteTarget((trajectory.lastState.state.pose + reference).translation)
             }
 
@@ -95,12 +93,12 @@ class VisionAssistedTrajectoryTracker(
             val velocity = (with(DriveSubsystem) {
                 leftMotor.encoder.velocity + rightMotor.encoder.velocity
             }).absoluteValue / 2.0
-            val scaler = velocity.value * (/* max scaler */ 4.0 - /* min scaler */ 1.0)/
+            val scaler = velocity.value * (/* max scaler */ 4.0 - /* min scaler */ 1.0) /
                     (/* velocity at max scaler */10.feet.meter) + 1.0
             var kp = (kCorrectionKp * scaler)
-            if(kp > 0.7) kp = 0.7
+            if (kp > 0.7) kp = 0.7
 
-            val turn = kp * error //+ kCorrectionKd * (error - prevError)
+            val turn = kp * error // + kCorrectionKd * (error - prevError)
 
             DriveSubsystem.setOutput(TrajectoryTrackerOutput(
                     nextState.linearVelocity,
@@ -110,7 +108,6 @@ class VisionAssistedTrajectoryTracker(
             lastOutput = nextState
 
             prevError = error
-
         } else {
             DriveSubsystem.setOutput(TrajectoryTrackerOutput(
                     nextState.linearVelocity,

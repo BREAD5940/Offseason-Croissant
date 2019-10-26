@@ -52,14 +52,14 @@ object Superstructure : FalconSubsystem(), EmergencyHandleable, ConcurrentlyUpda
     val kCargoMid get() = everythingMoveTo(45.inch, 6.degree, 6.degree)
     val kCargoHigh get() = everythingMoveTo(64.5.inch, 7.degree, 30.degree)
 
-    val kStraightDown get() = everythingMoveTo(32.inch, (-70).degree, (-51).degree) //sequential {
+    val kStraightDown get() = everythingMoveTo(32.inch, (-70).degree, (-51).degree) // sequential {
 //        +kHatchMid
 //        +ClosedLoopElevatorMove(35.5.inch)
 //        +parallel {
 //            +ClosedLoopProximalMove((-100).degree)
 //            +ClosedLoopWristMove(-50.degree)
 //        }
-////        +kStowed
+// //        +kStowed
 //    }
 
     fun everythingMoveTo(elevator: Length, proximal: SIUnit<Radian>, wrist: SIUnit<Radian>) = everythingMoveTo(State.Position(elevator, proximal, wrist))

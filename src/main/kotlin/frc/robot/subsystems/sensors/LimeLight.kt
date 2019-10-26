@@ -8,7 +8,7 @@ import frc.robot.subsystems.superstructure.Length
 import frc.robot.vision.TargetTracker
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
 import org.ghrobotics.lib.mathematics.twodim.geometry.Translation2d
-import org.ghrobotics.lib.mathematics.units.*
+import org.ghrobotics.lib.mathematics.units.* // ktlint-disable no-wildcard-imports
 import org.ghrobotics.lib.mathematics.units.derived.Radian
 import org.ghrobotics.lib.mathematics.units.derived.degree
 import org.ghrobotics.lib.mathematics.units.derived.radian
@@ -64,13 +64,13 @@ object LimeLight {
     private val streamEntry = table.getEntry("stream")
 
     data class State(
-            val hasTarget: Boolean,
-            val yaw: SIUnit<Radian>,
-            val pitch: SIUnit<Radian>,
-            val skew: SIUnit<Radian>,
-            val width: Double,
-            val height: Double,
-            val timestamp: SIUnit<Second>
+        val hasTarget: Boolean,
+        val yaw: SIUnit<Radian>,
+        val pitch: SIUnit<Radian>,
+        val skew: SIUnit<Radian>,
+        val width: Double,
+        val height: Double,
+        val timestamp: SIUnit<Second>
     ) {
         constructor() : this(false, 0.degree, 0.degree, 0.degree, 0.0, 0.0, 0.second)
     }
@@ -95,7 +95,7 @@ object LimeLight {
     private fun tangentDistance(isHatchTarget: Boolean = true): SIUnit<Meter> {
         // Thanks 1678
         val limeHeight = 42.25.inch - 1.inch + 2.inch
-        val targetHeight = if(isHatchTarget) 28.6.inch else 36.inch
+        val targetHeight = if (isHatchTarget) 28.6.inch else 36.inch
         val limelightPitch = (-30).degree
         val lastPitch = currentState.pitch
         val distance = tan(
@@ -109,7 +109,7 @@ object LimeLight {
         val focalLen = 707.0 * (57.0 / 53.0) // = (isHighRes) ? x_focal_length_high : x_focal_length_low;
         val width = 14.6.inch
         val targetSizePx = LimeLight.currentState.width // table.getEntry("tlong").getDouble(0.0) // getTargetXPixels();
-        val hypotenuse = width * focalLen / targetSizePx * (/*720p vs 240p*/ if(!isHighRes) 240.0 / 720.0 else 1.0 )
+        val hypotenuse = width * focalLen / targetSizePx * (/*720p vs 240p*/ if (!isHighRes) 240.0 / 720.0 else 1.0)
         val deltaElevation = (45 - 29).inch
         // since a^2 + b^2 = c^2, we find a^2 = c^2 - b^2
         return sqrt(
@@ -136,7 +136,7 @@ object LimeLight {
         val tx = newState.yaw
         val rawPose = Pose2d(Translation2d(distance, tx.toRotation2d()))
 
-        try {val targetPose = if (!(rawPose.translation.x.absoluteValue > (Constants.kRobotLength / 2.0 - 5.inch) ||
+        try { val targetPose = if (!(rawPose.translation.x.absoluteValue > (Constants.kRobotLength / 2.0 - 5.inch) ||
                         rawPose.translation.y.absoluteValue > (Constants.kRobotWidth / 2.0))) null else
             DriveSubsystem.localization[newState.timestamp] + (Constants.kCenterToFrontCamera + rawPose)
 
@@ -147,7 +147,5 @@ object LimeLight {
             println("[LimeLight] Could not add new target! ${e.localizedMessage}")
             e.printStackTrace()
         }
-
-
     }
 }

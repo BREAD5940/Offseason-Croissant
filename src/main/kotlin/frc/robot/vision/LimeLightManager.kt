@@ -1,27 +1,27 @@
-//package frc.robot.vision
+// package frc.robot.vision
 //
-//import edu.wpi.first.networktables.NetworkTableEntry
-//import edu.wpi.first.networktables.NetworkTableInstance
-//import edu.wpi.first.wpilibj.Timer
-//import edu.wpi.first.wpilibj2.command.SubsystemBase
-//import frc.robot.Constants
-//import frc.robot.subsystems.drive.DriveSubsystem
-//import frc.robot.subsystems.sensors.LimeLight
-//import frc.robot.subsystems.superstructure.Length
-//import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
-//import org.ghrobotics.lib.mathematics.twodim.geometry.Translation2d
-//import org.ghrobotics.lib.mathematics.units.* // ktlint-disable no-wildcard-imports
-//import org.ghrobotics.lib.mathematics.units.derived.degree
-//import org.ghrobotics.lib.mathematics.units.derived.toRotation2d
-//import kotlin.math.* // ktlint-disable no-wildcard-imports
+// import edu.wpi.first.networktables.NetworkTableEntry
+// import edu.wpi.first.networktables.NetworkTableInstance
+// import edu.wpi.first.wpilibj.Timer
+// import edu.wpi.first.wpilibj2.command.SubsystemBase
+// import frc.robot.Constants
+// import frc.robot.subsystems.drive.DriveSubsystem
+// import frc.robot.subsystems.sensors.LimeLight
+// import frc.robot.subsystems.superstructure.Length
+// import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
+// import org.ghrobotics.lib.mathematics.twodim.geometry.Translation2d
+// import org.ghrobotics.lib.mathematics.units.* // ktlint-disable no-wildcard-imports
+// import org.ghrobotics.lib.mathematics.units.derived.degree
+// import org.ghrobotics.lib.mathematics.units.derived.toRotation2d
+// import kotlin.math.* // ktlint-disable no-wildcard-imports
 //
-//// @Suppress("FunctionName")
-//// fun Translation2d(
-////    distance: Double = 0.0,
-////    rotation: Rotation2d = Rotation2d()
-//// ) = Translation2d(distance * rotation.cos, distance * rotation.sin)
+// // @Suppress("FunctionName")
+// // fun Translation2d(
+// //    distance: Double = 0.0,
+// //    rotation: Rotation2d = Rotation2d()
+// // ) = Translation2d(distance * rotation.cos, distance * rotation.sin)
 //
-//object LimeLightManager : SubsystemBase() {
+// object LimeLightManager : SubsystemBase() {
 //
 //    override fun periodic() = updateFromEstimatedTargetDistance(
 //            DriveSubsystem.robotPosition,
@@ -64,4 +64,4 @@
 //                hypotenuse.meter.pow(2) - deltaElevation.meter.pow(2)
 //        ).meter
 //    }
-//}
+// }

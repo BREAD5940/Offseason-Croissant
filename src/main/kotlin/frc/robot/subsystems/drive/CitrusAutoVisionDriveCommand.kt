@@ -14,7 +14,7 @@ import org.ghrobotics.lib.mathematics.units.derived.velocity
 import org.ghrobotics.lib.mathematics.units.inch
 import org.ghrobotics.lib.mathematics.units.meter
 
-class CitrusAutoVisionDriveCommand(private val isStowed: Boolean, private val skewCorrect: Boolean = true): FalconCommand(DriveSubsystem) {
+class CitrusAutoVisionDriveCommand(private val isStowed: Boolean, private val skewCorrect: Boolean = true) : FalconCommand(DriveSubsystem) {
 
     private var noTarget = 0
     private var cantFindTarget = false
@@ -27,7 +27,7 @@ class CitrusAutoVisionDriveCommand(private val isStowed: Boolean, private val sk
     /**
      * Target distance from the center of the robot to the vision taret
      */
-    private val targetDistance = (if(isStowed) Constants.kCenterToForwardIntakeStowed else Constants.kCenterToForwardIntake).translation.x.absoluteValue
+    private val targetDistance = (if (isStowed) Constants.kCenterToForwardIntakeStowed else Constants.kCenterToForwardIntake).translation.x.absoluteValue
 
     override fun end(interrupted: Boolean) {
         noTarget = 0
@@ -53,19 +53,19 @@ class CitrusAutoVisionDriveCommand(private val isStowed: Boolean, private val sk
 
         val lastKnownTargetPose = this.lastKnownTargetPose
 
-        if(lastKnownTargetPose == null) {
+        if (lastKnownTargetPose == null) {
             noTarget++
-            if(noTarget > 40) cantFindTarget = true
+            if (noTarget > 40) cantFindTarget = true
             return
         }
 
         // we know we have a new target
         noTarget = 0
 
-        val offset = if(!skewCorrect) 0.degree else {
+        val offset = if (!skewCorrect) 0.degree else {
             var skew = LimeLight.lastSkew
-            if(skew > (-45).degree) skew = skew.absoluteValue else skew += 90.degree
-            if(skew > 5.degree) {
+            if (skew > (-45).degree) skew = skew.absoluteValue else skew += 90.degree
+            if (skew > 5.degree) {
                 0.05.degree * (if (LimeLight.targetToTheLeft) 1 else -1) * (skew.degree / 13)
             } else 0.degree
         }
@@ -83,7 +83,7 @@ class CitrusAutoVisionDriveCommand(private val isStowed: Boolean, private val sk
         DriveSubsystem.setWheelVelocities(DifferentialDrive.WheelState(linear.value + turn, linear.value - turn))
 
         inRange = currentDistance < targetDistance + 2.inch
-        if(inRange && inRangeTime > 0.0) inRangeTime = Timer.getFPGATimestamp()
+        if (inRange && inRangeTime > 0.0) inRangeTime = Timer.getFPGATimestamp()
 
         prevAngleError = angle
     }
@@ -101,5 +101,4 @@ class CitrusAutoVisionDriveCommand(private val isStowed: Boolean, private val sk
         var kCorrectionKd = 14.0
         var kLinearKp = 1.0
     }
-
 }

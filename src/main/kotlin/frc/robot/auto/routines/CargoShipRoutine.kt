@@ -41,7 +41,6 @@ class CargoShipRoutine : AutoRoutine() {
     override val routine
         get() = sequential {
 
-
             +PrintCommand("Starting")
             +InstantCommand(Runnable { DriveSubsystem.lowGear = false })
 
@@ -101,6 +100,5 @@ class CargoShipRoutine : AutoRoutine() {
                 +IntakeHatchCommand(true).withTimeout(1.0)
                 +RunCommand(Runnable { DriveSubsystem.tankDrive(-0.3, -0.3) }).withTimeout(1.0)
             }
-
         }
 }

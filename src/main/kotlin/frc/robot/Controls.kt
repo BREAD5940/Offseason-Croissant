@@ -1,7 +1,6 @@
 package frc.robot
 
 import edu.wpi.first.wpilibj.GenericHID
-import edu.wpi.first.wpilibj.Joystick
 import edu.wpi.first.wpilibj.XboxController
 import edu.wpi.first.wpilibj2.command.* // ktlint-disable no-wildcard-imports
 import frc.robot.subsystems.climb.ClimbSubsystem
@@ -14,7 +13,6 @@ import frc.robot.subsystems.intake.IntakeHatchCommand
 import frc.robot.subsystems.superstructure.* // ktlint-disable no-wildcard-imports
 import org.ghrobotics.lib.commands.FalconCommand
 import org.ghrobotics.lib.commands.sequential
-import org.ghrobotics.lib.mathematics.units.derived.degree
 import org.ghrobotics.lib.mathematics.units.derived.volt
 import org.ghrobotics.lib.mathematics.units.inch
 import org.ghrobotics.lib.wrappers.hid.* // ktlint-disable no-wildcard-imports
@@ -45,8 +43,8 @@ object Controls : Updatable {
 
 //            val cargoCommand = sequential { +Superstructure.kCargoIntake; +IntakeCargoCommand(releasing = false) }
 //            button(10).changeOff{ Superstructure.kStowed.schedule() }.change(cargoCommand)
-            button(10).change(StartEndCommand(Runnable{ IntakeSubsystem.hatchMotorOutput = 6.volt },
-                    Runnable{ IntakeSubsystem.setNeutral() }, IntakeSubsystem))
+            button(10).change(StartEndCommand(Runnable { IntakeSubsystem.hatchMotorOutput = 6.volt },
+                    Runnable { IntakeSubsystem.setNeutral() }, IntakeSubsystem))
         } else {
             triggerAxisButton(GenericHID.Hand.kRight).change(TeleopVisionDriveCommand(true))
             button(kBumperLeft).changeOn { DriveSubsystem.lowGear = true }.changeOff { DriveSubsystem.lowGear = false }
@@ -96,17 +94,17 @@ object Controls : Updatable {
         // boring intake
         lessThanAxisButton(5).change(IntakeHatchCommand(releasing = true, shouldMutateArms = false))
         greaterThanAxisButton(5).change(
-                StartEndCommand(Runnable{IntakeSubsystem.hatchMotorOutput = 3.volt; IntakeSubsystem.wantsOpen = true},
-                        Runnable{IntakeSubsystem.setNeutral()})
+                StartEndCommand(Runnable { IntakeSubsystem.hatchMotorOutput = 3.volt; IntakeSubsystem.wantsOpen = true },
+                        Runnable { IntakeSubsystem.setNeutral() })
         )
 
         // hatch intake
         val poked = Superstructure.kSlightlyOutStowed
         val stowed = Superstructure.kStowed
         val intake = IntakeHatchCommand(false)
-        val delayedYote = StartEndCommand(Runnable{IntakeSubsystem.hatchMotorOutput = 8.volt
-            IntakeSubsystem.wantsOpen = true},
-                Runnable{IntakeSubsystem.setNeutral()}).withTimeout(0.75)
+        val delayedYote = StartEndCommand(Runnable { IntakeSubsystem.hatchMotorOutput = 8.volt
+            IntakeSubsystem.wantsOpen = true },
+                Runnable { IntakeSubsystem.setNeutral() }).withTimeout(0.75)
         triggerAxisButton(GenericHID.Hand.kLeft).changeOn { poked.schedule(); intake.schedule() }
                 .changeOff { poked.cancel(); intake.cancel(); stowed.schedule(); delayedYote.schedule()
         }.changeOn(IntakeHatchCommand(releasing = false))
@@ -116,13 +114,12 @@ object Controls : Updatable {
         val cargoCommand = sequential { +PrintCommand("running cargoCommand"); +Superstructure.kCargoIntake.beforeStarting { IntakeSubsystem.wantsOpen = true }; +IntakeCargoCommand(releasing = false) }
         button(kBumperLeft).changeOff { Superstructure.kStowed.schedule() }.change(cargoCommand)
         button(kBumperRight).change(IntakeCargoCommand(true))
-
     }
 
 //    val operatorJoy = Joystick(5)
 //    val operatorFalconHID = operatorJoy.mapControls {
 //        // cargo presets
-////            button(12).changeOn(Superstructure.kCargoIntake.andThen { IntakeSubsystem.wantsOpen = true }) // .changeOff { Superstructure.kStowed.schedule() }
+// //            button(12).changeOn(Superstructure.kCargoIntake.andThen { IntakeSubsystem.wantsOpen = true }) // .changeOff { Superstructure.kStowed.schedule() }
 //        button(7).changeOn(Superstructure.kCargoLow) // .changeOff { Superstructure.kStowed.schedule() }
 //        button(6).changeOn(Superstructure.kCargoMid) // .changeOff { Superstructure.kStowed.schedule() }
 //        button(5).changeOn(Superstructure.kCargoHigh) // .changeOff { Superstructure.kStowed.schedule() }
@@ -140,7 +137,7 @@ object Controls : Updatable {
 //        button(11).changeOn(ClosedLoopElevatorMove { Elevator.currentState.position - 1.inch })
 //
 //        // that one passthrough preset that doesnt snap back to normal
-////            button(4).changeOn(Superstructure.kBackHatchFromLoadingStation)
+// //            button(4).changeOn(Superstructure.kBackHatchFromLoadingStation)
 //
 //        // hatches
 //        val poked = Superstructure.kSlightlyOutStowed
@@ -178,7 +175,7 @@ private fun Command.andThen(block: () -> Unit) = sequential { +this@andThen ; +I
 private fun FalconXboxBuilder.registerEmergencyMode() {
     button(kBack).changeOn {
 //        Robot.activateEmergency()
-        val command = object: FalconCommand(Superstructure, DriveSubsystem, Elevator, Proximal, Wrist, IntakeSubsystem) {
+        val command = object : FalconCommand(Superstructure, DriveSubsystem, Elevator, Proximal, Wrist, IntakeSubsystem) {
             override fun execute() {
                 Superstructure.setNeutral()
                 Elevator.setNeutral()

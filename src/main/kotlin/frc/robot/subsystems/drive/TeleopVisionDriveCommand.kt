@@ -67,10 +67,10 @@ class TeleopVisionDriveCommand(private val isFront: Boolean, private val skewCor
                 source *= (distance + 1) / 6.0
             }
 
-            val offset = if(!skewCorrect) 0.degree else {
+            val offset = if (!skewCorrect) 0.degree else {
                 var skew = LimeLight.lastSkew
-                if(skew > (-45).degree) skew = skew.absoluteValue else skew += 90.degree
-                if(skew > 5.degree) {
+                if (skew > (-45).degree) skew = skew.absoluteValue else skew += 90.degree
+                if (skew > 5.degree) {
                     0.05.degree * (if (LimeLight.targetToTheLeft) 1 else -1) * (skew.degree / 13)
                 } else 0.degree
             }

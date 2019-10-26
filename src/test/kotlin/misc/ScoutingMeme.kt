@@ -9,7 +9,7 @@ fun main() {
     val breaks = 0
 
     val totalScouters = arrayListOf(
-            "A","B","C","D","E","F","G","H","I"
+            "A", "B", "C", "D", "E", "F", "G", "H", "I"
     )
 
     val currentlyScouting = ArrayList(totalScouters.subList(0, scoutersPerAlliance * 2))
@@ -21,10 +21,9 @@ fun main() {
 
     var lastBreakIndex = 0
 
-
     var currentRotation = 0
 
-    while(currentRotation<rotations) {
+    while (currentRotation <rotations) {
         // loop over  every rotation of scouters starting with 1
         // we'll add them to the list then sift them over
 //        chonkSchedule += currentlyScouting
@@ -45,7 +44,7 @@ fun main() {
 //        println("$humanComingOffBreak is coming off break and $humanToGoOnBreak is going on break")
 
         lastBreakIndex += 1
-        if(lastBreakIndex >= currentlyScouting.size) lastBreakIndex = 0
+        if (lastBreakIndex >= currentlyScouting.size) lastBreakIndex = 0
 
         currentRotation += 1
 
@@ -53,5 +52,4 @@ fun main() {
     }
 
     println("chonk schedule $chonkSchedule")
-
 }
