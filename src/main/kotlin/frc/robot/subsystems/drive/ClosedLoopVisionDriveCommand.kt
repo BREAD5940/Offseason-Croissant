@@ -69,11 +69,14 @@ class ClosedLoopVisionDriveCommand(private val isFront: Boolean, private val ske
             // so (0, 1) and (10, 2)
             // y = (2-1)/(10-0) * (x - 0) + 1
             val velocity = (with(DriveSubsystem) {
-                leftMotor.encoder.velocity.absoluteValue + rightMotor.encoder.velocity.absoluteValue
-            }) / 2.0
-            val scaler = velocity.value * (/* max scaler */ 3.0 - /* min scaler */ 1.0)/
+                leftMotor.encoder.velocity + rightMotor.encoder.velocity
+            }).absoluteValue / 2.0
+            val scaler = velocity.value * (/* max scaler */ 4.0 - /* min scaler */ 1.0)/
                     (/* velocity at max scaler */10.feet.meter) + 1.0
-            val kp = kCorrectionKp * scaler
+            var kp = (kCorrectionKp * scaler)
+            if(kp > 0.7) kp = 0.7
+
+            println("kp $kp")
 
             var turn = kp * error //+ kCorrectionKd * (error - prevError)
             if(turn.absoluteValue > maxTurn.value) turn = maxTurn.value
@@ -98,7 +101,7 @@ class ClosedLoopVisionDriveCommand(private val isFront: Boolean, private val ske
     companion object {
         var kCorrectionKp = 0.35
         var kCorrectionKd = 0.0
-        val maxTurn = 60.degree.velocity
+        val maxTurn = 90.degree.velocity
         var isActive = false
             private set
     }
