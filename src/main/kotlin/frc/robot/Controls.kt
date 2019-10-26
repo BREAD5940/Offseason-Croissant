@@ -35,9 +35,11 @@ object Controls : Updatable {
         if (Constants.kIsRocketLeague) {
 //            button(kBumperRight).change(TeleopVisionDriveCommand(true))
 //            button(kBumperRight).change(ClosedLoopVisionDriveCommand(true))
-            button(kY).change(TeleopVisionDriveCommand(true, true))
-            button(kB).change(TeleopVisionDriveCommand(true, false))
+//            button(kY).change(TeleopVisionDriveCommand(true, true))
+//            button(kB).change(TeleopVisionDriveCommand(true, false))
+
             button(kBumperRight).change(TeleopVisionDriveCommand(true, false))
+            button(kBumperRight).change(ClosedLoopVisionDriveCommand(true, false))
 
             button(9).changeOn { DriveSubsystem.lowGear = true }.changeOff { DriveSubsystem.lowGear = false }
 

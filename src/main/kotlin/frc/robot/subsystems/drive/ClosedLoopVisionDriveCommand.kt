@@ -21,7 +21,7 @@ import org.ghrobotics.lib.mathematics.units.kFeetToMeter
 import org.ghrobotics.lib.mathematics.units.meter
 import kotlin.math.absoluteValue
 
-class ClosedLoopVisionDriveCommand(private val isFront: Boolean) : FalconCommand(DriveSubsystem) {
+class ClosedLoopVisionDriveCommand(private val isFront: Boolean, private val skewCorrect: Boolean = false) : FalconCommand(DriveSubsystem) {
 
     override fun isFinished() = false
 
@@ -61,11 +61,21 @@ class ClosedLoopVisionDriveCommand(private val isFront: Boolean) : FalconCommand
             var offset = 0.degree
             var skew = LimeLight.lastSkew
             if(skew > (-45).degree) skew = skew.absoluteValue else skew += 90.degree
-            if(skew > 5.degree) offset = 0.05.degree * (if (LimeLight.targetToTheLeft) 1 else -1) * (skew.degree / 13);
+            if(skew > 5.degree && skewCorrect) offset = 0.05.degree * (if (LimeLight.targetToTheLeft) 1 else -1) * (skew.degree / 13);
 
             val error = angle.radian - offset.radian
 
-            var turn = kCorrectionKp * error + kCorrectionKd * (error - prevError)
+            // at 0 speed this should be 1, and at 10ft/sec it should be 2
+            // so (0, 1) and (10, 2)
+            // y = (2-1)/(10-0) * (x - 0) + 1
+            val velocity = (with(DriveSubsystem) {
+                leftMotor.encoder.velocity.absoluteValue + rightMotor.encoder.velocity.absoluteValue
+            }) / 2.0
+            val scaler = velocity.value * (/* max scaler */ 3.0 - /* min scaler */ 1.0)/
+                    (/* velocity at max scaler */10.feet.meter) + 1.0
+            val kp = kCorrectionKp * scaler
+
+            var turn = kp * error //+ kCorrectionKd * (error - prevError)
             if(turn.absoluteValue > maxTurn.value) turn = maxTurn.value
 
             DriveSubsystem.setWheelVelocities(DifferentialDrive.WheelState((linear - turn) * multiplier, (linear + turn) * multiplier))
@@ -86,9 +96,9 @@ class ClosedLoopVisionDriveCommand(private val isFront: Boolean) : FalconCommand
     }
 
     companion object {
-        var kCorrectionKp = 1.0
+        var kCorrectionKp = 0.35
         var kCorrectionKd = 0.0
-        val maxTurn = 30.degree.velocity
+        val maxTurn = 60.degree.velocity
         var isActive = false
             private set
     }

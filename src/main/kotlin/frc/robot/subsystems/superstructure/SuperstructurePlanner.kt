@@ -157,10 +157,10 @@ object SuperstructurePlanner {
         }
 
         // choose between everything at the same time, elevator first or arm first
-        val proximalThreshold = (-72).degree
+        val proximalThreshold = (-73).degree
         val nowOutsideCrossbar = currentState.proximal > proximalThreshold
         val willBeOutsideCrossbar = goalState.proximal > proximalThreshold
-        var mightHitElectronics = (goalState.elevator < 26.inch && goalState.proximal > proximalThreshold) || (goalState.elevator < 31.inch && goalState.proximal < proximalThreshold) // TODO check angles?
+        var mightHitElectronics = (goalState.elevator < 23.inch && goalState.proximal > proximalThreshold) || (goalState.elevator < 31.inch && goalState.proximal < proximalThreshold) // TODO check angles?
 
         val proximalStartSafe = currentState.proximal > -80.degree
         val proximalEndSafe = goalState.proximal > -80.degree
