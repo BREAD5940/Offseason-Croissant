@@ -49,6 +49,7 @@ class VisionAssistedTrajectoryTracker(
         trajectory = trajectorySource()
         DriveSubsystem.trajectoryTracker.reset(trajectory)
         LiveDashboard.isFollowingPath = true
+        lastKnownTargetPose = null
 //        visionFinished = false
         println("VISION INIT")
     }
