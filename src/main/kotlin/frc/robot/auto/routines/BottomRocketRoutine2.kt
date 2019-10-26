@@ -78,7 +78,7 @@ class BottomRocketRoutine2 : AutoRoutine() {
                     path2,
                     Autonomous.isStartingOnLeft,
                     10.feet,
-                    true
+                    false
             )
 
             // Reorient position on field based on Vision alignment.
