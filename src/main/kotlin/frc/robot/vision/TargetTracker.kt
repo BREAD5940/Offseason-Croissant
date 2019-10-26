@@ -200,5 +200,5 @@ object TargetTracker : Loggable, Updatable {
     val kVisionCameraTimeout = 2.second
     val kTargetTrackingDistanceErrorTolerance = 16.inch
     val kTargetTrackingMinLifetime = 0.1.second
-    val kTargetTrackingMaxLifetime = 0.5.second
+    val kTargetTrackingMaxLifetime = 0.4.second
 }

@@ -38,7 +38,7 @@ class TeleopVisionDriveCommand(private val isFront: Boolean, private val skewCor
 
     override fun execute() {
 
-        val newTarget = TargetTracker.getBestTargetUsingReference(referencePose, isFront)
+        val newTarget = TargetTracker.getBestTarget(isFront)
 
         val newPose = newTarget?.averagedPose2d
         if (newTarget?.isAlive == true && newPose != null) lastKnownTargetPose = newPose

@@ -91,7 +91,7 @@ object LimeLight {
         wantedStreamMode = 2.0
     }
 
-    fun estimateDistance(highRes: Boolean) = LimeLightManager.getDistanceToTarget(highRes)
+    fun estimateDistance(highRes: Boolean = true) = LimeLightManager.getDistanceToTarget(highRes)
 
     fun update() {
 

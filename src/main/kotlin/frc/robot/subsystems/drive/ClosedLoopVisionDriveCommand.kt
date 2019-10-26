@@ -35,15 +35,32 @@ class ClosedLoopVisionDriveCommand(private val isFront: Boolean, private val ske
         LEDs.wantedState = LEDs.State.Off
     }
 
+    private var lastKnownTargetPose: Pose2d? = null
+
     override fun execute() {
 
-        var linear = -ManualDriveCommand.speedSource()
+        val newTarget = TargetTracker.getBestTargetUsingReference(referencePose, isFront)
 
-        if (!LimeLight.hasTarget) {
+        val newPose = newTarget?.averagedPose2d
+        if (newTarget?.isAlive == true && newPose != null) lastKnownTargetPose = newPose
+
+        val lastKnownTargetPose = this.lastKnownTargetPose
+
+
+
+//        var linear = -ManualDriveCommand.speedSource()
+
+//        if (!LimeLight.hasTarget) {
+//            super.execute()
+        if (lastKnownTargetPose == null) {
+//            ElevatorSubsystem.wantedVisionMode = true
             super.execute()
         } else {
+            val transform = lastKnownTargetPose inFrameOfReferenceOf DriveSubsystem.robotPosition
+            var angle = Rotation2d(transform.translation.x.meter, transform.translation.y.meter, true)
+            var linear = -ManualDriveCommand.speedSource()
 
-            val angle = LimeLight.lastYaw
+//            val angle = LimeLight.lastYaw
 
             Network.visionDriveAngle.setDouble(angle.degree)
             Network.visionDriveActive.setBoolean(true)

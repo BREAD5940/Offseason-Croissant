@@ -59,7 +59,7 @@ class CitrusAutoVisionDriveCommand(private val isStowed: Boolean, private val sk
         val angleError = (globalPose - DriveSubsystem.robotPosition.rotation)
 
         // idk man maybe 1 feet per second at 1 ft of error?
-        val currentDistance = LimeLight.estimateDistance(true)
+        val currentDistance = LimeLight.estimateDistance()
         val linear = (currentDistance - Constants.kCenterToFrontCamera.translation.x - targetDistance).velocity * kLinearKp // TODO tune
 
         // P loop on heading
