@@ -136,6 +136,7 @@ object ClimbSubsystem : FalconSubsystem() {
         var voltageArray: ArrayList<Double> = arrayListOf()
 
         override fun initialize() {
+            DriveSubsystem.compressor.stop()
             stiltMotor.controller.setOutputRange(-1.0, 1.0)
             Elevator.motor.master.talonSRX.configClosedLoopPeakOutput(0, 0.3)
             Proximal.wantedState = WantedState.Position((-15).degree)
@@ -188,6 +189,7 @@ object ClimbSubsystem : FalconSubsystem() {
         override fun isFinished() = endCommand()
 
         override fun end(interrupted: Boolean) {
+            DriveSubsystem.compressor.start()
             Elevator.wantsLowGear = false
             Elevator.motor.master.talonSRX.configClosedLoopPeakOutput(0, 1.0)
             Proximal.setMotionMagicMode()
@@ -242,6 +244,7 @@ object ClimbSubsystem : FalconSubsystem() {
         var voltageArray: ArrayList<Double> = arrayListOf()
 
         override fun initialize() {
+            DriveSubsystem.compressor.stop()
             stiltMotor.controller.setOutputRange(-1.0, 1.0)
             Elevator.motor.master.talonSRX.configClosedLoopPeakOutput(0, 0.25)
             Proximal.wantedState = WantedState.Position((-15).degree)
@@ -283,6 +286,7 @@ object ClimbSubsystem : FalconSubsystem() {
         override fun isFinished() = endCommand()
 
         override fun end(interrupted: Boolean) {
+            DriveSubsystem.compressor.start()
             Elevator.wantsLowGear = false
             Elevator.motor.master.talonSRX.configClosedLoopPeakOutput(0, 1.0)
             Proximal.setMotionMagicMode()
