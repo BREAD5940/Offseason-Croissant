@@ -39,14 +39,12 @@ class ClosedLoopVisionDriveCommand(private val isFront: Boolean, private val ske
 
     override fun execute() {
 
-        val newTarget = TargetTracker.getBestTargetUsingReference(referencePose, isFront)
+        val newTarget = TargetTracker.getBestTarget(/* referencePose, */ isFront)
 
         val newPose = newTarget?.averagedPose2d
         if (newTarget?.isAlive == true && newPose != null) lastKnownTargetPose = newPose
 
         val lastKnownTargetPose = this.lastKnownTargetPose
-
-
 
 //        var linear = -ManualDriveCommand.speedSource()
 
