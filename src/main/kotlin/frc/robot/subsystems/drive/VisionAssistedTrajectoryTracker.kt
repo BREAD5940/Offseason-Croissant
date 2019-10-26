@@ -1,13 +1,17 @@
 package frc.robot.subsystems.drive
 
+import frc.robot.Constants
 import frc.robot.Network
 import frc.robot.subsystems.sensors.LimeLight
 import frc.robot.subsystems.superstructure.Length
+import frc.robot.vision.TargetTracker
 import org.ghrobotics.lib.commands.FalconCommand
 import org.ghrobotics.lib.debug.LiveDashboard
 import org.ghrobotics.lib.mathematics.twodim.control.TrajectoryTrackerOutput
+import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2dWithCurvature
 import org.ghrobotics.lib.mathematics.twodim.geometry.Rotation2d
+import org.ghrobotics.lib.mathematics.twodim.geometry.Translation2d
 import org.ghrobotics.lib.mathematics.twodim.trajectory.types.TimedEntry
 import org.ghrobotics.lib.mathematics.twodim.trajectory.types.Trajectory
 import org.ghrobotics.lib.mathematics.units.* // ktlint-disable no-wildcard-imports
@@ -21,7 +25,8 @@ import org.ghrobotics.lib.utils.Source
  */
 class VisionAssistedTrajectoryTracker(
         val trajectorySource: Source<Trajectory<SIUnit<Second>, TimedEntry<Pose2dWithCurvature>>>,
-        private val radiusFromEnd: Length
+        private val radiusFromEnd: Length,
+        private val useAbsoluteVision: Boolean = false
 ) : FalconCommand(DriveSubsystem) {
 
 //    private var visionFinished = false
@@ -30,10 +35,12 @@ class VisionAssistedTrajectoryTracker(
 
     @Suppress("LateinitUsage")
     private lateinit var trajectory: Trajectory<SIUnit<Second>, TimedEntry<Pose2dWithCurvature>>
+    private var lastOutput = TrajectoryTrackerOutput(0.feet.velocity, 0.feet.acceleration, 0.degree.velocity, 0.degree.acceleration)
 
     override fun isFinished() = DriveSubsystem.trajectoryTracker.isFinished // visionFinished
 
-    var shouldVision = false
+    private var lastKnownTargetPose: Pose2d? = null
+    private var shouldVision = false
 
     /**
      * Reset the trajectory follower with the new trajectory.
@@ -52,63 +59,52 @@ class VisionAssistedTrajectoryTracker(
         val robotPositionWithIntakeOffset = DriveSubsystem.robotPosition // IntakeSubsystem.robotPositionWithIntakeOffset
 
         val nextState = DriveSubsystem.trajectoryTracker.nextState(DriveSubsystem.robotPosition)
-        DriveSubsystem.setOutput(nextState) //TrajectoryTrackerOutput(
-//                nextState.linearVelocity,
-//                SIUnit((nextState.linearVelocity - lastOutput.linearVelocity).value / 0.020),
-//                nextState.angularVelocity,
-//                SIUnit((nextState.angularVelocity - lastOutput.angularVelocity).value / 0.020)))
-//        lastOutput = nextState
 
         val withinVisionRadius =
-                robotPositionWithIntakeOffset.translation.distance(
-                        trajectory.lastState.state.pose.translation // + Translation2d(
-//                                Length.kZero,
-//                                IntakeSubsystem.badIntakeOffset
-//                        )
-                ) < radiusFromEnd.value
+                robotPositionWithIntakeOffset.translation.distance(trajectory.lastState.state.pose.translation) <
+                        radiusFromEnd.meter
 
-        // only check for new targets if we are close to the end of the spline
         if (withinVisionRadius) {
-//            val newTarget = if (!useAbsoluteVision) {
-//                TargetTracker.getBestTarget(!trajectory.reversed)
-//            } else {
-//                TargetTracker.getAbsoluteTarget((trajectory.lastState.state.pose + Constants.kCenterToForwardIntake).translation)
-//            }
-//
-//            val newPose = newTarget?.averagedPose2d
-//            if (newTarget?.isAlive == true && newPose != null) this.lastKnownTargetPose = newPose
-            this.shouldVision = shouldVision || LimeLight.hasTarget
+            val newTarget = if (!useAbsoluteVision) {
+                TargetTracker.getBestTarget(!trajectory.reversed)
+            } else {
+                val reference = if(!trajectory.reversed) Constants.kCenterToForwardIntakeStowed else Constants.kBackwardIntakeToCenter
+                TargetTracker.getAbsoluteTarget((trajectory.lastState.state.pose + reference).translation)
+            }
+
+            val newPose = newTarget?.averagedPose2d
+            if (newTarget?.isAlive == true && newPose != null) lastKnownTargetPose = newPose
         }
 
-//        val lastKnownTargetPose = this.lastKnownTargetPose
+        val lastKnownTargetPose = this.lastKnownTargetPose
 
-        if (this.shouldVision) {
-            println("VISION")
+        if (lastKnownTargetPose != null) {
             visionActive = true
-//            val transform = lastKnownTargetPose inFrameOfReferenceOf robotPositionWithIntakeOffset
-//            val angle = Rotation2d(transform.translation.x.meter, transform.translation.y.meter, true)
-
-            val angle = LimeLight.currentState.yaw.toRotation2d() + DriveSubsystem.localization[LimeLight.currentState.timestamp].rotation - DriveSubsystem.robotPosition.rotation
+            val transform = lastKnownTargetPose inFrameOfReferenceOf robotPositionWithIntakeOffset
+            val angle = Rotation2d(transform.translation.x.meter, transform.translation.y.meter, true)
 
             Network.visionDriveAngle.setDouble(angle.degree)
             Network.visionDriveActive.setBoolean(true)
 
             val error = (angle + if (!trajectory.reversed) Rotation2d() else Math.PI.radian.toRotation2d()).radian
-            val turn =  kCorrectionKp * error + kCorrectionKd * (error - prevError)
+            val turn = kCorrectionKp * error + kCorrectionKd * (error - prevError)
 
-            DriveSubsystem.setOutput(
-                    TrajectoryTrackerOutput(
-                            nextState.linearVelocity,
-                            0.meter.acceleration,
-                            turn.radian.velocity,
-                            0.radian.acceleration
-                    )
-            )
+            DriveSubsystem.setOutput(TrajectoryTrackerOutput(
+                    nextState.linearVelocity,
+                    SIUnit((nextState.linearVelocity - lastOutput.linearVelocity).value / 0.020),
+                    turn.radian.velocity,
+                    SIUnit((turn.radian.velocity - lastOutput.angularVelocity).value / 0.020)))
+            lastOutput = nextState
 
             prevError = error
+
         } else {
-            println("DONT SEE VISION")
-            DriveSubsystem.setOutput(nextState)
+            DriveSubsystem.setOutput(TrajectoryTrackerOutput(
+                    nextState.linearVelocity,
+                    SIUnit((nextState.linearVelocity - lastOutput.linearVelocity).value / 0.020),
+                    nextState.angularVelocity,
+                    SIUnit((nextState.angularVelocity - lastOutput.angularVelocity).value / 0.020)))
+            lastOutput = nextState
         }
 
         val referencePoint = DriveSubsystem.trajectoryTracker.referencePoint
