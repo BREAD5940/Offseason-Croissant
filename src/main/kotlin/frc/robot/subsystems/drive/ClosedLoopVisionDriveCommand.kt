@@ -1,7 +1,6 @@
 package frc.robot.subsystems.drive
 
 import com.team254.lib.physics.DifferentialDrive
-import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import frc.robot.Network
@@ -39,14 +38,12 @@ class ClosedLoopVisionDriveCommand(private val isFront: Boolean, private val ske
 
     override fun execute() {
 
-        val newTarget = TargetTracker.getBestTargetUsingReference(referencePose, isFront)
+        val newTarget = TargetTracker.getBestTarget(/* referencePose, */ isFront)
 
         val newPose = newTarget?.averagedPose2d
         if (newTarget?.isAlive == true && newPose != null) lastKnownTargetPose = newPose
 
         val lastKnownTargetPose = this.lastKnownTargetPose
-
-
 
 //        var linear = -ManualDriveCommand.speedSource()
 
@@ -83,8 +80,8 @@ class ClosedLoopVisionDriveCommand(private val isFront: Boolean, private val ske
 
             var offset = 0.degree
             var skew = LimeLight.lastSkew
-            if(skew > (-45).degree) skew = skew.absoluteValue else skew += 90.degree
-            if(skew > 5.degree && skewCorrect) offset = 0.05.degree * (if (LimeLight.targetToTheLeft) 1 else -1) * (skew.degree / 13);
+            if (skew > (-45).degree) skew = skew.absoluteValue else skew += 90.degree
+            if (skew > 5.degree && skewCorrect) offset = 0.05.degree * (if (LimeLight.targetToTheLeft) 1 else -1) * (skew.degree / 13)
 
             val error = angle.radian - offset.radian
 
@@ -94,15 +91,15 @@ class ClosedLoopVisionDriveCommand(private val isFront: Boolean, private val ske
             val velocity = (with(DriveSubsystem) {
                 leftMotor.encoder.velocity + rightMotor.encoder.velocity
             }).absoluteValue / 2.0
-            val scaler = velocity.value * (/* max scaler */ 4.0 - /* min scaler */ 1.0)/
+            val scaler = velocity.value * (/* max scaler */ 4.0 - /* min scaler */ 1.0) /
                     (/* velocity at max scaler */10.feet.meter) + 1.0
             var kp = (kCorrectionKp * scaler)
-            if(kp > 0.7) kp = 0.7
+            if (kp > 0.7) kp = 0.7
 
 //            println("kp $kp")
 
-            var turn = kp * error //+ kCorrectionKd * (error - prevError)
-            if(turn.absoluteValue > maxTurn.value) turn = maxTurn.value
+            var turn = kp * error // + kCorrectionKd * (error - prevError)
+            if (turn.absoluteValue > maxTurn.value) turn = maxTurn.value
 
             DriveSubsystem.setWheelVelocities(DifferentialDrive.WheelState((linear - turn) * multiplier, (linear + turn) * multiplier))
 

@@ -55,7 +55,6 @@ object DriveSubsystem : TankDriveSubsystem(), EmergencyHandleable, ConcurrentlyU
             followers[0].talonSRX.configPeakCurrentLimit(60)
             master.talonSRX.enableCurrentLimit(true)
             followers[0].talonSRX.enableCurrentLimit(true)
-
         }
 
         override fun setClosedLoopGains() {

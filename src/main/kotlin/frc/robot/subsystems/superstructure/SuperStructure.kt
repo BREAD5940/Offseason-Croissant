@@ -29,7 +29,7 @@ object Superstructure : FalconSubsystem(), EmergencyHandleable, ConcurrentlyUpda
     val kStowed
         get() = everythingMoveTo(30.25.inch + 1.2.inch, (-70).degree, 40.degree)
 
-    val kSlightlyOutStowed get() = everythingMoveTo(31.45.inch - 2.2.inch - 2.inch + 0.5.inch - 1.8.inch, (-40).degree, 30.degree)
+    val kPokedStowed get() = everythingMoveTo(31.45.inch - 2.2.inch - 2.inch + 0.5.inch - 1.8.inch, (-40).degree, 30.degree)
 
     val kMatchStartToStowed get() = sequential {
         +parallel {
@@ -52,14 +52,14 @@ object Superstructure : FalconSubsystem(), EmergencyHandleable, ConcurrentlyUpda
     val kCargoMid get() = everythingMoveTo(45.inch, 6.degree, 6.degree)
     val kCargoHigh get() = everythingMoveTo(64.5.inch, 7.degree, 30.degree)
 
-    val kStraightDown get() = everythingMoveTo(32.inch, (-70).degree, (-51).degree) //sequential {
+    val kStraightDown get() = everythingMoveTo(32.inch, (-70).degree, (-51).degree) // sequential {
 //        +kHatchMid
 //        +ClosedLoopElevatorMove(35.5.inch)
 //        +parallel {
 //            +ClosedLoopProximalMove((-100).degree)
 //            +ClosedLoopWristMove(-50.degree)
 //        }
-////        +kStowed
+// //        +kStowed
 //    }
 
     fun everythingMoveTo(elevator: Length, proximal: SIUnit<Radian>, wrist: SIUnit<Radian>) = everythingMoveTo(State.Position(elevator, proximal, wrist))

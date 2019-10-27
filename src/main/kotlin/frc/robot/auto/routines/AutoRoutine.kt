@@ -42,15 +42,26 @@ abstract class AutoRoutine : SequentialCommandGroup(), Source<Command> {
         useAbsoluteVision: Boolean = false
     ) = VisionAssistedTrajectoryTracker(
             pathMirrored.map(originalTrajectory.mirror(), originalTrajectory),
-            radiusFromEnd
+            radiusFromEnd,
+            useAbsoluteVision
     )
 
-    protected fun relocalize(position: Pose2d, forward: Boolean, pathMirrored: BooleanSource, isStowed: Boolean = false) = InstantCommand(Runnable {
+    protected fun relocalize(position: Pose2d, forward: Boolean, pathMirrored: BooleanSource, isStowed: Boolean = true, isPoked: Boolean = false) = InstantCommand(Runnable {
+        val offset = if (forward) {
+            if (isStowed && isPoked) {
+                Constants.kForwardIntakePokedStowedToCenter
+            } else if (isStowed && !isPoked) {
+                Constants.kForwardIntakeStowedToCenter
+            } else Constants.kForwardIntakeToCenter
+        } else {
+            Constants.kBackwardIntakeToCenter
+        }
+
         val newPosition = Pose2d(
                 pathMirrored.map(position.mirror, position)().translation, // if pathMirrored is true, mirror the pose
                 // otherwise, don't. Use that translation2d for the new position
                 DriveSubsystem.localization().rotation
-        ) + if (forward) (if (isStowed) Constants.kForwardIntakeStowedToCenter else Constants.kForwardIntakeToCenter) else Constants.kBackwardIntakeToCenter
+        ) + offset
         println("RESETTING LOCALIZATION TO ${newPosition.asString()}")
         DriveSubsystem.localization.reset(newPosition)
     })

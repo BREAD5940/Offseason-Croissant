@@ -13,7 +13,6 @@ import frc.robot.subsystems.superstructure.Proximal
 import frc.robot.subsystems.superstructure.Superstructure
 import frc.robot.subsystems.superstructure.* // ktlint-disable no-wildcard-imports
 import frc.robot.vision.JeVoisManager
-import frc.robot.vision.LimeLightManager
 import frc.robot.vision.TargetTracker
 import frc.robot.vision.VisionProcessing
 import frc.robot.subsystems.superstructure.Wrist
@@ -34,7 +33,7 @@ object Robot : FishyRobot() {
 
         +TargetTracker
         JeVoisManager
-        LimeLightManager
+//        LimeLightManager
         VisionProcessing
         +Controls
         +Autonomous

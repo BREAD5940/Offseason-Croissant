@@ -1,7 +1,6 @@
 package frc.robot
 
 import edu.wpi.first.wpilibj.GenericHID
-import edu.wpi.first.wpilibj.Joystick
 import edu.wpi.first.wpilibj.XboxController
 import edu.wpi.first.wpilibj2.command.* // ktlint-disable no-wildcard-imports
 import frc.robot.subsystems.climb.ClimbSubsystem
@@ -14,7 +13,6 @@ import frc.robot.subsystems.intake.IntakeHatchCommand
 import frc.robot.subsystems.superstructure.* // ktlint-disable no-wildcard-imports
 import org.ghrobotics.lib.commands.FalconCommand
 import org.ghrobotics.lib.commands.sequential
-import org.ghrobotics.lib.mathematics.units.derived.degree
 import org.ghrobotics.lib.mathematics.units.derived.volt
 import org.ghrobotics.lib.mathematics.units.inch
 import org.ghrobotics.lib.wrappers.hid.* // ktlint-disable no-wildcard-imports
@@ -45,8 +43,8 @@ object Controls : Updatable {
 
 //            val cargoCommand = sequential { +Superstructure.kCargoIntake; +IntakeCargoCommand(releasing = false) }
 //            button(10).changeOff{ Superstructure.kStowed.schedule() }.change(cargoCommand)
-            button(10).change(StartEndCommand(Runnable{ IntakeSubsystem.hatchMotorOutput = 6.volt },
-                    Runnable{ IntakeSubsystem.setNeutral() }, IntakeSubsystem))
+            button(10).change(StartEndCommand(Runnable { IntakeSubsystem.hatchMotorOutput = 6.volt },
+                    Runnable { IntakeSubsystem.setNeutral() }, IntakeSubsystem))
         } else {
             triggerAxisButton(GenericHID.Hand.kRight).change(TeleopVisionDriveCommand(true))
             button(kBumperLeft).changeOn { DriveSubsystem.lowGear = true }.changeOff { DriveSubsystem.lowGear = false }
@@ -178,7 +176,7 @@ private fun Command.andThen(block: () -> Unit) = sequential { +this@andThen ; +I
 private fun FalconXboxBuilder.registerEmergencyMode() {
     button(kBack).changeOn {
 //        Robot.activateEmergency()
-        val command = object: FalconCommand(Superstructure, DriveSubsystem, Elevator, Proximal, Wrist, IntakeSubsystem) {
+        val command = object : FalconCommand(Superstructure, DriveSubsystem, Elevator, Proximal, Wrist, IntakeSubsystem) {
             override fun execute() {
                 Superstructure.setNeutral()
                 Elevator.setNeutral()

@@ -172,8 +172,8 @@ object SuperstructurePlanner {
         val safeToMoveSynced = (nowOutsideCrossbar && willBeOutsideCrossbar && (!mightHitElectronics || needsExceptionForCargoGrab)) ||
                 (proximalStartSafe && proximalEndSafe && startHighEnough && endHighEnough)
 
-        val needsLongMoveAboveCrossbarException = currentState.elevator > 54.inch
-                && goalState.elevator < 54.inch && goalState.proximal < (-60).degree
+        val needsLongMoveAboveCrossbarException = currentState.elevator > 54.inch &&
+                goalState.elevator < 54.inch && goalState.proximal < (-60).degree
 
         if (safeToMoveSynced && !needsLongMoveAboveCrossbarException) {
             // yeet everything at the same time
@@ -182,17 +182,16 @@ object SuperstructurePlanner {
                 +ClosedLoopWristMove(goalState.wrist)
                 +ClosedLoopProximalMove(goalState.proximal)
             }
-        } else if(safeToMoveSynced && needsLongMoveAboveCrossbarException) {
+        } else if (safeToMoveSynced && needsLongMoveAboveCrossbarException) {
             +parallel {
                 +ClosedLoopElevatorMove(goalState.elevator)
                 +ClosedLoopWristMove(goalState.wrist)
                 +ClosedLoopSourceProximalMove(goalState.proximal) {
                     @Suppress("RemoveRedundantQualifierName")
-                    if(Superstructure.currentState.elevator < 54.inch) { goalState.proximal } else { (-60).degree }
+                    if (Superstructure.currentState.elevator < 54.inch) { goalState.proximal } else { (-60).degree }
                 }
             }
-        }
-        else {
+        } else {
             // choose between arm first or elevator first
             val proximalThresh = (-18).degree
             val startAboveSafe = goalState.elevator > 36.inch

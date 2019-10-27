@@ -74,13 +74,12 @@ var updateJob: Job? = null
         updatableSubsystems.forEach { it.update() }
 
         val job = this.updateJob
-        if(job != null) {
-            if(!job.isActive) job.start()
+        if (job != null) {
+            if (!job.isActive) job.start()
         }
 
 //        runBlocking { periodicUpdate() }
         super.robotPeriodic()
-
     }
 
     private val updatableSubsystems = arrayListOf<Updatable>()

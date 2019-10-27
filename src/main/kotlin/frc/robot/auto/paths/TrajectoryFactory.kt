@@ -366,7 +366,7 @@ object TrajectoryFactory {
             transform = Pose2d((-3).inch, (-12).inch, 0.degree) // x is forward, y is left (so towards rocket)
     )
 
-    val rocketFPrepareRotated = Pose2d(rocketFPrepTransform, 127.862.degree)//.transformBy(Pose2d((-3).inch, -3.inch, 0.degree))
+    val rocketFPrepareRotated = Pose2d(rocketFPrepTransform, 127.862.degree) // .transformBy(Pose2d((-3).inch, -3.inch, 0.degree))
 
     val sideStartReversedToRocketFPrepare by lazy { generateTrajectory(
             true,
