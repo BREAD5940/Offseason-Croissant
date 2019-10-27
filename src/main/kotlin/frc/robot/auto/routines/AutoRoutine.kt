@@ -50,13 +50,13 @@ abstract class AutoRoutine : SequentialCommandGroup(), Source<Command> {
         val offset = if (forward) {
             if (isStowed && isPoked) {
                 Constants.kForwardIntakePokedStowedToCenter
-            } else if(isStowed && !isPoked) {
+            } else if (isStowed && !isPoked) {
                 Constants.kForwardIntakeStowedToCenter
             } else Constants.kForwardIntakeToCenter
         } else {
             Constants.kBackwardIntakeToCenter
         }
-        
+
         val newPosition = Pose2d(
                 pathMirrored.map(position.mirror, position)().translation, // if pathMirrored is true, mirror the pose
                 // otherwise, don't. Use that translation2d for the new position
