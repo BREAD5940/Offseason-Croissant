@@ -117,7 +117,7 @@ object LimeLight {
         ).meter
     }
 
-    fun estimateDistance(highRes: Boolean = true) = tangentDistance()
+    fun estimateDistance(highRes: Boolean = true) = focalLenDistance(true)
 
     fun update() {
 
@@ -132,20 +132,20 @@ object LimeLight {
         )
         this.currentState = newState
 
-        val distance = tangentDistance()
-        val tx = newState.yaw
-        val rawPose = Pose2d(Translation2d(distance, tx.toRotation2d()))
-
-        try { val targetPose = if (!(rawPose.translation.x.absoluteValue > (Constants.kRobotLength / 2.0 - 5.inch) ||
-                        rawPose.translation.y.absoluteValue > (Constants.kRobotWidth / 2.0))) null else
-            DriveSubsystem.localization[newState.timestamp] + (Constants.kCenterToFrontCamera + rawPose)
-
-            TargetTracker.addSamples(
-                    newState.timestamp.second, listOfNotNull(targetPose)
-            )
-        } catch (e: Exception) {
-            println("[LimeLight] Could not add new target! ${e.localizedMessage}")
-            e.printStackTrace()
-        }
+//        val distance = estimateDistance(true)
+//        val tx = newState.yaw
+//        val rawPose = Pose2d(Translation2d(distance, tx.toRotation2d()))
+//
+//        try { val targetPose = if (!(rawPose.translation.x.absoluteValue > (Constants.kRobotLength / 2.0 - 5.inch) ||
+//                        rawPose.translation.y.absoluteValue > (Constants.kRobotWidth / 2.0))) null else
+//            DriveSubsystem.localization[newState.timestamp] + (Constants.kCenterToFrontCamera + rawPose)
+//
+//            TargetTracker.addSamples(
+//                    newState.timestamp.second, listOfNotNull(targetPose)
+//            )
+//        } catch (e: Exception) {
+//            println("[LimeLight] Could not add new target! ${e.localizedMessage}")
+//            e.printStackTrace()
+//        }
     }
 }

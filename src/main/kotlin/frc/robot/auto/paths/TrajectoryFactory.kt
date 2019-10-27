@@ -47,7 +47,7 @@ object TrajectoryFactory {
     private val cargoShipS1Adjusted = TrajectoryWaypoints.Waypoint(
             trueLocation = TrajectoryWaypoints.kCargoShipS1,
             transform = Constants.kForwardIntakeStowedToCenter,
-            translationalOffset = Translation2d(1.9.inch, 0.inch)
+            translationalOffset = Translation2d(8.inch, 0.inch)
     )
     private val cargoShipS2Adjusted = TrajectoryWaypoints.Waypoint(
             trueLocation = TrajectoryWaypoints.kCargoShipS2,
@@ -292,16 +292,25 @@ object TrajectoryFactory {
             getConstraints(false, loadingStationAdjusted), kMaxVelocity, kMaxAcceleration, kMaxVoltage
     ) }
 
-    val sideStartToCargoShipS1 by lazy { generateTrajectory(
+    val s1PrepTranslationEarly = Translation2d(22.feet, 7.feet)
+
+    val sideStartToCargoShipS1Prep by lazy { generateTrajectory(
+            true,
+            listOf(
+                    TrajectoryWaypoints.kSideStartReversed.asWaypoint(),
+                    TrajectoryWaypoints.kSideStartReversed.transformBy(Pose2d((-4).feet, 0.feet, 0.degree)).asWaypoint(),
+                    Pose2d(s1PrepTranslationEarly, 180.degree.toRotation2d()).asWaypoint()
+            ),
+            getConstraints(true, Pose2d()), kMaxVelocity, kMaxAcceleration * 1.5, kMaxVoltage
+    ) }
+
+    val cargoS1PrepToCargoS1 by lazy { generateTrajectory(
             false,
             listOf(
-                    TrajectoryWaypoints.kSideStart.asWaypoint(),
-                    TrajectoryWaypoints.kSideStart.transformBy(Pose2d(4.feet, 0.feet, 0.degree)).asWaypoint(),
-                    Pose2d(18.123.feet, 5.691.feet, (-15.03).degree).asWaypoint(),
-                    cargoShipS1Adjusted.position.transformBy(Pose2d((-1).feet, 0.feet, 0.degree)).asWaypoint(),
-                    cargoShipS1Adjusted.position.transformBy(Pose2d((6).inch, 0.feet, 0.degree)).asWaypoint()
+                    Pose2d(s1PrepTranslationEarly, 90.degree.toRotation2d()).asWaypoint(),
+                    cargoShipS1Adjusted
             ),
-            getConstraints(true, cargoShipS1Adjusted), kMaxVelocity, kMaxAcceleration * 1.5, kMaxVoltage
+            getConstraints(true, cargoShipS1Adjusted), 2.feet.velocity, kMaxAcceleration * 1.5, kMaxVoltage
     ) }
 
     val s1PrepTranslation = Pose2d(23.992.feet, 7.121.feet, (-168.246).degree).asWaypoint()

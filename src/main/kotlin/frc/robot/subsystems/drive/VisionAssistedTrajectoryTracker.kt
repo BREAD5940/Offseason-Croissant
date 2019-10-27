@@ -87,18 +87,7 @@ class VisionAssistedTrajectoryTracker(
 
             val error = (angle + if (!trajectory.reversed) Rotation2d() else Math.PI.radian.toRotation2d()).radian
 
-            // at 0 speed this should be 1, and at 10ft/sec it should be 2
-            // so (0, 1) and (10, 2)
-            // y = (2-1)/(10-0) * (x - 0) + 1
-            val velocity = (with(DriveSubsystem) {
-                leftMotor.encoder.velocity + rightMotor.encoder.velocity
-            }).absoluteValue / 2.0
-            val scaler = velocity.value * (/* max scaler */ 4.0 - /* min scaler */ 1.0) /
-                    (/* velocity at max scaler */10.feet.meter) + 1.0
-            var kp = (kCorrectionKp * scaler)
-            if (kp > 0.7) kp = 0.7
-
-            val turn = kp * error // + kCorrectionKd * (error - prevError)
+            val turn = kCorrectionKp * error + kCorrectionKd * (error - prevError)
 
             DriveSubsystem.setOutput(TrajectoryTrackerOutput(
                     nextState.linearVelocity,
@@ -139,7 +128,7 @@ class VisionAssistedTrajectoryTracker(
     }
 
     companion object {
-        const val kCorrectionKp = 0.35 // 5.5 * 2.0
+        const val kCorrectionKp = 1.8 * 3.0 // 5.5 * 2.0
         const val kCorrectionKd = 0.0 // 5.0
         var visionActive = false
     }

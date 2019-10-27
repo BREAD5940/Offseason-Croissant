@@ -1,9 +1,6 @@
 package frc.robot.auto.routines
 
-import edu.wpi.first.wpilibj2.command.InstantCommand
-import edu.wpi.first.wpilibj2.command.PrintCommand
-import edu.wpi.first.wpilibj2.command.RunCommand
-import edu.wpi.first.wpilibj2.command.WaitCommand
+import edu.wpi.first.wpilibj2.command.*
 import frc.robot.auto.Autonomous
 import frc.robot.auto.paths.TrajectoryFactory
 import frc.robot.auto.paths.TrajectoryWaypoints
@@ -27,7 +24,7 @@ import org.ghrobotics.lib.utils.withEquals
 
 class CargoShipRoutine : AutoRoutine() {
 
-    val path1 = TrajectoryFactory.sideStartToCargoShipS1
+    val path1 = TrajectoryFactory.sideStartToCargoShipS1Prep
     val path2 = TrajectoryFactory.cargoShipS1ToS1Prep
     val path3 = TrajectoryFactory.cargoS1PrepToLoadingStation
     val path4 = TrajectoryFactory.loadingStationToCargoS1Prep
@@ -35,8 +32,8 @@ class CargoShipRoutine : AutoRoutine() {
 
     private val pathMirrored = Autonomous.startingPosition.withEquals(Autonomous.StartingPositions.LEFT)
 
-    override val duration: SIUnit<Second>
-        get() = path1.duration + path2.duration + path3.duration
+    override val duration: SIUnit<Second> = 0.second
+//        get() = path1.duration + path2.duration + path3.duration
 
     override val routine
         get() = sequential {
@@ -54,16 +51,31 @@ class CargoShipRoutine : AutoRoutine() {
 //            }
 
             +parallel {
-                +followVisionAssistedTrajectory(
-                        path1,
-                        Autonomous.isStartingOnLeft,
-                        3.feet
-                )
+                +sequential {
+                    +DriveSubsystem.followTrajectory(
+                            path1,
+                            Autonomous.isStartingOnLeft
+                    )
+                    +PointTurnCommand {
+                       90.degree.toRotation2d() * if (Autonomous.isStartingOnLeft()) -1.0 else 1.0
+                    }
+                    // drive forward
+                    +super.followVisionAssistedTrajectory(
+                            TrajectoryFactory.cargoS1PrepToCargoS1,
+                            Autonomous.isStartingOnLeft,
+                            100.feet,
+                            false
+                    )
+                }
                 +(sequential {
                     +DriveSubsystem.notWithinRegion(TrajectoryWaypoints.kHabitatL1Platform)
                     +WaitCommand(0.5)
                     +Superstructure.kMatchStartToStowed
-                }).beforeStarting { IntakeSubsystem.hatchMotorOutput = 6.volt }.whenFinished { IntakeSubsystem.hatchMotorOutput = 0.volt }
+                    +Superstructure.kPokedStowed
+                })
+                +sequential {
+                    +IntakeHatchCommand(false).withTimeout(0.5)
+                }
             }
 
             val path2_ = DriveSubsystem.followTrajectory(path2, pathMirrored)
@@ -81,6 +93,7 @@ class CargoShipRoutine : AutoRoutine() {
                     +path3_
                 }
                 +sequential {
+                    +IntakeHatchCommand(true).withTimeout(1.5)
                     +WaitCommand(path3.duration.second + path2.duration.second - 4)
                     +IntakeHatchCommand(false).withExit { path3_.isFinished }
                 }.withExit { path3_.isFinished }

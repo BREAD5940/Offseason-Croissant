@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import frc.robot.subsystems.drive.DriveSubsystem
 import frc.robot.subsystems.sensors.LimeLight
 import frc.robot.subsystems.superstructure.* // ktlint-disable no-wildcard-imports
+import frc.robot.vision.LimeLightManager
 import kotlinx.coroutines.* // ktlint-disable no-wildcard-imports
 import org.ghrobotics.lib.utils.loopFrequency
 import org.ghrobotics.lib.wrappers.FalconTimedRobot
@@ -27,6 +28,7 @@ abstract class FishyRobot : FalconTimedRobot() {
         Superstructure.useState()
 
         LimeLight.update()
+        LimeLightManager.periodic()
     }
 
 //    private val job = arrayListOf<Job>()
