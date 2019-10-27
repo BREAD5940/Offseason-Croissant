@@ -60,6 +60,12 @@ class ClosedLoopVisionDriveCommand(private val isFront: Boolean, private val ske
             var angle = Rotation2d(transform.translation.x.meter, transform.translation.y.meter, true)
             var linear = -ManualDriveCommand.speedSource()
 
+            if (angle.degree.absoluteValue > 45) {
+                // plz no disable us when going to loading station, kthx
+                this.lastKnownTargetPose = null
+                super.execute()
+            }
+
 //            val angle = LimeLight.lastYaw
 
             Network.visionDriveAngle.setDouble(angle.degree)
@@ -93,7 +99,7 @@ class ClosedLoopVisionDriveCommand(private val isFront: Boolean, private val ske
             var kp = (kCorrectionKp * scaler)
             if(kp > 0.7) kp = 0.7
 
-            println("kp $kp")
+//            println("kp $kp")
 
             var turn = kp * error //+ kCorrectionKd * (error - prevError)
             if(turn.absoluteValue > maxTurn.value) turn = maxTurn.value
