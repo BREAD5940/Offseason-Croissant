@@ -38,8 +38,8 @@ object LimeLight {
         ledModeEntry.setDouble(if (wantsOn) 3.0 else 1.0)
     }
 
-    var wantedPipeline by Delegates.observable(0.0) { _, _, newPipeline ->
-        if (newPipeline < 0 || newPipeline > 9) {} else pipelineEntry.setDouble(newPipeline)
+    var wantedPipeline by Delegates.observable(0) { _, _, newPipeline ->
+        if (newPipeline < 0 || newPipeline > 9) {} else pipelineEntry.setDouble(newPipeline.toDouble())
     }
 
     var wantsDriverMode by Delegates.observable(false) { _, _, wantsHighExposure ->
@@ -85,14 +85,14 @@ object LimeLight {
         wantsLEDsOn = true
         wantsDriverMode = false
         wantedStreamMode = 2.0
-        wantedPipeline = 0.0 // TODO add pipelines to the limelight
+        wantedPipeline = 1 // TODO add pipelines to the limelight
     }
 
     init {
         wantedStreamMode = 2.0
     }
 
-    private fun tangentDistance(isHatchTarget: Boolean = true): SIUnit<Meter> {
+    fun tangentDistance(isHatchTarget: Boolean = true): SIUnit<Meter> {
         // Thanks 1678
         val limeHeight = 42.25.inch - 1.inch + 2.inch
         val targetHeight = if (isHatchTarget) 28.6.inch else 36.inch
@@ -117,7 +117,11 @@ object LimeLight {
         ).meter
     }
 
-    fun estimateDistance(highRes: Boolean = true) = focalLenDistance(true)
+    fun estimateDistance() = focalLenDistance(isHighRes())
+
+    private fun isHighRes(): Boolean {
+        return wantedPipeline == 0
+    }
 
     fun update() {
 

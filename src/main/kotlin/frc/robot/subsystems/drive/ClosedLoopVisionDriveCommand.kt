@@ -29,6 +29,7 @@ class ClosedLoopVisionDriveCommand(private val isFront: Boolean, private val ske
     private var prevError = 0.0
 
     override fun initialize() {
+        LimeLight.wantedPipeline = 0
         isActive = true
         referencePose = DriveSubsystem.robotPosition
         LEDs.wantedState = LEDs.State.Off

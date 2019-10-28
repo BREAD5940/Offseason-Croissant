@@ -34,7 +34,7 @@
 
     private fun updateFromEstimatedTargetDistance(robotPosition: Pose2d, timestamp: Double) {
 
-        val distance = getDistanceToTarget()
+        val distance = LimeLight.estimateDistance() //getDistanceToTarget()
         val angle = -txEntry().degree
 
         val estimatedPose: Pose2d? = Pose2d(Translation2d(distance, angle.toRotation2d())).let {

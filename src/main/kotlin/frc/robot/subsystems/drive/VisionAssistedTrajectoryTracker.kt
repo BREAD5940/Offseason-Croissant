@@ -2,6 +2,7 @@ package frc.robot.subsystems.drive
 
 import frc.robot.Constants
 import frc.robot.Network
+import frc.robot.subsystems.sensors.LimeLight
 import frc.robot.subsystems.superstructure.Length
 import frc.robot.vision.TargetTracker
 import org.ghrobotics.lib.commands.FalconCommand
@@ -50,6 +51,7 @@ class VisionAssistedTrajectoryTracker(
         lastKnownTargetPose = null
 //        visionFinished = false
         println("VISION INIT")
+        LimeLight.wantedPipeline = 1
     }
 
     var lastAbsoluteAngle: SIUnit<Radian>? = null

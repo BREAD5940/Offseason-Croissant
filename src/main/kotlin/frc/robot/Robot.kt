@@ -53,7 +53,6 @@ object Robot : FishyRobot() {
     }
 
     override fun teleopPeriodic() {
-        LimeLight.configureEnabled()
     }
 
     override fun robotPeriodic() {
@@ -65,6 +64,7 @@ object Robot : FishyRobot() {
     }
 
     override fun teleopInit() {
+        LimeLight.configureEnabled()
         DriveSubsystem.lowGear = false
     }
 }
