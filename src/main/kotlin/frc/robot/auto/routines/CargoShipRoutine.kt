@@ -27,8 +27,8 @@ class CargoShipRoutine : AutoRoutine() {
     val path1 = TrajectoryFactory.sideStartToCargoShipS1Prep
     val path2 = TrajectoryFactory.cargoShipS1ToS1Prep
     val path3 = TrajectoryFactory.cargoS1PrepToLoadingStation
-    val path4 = TrajectoryFactory.loadingStationToCargoS1Prep
-    val path5 = TrajectoryFactory.cargoPrepToCargoS1
+    val path4 = TrajectoryFactory.loadingStationToCargoS2Prep
+    val path5 = TrajectoryFactory.cargoPrepToCargoS2
 
     private val pathMirrored = Autonomous.startingPosition.withEquals(Autonomous.StartingPositions.LEFT)
 
@@ -102,13 +102,18 @@ class CargoShipRoutine : AutoRoutine() {
             +relocalize(TrajectoryWaypoints.kLoadingStation, false, pathMirrored)
 
             +parallel {
-                +IntakeHatchCommand(false).withTimeout(1.0)
+                +IntakeHatchCommand(false).withTimeout(1.0).beforeStarting { IntakeSubsystem.wantsOpen = true }
                 +DriveSubsystem.followTrajectory(path4, pathMirrored)
             }
             +PointTurnCommand(pathMirrored.map(-90.degree.toRotation2d(), 90.degree.toRotation2d()))
 
-            +DriveSubsystem.followTrajectory(path5, pathMirrored)
-
+            +super.followVisionAssistedTrajectory(
+                    path5,
+                    pathMirrored,
+                    100.feet,
+                    false
+            )
+            
             +parallel {
                 +IntakeHatchCommand(true).withTimeout(1.0)
                 +RunCommand(Runnable { DriveSubsystem.tankDrive(-0.3, -0.3) }).withTimeout(1.0)
