@@ -93,8 +93,10 @@ object Controls : Updatable {
         button(9).changeOn(Superstructure.kStowed)
 
         // jogging
-        lessThanAxisButton(1).changeOn(ClosedLoopElevatorMove { Elevator.currentState.position + 1.inch })
-        greaterThanAxisButton(1).changeOn(ClosedLoopElevatorMove { Elevator.currentState.position - 1.inch })
+        lessThanAxisButton(1, 0.8).changeOn(ClosedLoopElevatorMove { Elevator.currentState.position + 1.inch })
+        greaterThanAxisButton(1, 0.8).changeOn(ClosedLoopElevatorMove { Elevator.currentState.position - 1.inch })
+        lessThanAxisButton(0, 0.8).changeOn { Wrist.offset += 2.degree }
+        greaterThanAxisButton(0, 0.8).changeOn { Wrist.offset -= 2.degree }
 
         // boring intake
         lessThanAxisButton(5).change(IntakeHatchCommand(releasing = true, shouldMutateArms = false))
@@ -103,17 +105,20 @@ object Controls : Updatable {
                         Runnable{IntakeSubsystem.setNeutral()})
         )
 
-        // hatch intake
+        // intake hatches
         val poked = Superstructure.kPokedStowed
         val stowed = Superstructure.kStowed
         val intake = IntakeHatchCommand(false)
         val delayedYote = StartEndCommand(Runnable{IntakeSubsystem.hatchMotorOutput = 8.volt
             IntakeSubsystem.wantsOpen = true},
                 Runnable{IntakeSubsystem.setNeutral()}).withTimeout(0.75)
-        triggerAxisButton(GenericHID.Hand.kLeft).changeOn { poked.schedule(); intake.schedule() }
+        triggerAxisButton(GenericHID.Hand.kLeft).changeOn { delayedYote.cancel(); poked.schedule(); intake.schedule() }
                 .changeOff { poked.cancel(); intake.cancel(); stowed.schedule(); delayedYote.schedule()
         }.changeOn(IntakeHatchCommand(releasing = false))
+
+        // outtake hatches
         triggerAxisButton(GenericHID.Hand.kRight).change(IntakeHatchCommand(true))
+
         // cargo -- intake is a bit tricky, it'll go to the intake preset automatically
         // the lessThanAxisButton represents "intaking", and the greaterThanAxisButton represents "outtaking"
         val cargoCommand = sequential { +PrintCommand("running cargoCommand"); +Superstructure.kCargoIntake.beforeStarting { IntakeSubsystem.wantsOpen = true }; +IntakeCargoCommand(releasing = false) }

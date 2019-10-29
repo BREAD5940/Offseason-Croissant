@@ -14,6 +14,7 @@ import org.ghrobotics.lib.mathematics.units.nativeunit.toNativeUnitPosition
 import org.ghrobotics.lib.motors.ctre.FalconSRX
 import org.team5940.pantry.lib.ConcurrentFalconJoint
 import org.team5940.pantry.lib.MultiMotorTransmission
+import org.team5940.pantry.lib.WantedState
 import org.team5940.pantry.lib.asPWMSource
 
 object Wrist : ConcurrentFalconJoint<Radian, FalconSRX<Radian>>() {
@@ -83,6 +84,22 @@ object Wrist : ConcurrentFalconJoint<Radian, FalconSRX<Radian>>() {
             master.setClosedLoopGains(
                     2.0, 0.0, ff = 0.4
             )
+        }
+    }
+
+    private val safeOffset = (-15).degree..15.degree
+    var offset = 0.degree
+        set(value) {
+            field = value.coerceIn(safeOffset)
+        }
+
+    override fun customizeWantedState(wantedState: WantedState): WantedState {
+        return when(wantedState) {
+            is WantedState.Position<*> -> WantedState.Position(
+                    SIUnit<Radian>(wantedState.targetPosition.value + offset.value),
+                    wantedState.feedForward,
+                    wantedState.ignoreDefaultFF)
+            else -> wantedState
         }
     }
 
