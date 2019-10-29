@@ -113,7 +113,7 @@ class CargoShipRoutine : AutoRoutine() {
                     100.feet,
                     false
             )
-            
+
             +parallel {
                 +IntakeHatchCommand(true).withTimeout(1.0)
                 +RunCommand(Runnable { DriveSubsystem.tankDrive(-0.3, -0.3) }).withTimeout(1.0)

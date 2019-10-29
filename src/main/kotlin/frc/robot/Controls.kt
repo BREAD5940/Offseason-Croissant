@@ -1,6 +1,7 @@
 package frc.robot
 
 import edu.wpi.first.wpilibj.GenericHID
+import edu.wpi.first.wpilibj.Joystick
 import edu.wpi.first.wpilibj.XboxController
 import edu.wpi.first.wpilibj2.command.* // ktlint-disable no-wildcard-imports
 import frc.robot.auto.routines.TestRoutine
@@ -145,7 +146,7 @@ object Controls : Updatable {
 ////            button(4).changeOn(Superstructure.kBackHatchFromLoadingStation)
 //
 //        // hatches
-//        val poked = Superstructure.kSlightlyOutStowed
+//        val poked = Superstructure.kPokedStowed
 //        val stowed = Superstructure.kStowed
 //        lessThanAxisButton(1).changeOn { poked.schedule() }.changeOff { poked.cancel(); stowed.schedule() }
 //                .change(IntakeHatchCommand(releasing = false))

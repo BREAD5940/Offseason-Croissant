@@ -53,6 +53,9 @@ object Network : Updatable {
     private val elevatorSetpoint = elevatorSubsystemLayout.add("Setpoint (in)", 0.0).entry
     private val elevatorVelocity = elevatorSubsystemLayout.add("Velocity (ips)", 0.0).entry
 
+    val autoVisionP = visionLayout.add("Auto kP", 0.0).entry
+    val autoVisionD = visionLayout.add("Auto kD", 0.0).entry
+
     val visionDriveAngle = visionLayout.add("Vision Drive Angle", 0.0).entry
     val visionDriveActive = visionLayout.add("Vision Drive Active", false).entry
 
@@ -73,12 +76,12 @@ object Network : Updatable {
     }
 
     override fun update() {
-        elevatorPosition.setDouble(Elevator.currentState.position.inch)
-        elevatorVelocity.setDouble(Elevator.currentState.velocity.inchesPerSecond)
-        elevatorSetpoint.setDouble(let {
-            val wantedState = Elevator.wantedState as? WantedState.Position<*> ?: return@let 0.0
-            wantedState.targetPosition.value / kInchToMeter
-        })
+//        elevatorPosition.setDouble(Elevator.currentState.position.inch)
+//        elevatorVelocity.setDouble(Elevator.currentState.velocity.inchesPerSecond)
+//        elevatorSetpoint.setDouble(let {
+//            val wantedState = Elevator.wantedState as? WantedState.Position<*> ?: return@let 0.0
+//            wantedState.targetPosition.value / kInchToMeter
+//        })
         jointPosition.setString(Superstructure.currentState.toString())
     }
 }

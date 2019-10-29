@@ -74,7 +74,7 @@ class VisionAssistedTrajectoryTracker(
             }
 
             val newPose = newTarget?.averagedPose2d
-            if (newTarget?.isAlive == true && newPose != null) lastKnownTargetPose = newPose
+            if (newTarget?.isAlive == true && newPose != null) this.lastKnownTargetPose = newPose
         }
 
         val lastKnownTargetPose = this.lastKnownTargetPose
@@ -87,15 +87,29 @@ class VisionAssistedTrajectoryTracker(
             Network.visionDriveAngle.setDouble(angle.degree)
             Network.visionDriveActive.setBoolean(true)
 
-            val error = (angle + if (!trajectory.reversed) Rotation2d() else Math.PI.radian.toRotation2d()).radian
+            val error = LimeLight.lastYaw.radian //(angle + if (!trajectory.reversed) Rotation2d() else Math.PI.radian.toRotation2d()).radian
 
-            val turn = kCorrectionKp * error + kCorrectionKd * (error - prevError)
+            // at 0 speed this should be 1, and at 10ft/sec it should be 2
+            // so (0, 1) and (10, 2)
+            // y = (2-1)/(10-0) * (x - 0) + 1
+            val velocity = (with(DriveSubsystem) {
+                leftMotor.encoder.velocity + rightMotor.encoder.velocity
+            }).absoluteValue / 2.0
+            val scaler = velocity.value * (/* max scaler */ 4.0 - /* min scaler */ 1.0) /
+                    (/* velocity at max scaler */10.feet.meter) + 1.0
+            var kp = (0.50 * scaler)
+            if (kp > 0.7) kp = 0.7
+
+            val multiplier = if (DriveSubsystem.lowGear) 8.0 * kFeetToMeter else 12.0 * kFeetToMeter
+            val turn = /* kCorrectionKp */ kp * error * multiplier //+ /* kCorrectionKd */ Network.autoVisionD.getDouble(0.0) * (error - prevError)
+
+            println("angle error ${error.radian.degree} turn $turn")
 
             DriveSubsystem.setOutput(TrajectoryTrackerOutput(
                     nextState.linearVelocity,
                     SIUnit((nextState.linearVelocity - lastOutput.linearVelocity).value / 0.020),
                     turn.radian.velocity,
-                    SIUnit((turn.radian.velocity - lastOutput.angularVelocity).value / 0.020)))
+                    0.radian.acceleration))//SIUnit((turn.radian.velocity - lastOutput.angularVelocity).value / 0.020)))
             lastOutput = nextState
 
             prevError = error
@@ -130,8 +144,8 @@ class VisionAssistedTrajectoryTracker(
     }
 
     companion object {
-        const val kCorrectionKp = 1.8 * 3.0 // 5.5 * 2.0
-        const val kCorrectionKd = 0.0 // 5.0
+        const val kCorrectionKp = 0.3 // 5.5 * 2.0
+        const val kCorrectionKd = 00.0 // 5.0
         var visionActive = false
     }
 }
