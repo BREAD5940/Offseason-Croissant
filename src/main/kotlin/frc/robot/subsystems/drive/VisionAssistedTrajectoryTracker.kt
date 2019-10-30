@@ -97,7 +97,7 @@ class VisionAssistedTrajectoryTracker(
             }).absoluteValue / 2.0
             val scaler = velocity.value * (/* max scaler */ 4.0 - /* min scaler */ 1.0) /
                     (/* velocity at max scaler */10.feet.meter) + 1.0
-            var kp = (0.50 * scaler)
+            var kp = (kCorrectionKp * scaler)
             if (kp > 0.7) kp = 0.7
 
             val multiplier = if (DriveSubsystem.lowGear) 8.0 * kFeetToMeter else 12.0 * kFeetToMeter
@@ -144,7 +144,7 @@ class VisionAssistedTrajectoryTracker(
     }
 
     companion object {
-        const val kCorrectionKp = 0.3 // 5.5 * 2.0
+        const val kCorrectionKp = 0.8 // 5.5 * 2.0
         const val kCorrectionKd = 00.0 // 5.0
         var visionActive = false
     }
