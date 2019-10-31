@@ -16,6 +16,7 @@ import org.team5940.pantry.lib.ConcurrentFalconJoint
 import org.team5940.pantry.lib.MultiMotorTransmission
 import org.team5940.pantry.lib.WantedState
 import org.team5940.pantry.lib.asPWMSource
+import kotlin.math.abs
 
 object Wrist : ConcurrentFalconJoint<Radian, FalconSRX<Radian>>() {
 
@@ -92,6 +93,16 @@ object Wrist : ConcurrentFalconJoint<Radian, FalconSRX<Radian>>() {
         set(value) {
             field = value.coerceIn(safeOffset)
         }
+
+    /**
+     * Determine if the joint is within the [tolerance] of the current wantedState.
+     * If the wantedState isn't [WantedState.Position<*>], return false.
+     */
+    fun isWithToleranceWithOffset(tolerance: SIUnit<Radian> /* radian */): Boolean {
+        val state = wantedState as? WantedState.Position<*> ?: return false // smart cast state, return false if it's not Position
+
+        return abs(state.targetPosition.value - (currentState.position.value + offset.value)) < tolerance.value
+    }
 
     override fun customizeWantedState(wantedState: WantedState): WantedState {
         return when(wantedState) {

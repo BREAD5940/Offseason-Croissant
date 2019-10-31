@@ -20,7 +20,7 @@ import org.ghrobotics.lib.mathematics.units.kFeetToMeter
 import org.ghrobotics.lib.mathematics.units.meter
 import kotlin.math.absoluteValue
 
-class ClosedLoopVisionDriveCommand(private val isFront: Boolean, private val skewCorrect: Boolean = false) : FalconCommand(DriveSubsystem) {
+class ClosedLoopVisionDriveCommand(private val isFront: Boolean, private val skewCorrect: Boolean = false) : ManualDriveCommand() {
 
     override fun isFinished() = false
 
@@ -79,28 +79,31 @@ class ClosedLoopVisionDriveCommand(private val isFront: Boolean, private val ske
 
             val multiplier = if (DriveSubsystem.lowGear) 8.0 * kFeetToMeter else 12.0 * kFeetToMeter
 
-            var offset = 0.degree
-            var skew = LimeLight.lastSkew
-            if (skew > (-45).degree) skew = skew.absoluteValue else skew += 90.degree
-            if (skew > 5.degree && skewCorrect) offset = 0.05.degree * (if (LimeLight.targetToTheLeft) 1 else -1) * (skew.degree / 13)
+//            var offset = 0.degree
+//            var skew = LimeLight.lastSkew
+//            if (skew > (-45).degree) skew = skew.absoluteValue else skew += 90.degree
+//            if (skew > 5.degree && skewCorrect) offset = 0.05.degree * (if (LimeLight.targetToTheLeft) 1 else -1) * (skew.degree / 13)
 
-            val error = angle.radian - offset.radian
+            val error = angle.radian //- offset.radian
 
             // at 0 speed this should be 1, and at 10ft/sec it should be 2
             // so (0, 1) and (10, 2)
             // y = (2-1)/(10-0) * (x - 0) + 1
-            val velocity = (with(DriveSubsystem) {
-                leftMotor.encoder.velocity + rightMotor.encoder.velocity
-            }).absoluteValue / 2.0
-            val scaler = velocity.value * (/* max scaler */ 4.0 - /* min scaler */ 1.0) /
-                    (/* velocity at max scaler */10.feet.meter) + 1.0
-            var kp = (kCorrectionKp * scaler)
-            if (kp > 0.7) kp = 0.7
+//            val velocity = (with(DriveSubsystem) {
+//                leftMotor.encoder.velocity + rightMotor.encoder.velocity
+//            }).absoluteValue / 2.0
+//            val scaler = velocity.value * (/* max scaler */ 4.0 - /* min scaler */ 1.0) /
+//                    (/* velocity at max scaler */10.feet.meter) + 1.0
+//            var kp = (kCorrectionKp * scaler)
+//            if (kp > 0.7) kp = 0.7
+            val kp = kCorrectionKp
 
 //            println("kp $kp")
 
             var turn = kp * error // + kCorrectionKd * (error - prevError)
             if (turn.absoluteValue > maxTurn.value) turn = maxTurn.value
+
+//            val wheelState = curvatureDrive(linear, turn, false)
 
             DriveSubsystem.setWheelVelocities(DifferentialDrive.WheelState((linear - turn) * multiplier, (linear + turn) * multiplier))
 

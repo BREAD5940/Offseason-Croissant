@@ -33,7 +33,7 @@ class ClosedLoopChezyDriveCommand : ManualDriveCommand() {
 
         val multiplier = if (DriveSubsystem.lowGear) 8.0 * kFeetToMeter else 12.0 * kFeetToMeter
 
-        var wheelSpeeds = curvatureDrive(linear, curvature, isQuickTurn)
+        var wheelSpeeds = curvatureDrive(linear, curvature * if(isQuickTurn) 0.5 else 1.0, isQuickTurn)
         wheelSpeeds = DifferentialDrive.WheelState(wheelSpeeds.left * multiplier, wheelSpeeds.right * multiplier)
 
         DriveSubsystem.setWheelVelocities(wheelSpeeds)

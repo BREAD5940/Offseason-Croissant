@@ -92,16 +92,17 @@ class VisionAssistedTrajectoryTracker(
             // at 0 speed this should be 1, and at 10ft/sec it should be 2
             // so (0, 1) and (10, 2)
             // y = (2-1)/(10-0) * (x - 0) + 1
-            val velocity = (with(DriveSubsystem) {
-                leftMotor.encoder.velocity + rightMotor.encoder.velocity
-            }).absoluteValue / 2.0
-            val scaler = velocity.value * (/* max scaler */ 4.0 - /* min scaler */ 1.0) /
-                    (/* velocity at max scaler */10.feet.meter) + 1.0
-            var kp = (kCorrectionKp * scaler)
-            if (kp > 0.7) kp = 0.7
+//            val velocity = (with(DriveSubsystem) {
+//                leftMotor.encoder.velocity + rightMotor.encoder.velocity
+//            }).absoluteValue / 2.0
+//            val scaler = velocity.value * (/* max scaler */ 4.0 - /* min scaler */ 1.0) /
+//                    (/* velocity at max scaler */10.feet.meter) + 1.0
+//            var kp = (kCorrectionKp * scaler)
+//            if (kp > 0.7) kp = 0.7
+            val kp = kCorrectionKp
 
             val multiplier = if (DriveSubsystem.lowGear) 8.0 * kFeetToMeter else 12.0 * kFeetToMeter
-            val turn = /* kCorrectionKp */ kp * error * multiplier //+ /* kCorrectionKd */ Network.autoVisionD.getDouble(0.0) * (error - prevError)
+            val turn = /* kCorrectionKp */ kp * error * multiplier + kCorrectionKd * (error - prevError) * multiplier
 
             println("angle error ${error.radian.degree} turn $turn")
 
@@ -144,8 +145,8 @@ class VisionAssistedTrajectoryTracker(
     }
 
     companion object {
-        const val kCorrectionKp = 0.8 // 5.5 * 2.0
-        const val kCorrectionKd = 00.0 // 5.0
+        const val kCorrectionKp = 3.0 // 5.5 * 2.0
+        const val kCorrectionKd = 10.0 // 5.0
         var visionActive = false
     }
 }

@@ -77,7 +77,7 @@ class ClosedLoopWristMove(private val target: SIUnit<Radian>) : FalconCommand(Wr
         }
     }
 
-    override fun isFinished() = Wrist.isWithTolerance(5.0.degree) // toDegrees(abs(target - Wrist.currentState.position)) < 5.0
+    override fun isFinished() = Wrist.isWithToleranceWithOffset(5.0.degree) // toDegrees(abs(target - Wrist.currentState.position)) < 5.0
 }
 
 // class JogElevator : FalconCommand(Superstructure, Elevator) {
