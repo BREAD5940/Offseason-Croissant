@@ -56,10 +56,16 @@ object Controls : Updatable {
         }
 
         state({ isClimbing && !wantsHab3Mode }) {
-            button(kStart).changeOn(ClimbSubsystem.hab2ClimbCommand)
+            pov(0).changeOn(ClimbSubsystem.hab2ClimbCommand)
+            pov(90).changeOn(ClimbSubsystem.hab2ClimbCommand)
+            pov(180).changeOn(ClimbSubsystem.hab2ClimbCommand)
+            pov(280).changeOn(ClimbSubsystem.hab2ClimbCommand)
         }
         state({ isClimbing && wantsHab3Mode }) {
-            button(kStart).changeOn(ClimbSubsystem.hab3ClimbCommand)
+            pov(0).changeOn(ClimbSubsystem.hab3ClimbCommand)
+            pov(90).changeOn(ClimbSubsystem.hab3ClimbCommand)
+            pov(180).changeOn(ClimbSubsystem.hab3ClimbCommand)
+            pov(270).changeOn(ClimbSubsystem.hab3ClimbCommand)
         }
 
         // get both the buttons that are close together
@@ -95,8 +101,8 @@ object Controls : Updatable {
         // jogging
         lessThanAxisButton(1, 0.8).changeOn(ClosedLoopElevatorMove { Elevator.currentState.position + 1.inch })
         greaterThanAxisButton(1, 0.8).changeOn(ClosedLoopElevatorMove { Elevator.currentState.position - 1.inch })
-        lessThanAxisButton(0, 0.8).changeOn { Wrist.offset += 2.degree }
-        greaterThanAxisButton(0, 0.8).changeOn { Wrist.offset -= 2.degree }
+        lessThanAxisButton(0, 0.8).changeOn { Wrist.offset += 4.degree }
+        greaterThanAxisButton(0, 0.8).changeOn { Wrist.offset -= 4.degree }
 
         // boring intake
         lessThanAxisButton(5).change(IntakeHatchCommand(releasing = true, shouldMutateArms = false))
