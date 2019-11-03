@@ -293,7 +293,7 @@ object TrajectoryFactory {
             getConstraints(false, loadingStationAdjusted), kMaxVelocity, kMaxAcceleration, kMaxVoltage
     ) }
 
-    val s1PrepTranslationEarly = Translation2d(21.0.feet, 7.feet)
+    val s1PrepTranslationEarly = Translation2d(21.3.feet, 7.feet)
 
     val sideStartToCargoShipS1Prep by lazy { generateTrajectory(
             true,
