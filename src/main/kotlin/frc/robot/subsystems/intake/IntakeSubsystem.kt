@@ -30,7 +30,7 @@ object IntakeSubsystem : FalconSubsystem() {
     }
 
     init {
-        hatchMotor.configCurrentLimit(true, FalconSRX.CurrentLimitConfig(40.amp, 400.milli.second, 22.amp))
+        hatchMotor.configCurrentLimit(true, FalconSRX.CurrentLimitConfig(40.amp, 1.milli.second, 22.amp))
         cargoMotor.configCurrentLimit(true, FalconSRX.CurrentLimitConfig(35.amp, 400.milli.second, 20.amp))
         cargoMotor.talonSRX.configPeakOutputForward(0.8)
         cargoMotor.talonSRX.configPeakOutputReverse(-0.8)
