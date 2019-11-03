@@ -71,7 +71,7 @@ class CargoShipRoutine : AutoRoutine() {
                     +DriveSubsystem.notWithinRegion(TrajectoryWaypoints.kHabitatL1Platform)
                     +WaitCommand(0.5)
                     +Superstructure.kMatchStartToStowed
-                    +Superstructure.kPokedStowed
+//                    +Superstructure.kPokedStowed
                 })
                 +sequential {
                     +IntakeHatchCommand(false).withTimeout(0.5)
@@ -90,7 +90,10 @@ class CargoShipRoutine : AutoRoutine() {
             +parallel {
                 +sequential {
                     +path2_
-                    +path3_
+                    +parallel {
+                        +path3_
+                        +Superstructure.kPokedStowed
+                    }
                 }
                 +sequential {
                     +IntakeHatchCommand(true).withTimeout(1.5)
@@ -99,10 +102,11 @@ class CargoShipRoutine : AutoRoutine() {
                 }.withExit { path3_.isFinished }
             }
 
-            +relocalize(TrajectoryWaypoints.kLoadingStation, false, pathMirrored)
+            +relocalize(TrajectoryWaypoints.kLoadingStationReversed, true, pathMirrored, isStowed = true, isPoked = true)
 
             +parallel {
                 +IntakeHatchCommand(false).withTimeout(1.0).beforeStarting { IntakeSubsystem.wantsOpen = true }
+                +Superstructure.kStowed
                 +DriveSubsystem.followTrajectory(path4, pathMirrored)
             }
             +PointTurnCommand(pathMirrored.map(-90.degree.toRotation2d(), 90.degree.toRotation2d()))

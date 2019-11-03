@@ -147,7 +147,7 @@ class BottomRocketRoutine2 : AutoRoutine() {
 //                    // plus the rotation of the dt at that timestamp
 //                    LimeLight.currentState.tx.toRotation2d() + DriveSubsystem.localization[LimeLight.currentState.timestamp].rotation
 //                } else {
-                -28.75.degree.toRotation2d() * if (Autonomous.isStartingOnLeft()) -1.0 else 1.0
+                -13.degree.toRotation2d() * if (Autonomous.isStartingOnLeft()) -1.0 else 1.0
 //                }
 //
 // //                (-28.75).degree.toRotation2d()

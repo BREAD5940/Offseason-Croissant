@@ -64,6 +64,8 @@ object TrajectoryWaypoints {
 
         val trueAndTransform = trueLocation + transform
 
+        fun transformBy(other: Pose2d) = Waypoint(trueLocation, transform.transformBy(other), translationalOffset, rotationalOffset)
+
         val position = Pose2d(
                 trueAndTransform.translation + translationalOffset,
                 trueAndTransform.rotation + rotationalOffset
