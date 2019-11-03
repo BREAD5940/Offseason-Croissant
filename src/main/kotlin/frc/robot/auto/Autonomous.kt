@@ -7,6 +7,7 @@ import frc.robot.Robot
 import frc.robot.auto.paths.TrajectoryWaypoints
 import frc.robot.auto.routines.BottomRocketRoutine2
 import frc.robot.auto.routines.CargoShipRoutine
+import frc.robot.auto.routines.HybridRoutine
 import frc.robot.subsystems.drive.DriveSubsystem
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
 import org.ghrobotics.lib.utils.Source
@@ -58,7 +59,8 @@ object Autonomous : Updatable {
 
     val possibleAutos = hashMapOf(
             Mode.BOTTOM_ROCKET_2 to BottomRocketRoutine2()(),
-            Mode.SIDE_CARGO_SHIP to CargoShipRoutine()()
+            Mode.SIDE_CARGO_SHIP to CargoShipRoutine()(),
+            Mode.HYBRID to HybridRoutine()()
     )
     var selectedAutonomous: CommandBase = InstantCommand()
     val doNothing = selectedAutonomous
@@ -82,5 +84,5 @@ object Autonomous : Updatable {
         RIGHT_REVERSED(TrajectoryWaypoints.kSideStartReversed)
     }
 
-    enum class Mode { BOTTOM_ROCKET_2, FORWARD_CARGO_SHIP, SIDE_CARGO_SHIP, HYBRID_LEFT, HYBRID_RIGHT, DO_NOTHING }
+    enum class Mode { BOTTOM_ROCKET_2, FORWARD_CARGO_SHIP, SIDE_CARGO_SHIP, HYBRID, DO_NOTHING }
 }

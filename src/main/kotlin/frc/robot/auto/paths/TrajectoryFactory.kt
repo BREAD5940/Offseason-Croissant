@@ -172,14 +172,15 @@ object TrajectoryFactory {
             getConstraints(false, cargoShipS2Adjusted), kMaxVelocity, kMaxAcceleration, kMaxVoltage
     ) }
 
-    val loadingStationToRocketF by lazy { generateTrajectory(
-            false,
+    val loadingStationToRocketFPrep by lazy { generateTrajectory(
+            true,
             listOf(
-                    loadingStationAdjusted,
-                    Pose2d(17.039.feet, 6.378.feet, 9.degree).asWaypoint(),
-                    rocketFAdjusted
+                    loadingStationUnPassedthroughAdjusted,
+//                    Pose2d(17.039.feet, 6.378.feet, 9.degree).asWaypoint(),
+//                    Pose2d(15.214.feet, 8.7.feet, 165.degree).asWaypoint(),
+                    rocketFPrepareRotated.transformBy(Pose2d((-12).inch, 6.inch, 0.degree)).asWaypoint()
             ),
-            getConstraints(true, rocketFAdjusted), kMaxVelocity, kMaxAcceleration, kMaxVoltage
+            getConstraints(true, Pose2d()), kMaxVelocity, kMaxAcceleration, kMaxVoltage
     ) }
 
     val loadingStationToRocketN by lazy { generateTrajectory(
@@ -292,7 +293,7 @@ object TrajectoryFactory {
             getConstraints(false, loadingStationAdjusted), kMaxVelocity, kMaxAcceleration, kMaxVoltage
     ) }
 
-    val s1PrepTranslationEarly = Translation2d(21.6.feet, 7.feet)
+    val s1PrepTranslationEarly = Translation2d(21.0.feet, 7.feet)
 
     val sideStartToCargoShipS1Prep by lazy { generateTrajectory(
             true,
@@ -358,7 +359,7 @@ object TrajectoryFactory {
                     Pose2d(offsetCargoS2, (-160).degree).transformBy(Pose2d(-18.inch, 0.inch, 0.degree)).asWaypoint().withRotation(90.degree),
                     Pose2d(23.425.feet, 9.879.feet, 90.degree).asWaypoint()
             ),
-            getConstraints(true, cargoShipS2Adjusted), kMaxVelocity, kFirstPathMaxAcceleration, kMaxVoltage
+            getConstraints(true, cargoShipS2Adjusted), 2.feet.velocity, kFirstPathMaxAcceleration, kMaxVoltage
     ) }
 
     val sideStartToRocketF by lazy { generateTrajectory(

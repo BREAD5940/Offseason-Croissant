@@ -88,7 +88,7 @@ object Wrist : ConcurrentFalconJoint<Radian, FalconSRX<Radian>>() {
         }
     }
 
-    private val safeOffset = (-15).degree..15.degree
+    private val safeOffset = (-30).degree..30.degree
     var offset = 0.degree
         set(value) {
             field = value.coerceIn(safeOffset)
