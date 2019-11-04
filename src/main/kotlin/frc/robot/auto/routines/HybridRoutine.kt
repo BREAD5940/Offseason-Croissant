@@ -109,7 +109,7 @@ class HybridRoutine : AutoRoutine() {
                 +Superstructure.kStowed
                 +DriveSubsystem.followTrajectory(path4, pathMirrored)
             }
-            +PointTurnCommand { (-143).degree.toRotation2d() * if (Autonomous.isStartingOnLeft()) -1.0 else 1.0 }
+            +PointTurnCommand { (-143 - 8).degree.toRotation2d() * if (Autonomous.isStartingOnLeft()) -1.0 else 1.0 }
 
             +super.followVisionAssistedTrajectory(
                     path5,

@@ -78,38 +78,83 @@ object Controls : Updatable {
 //        pov(180+45).changeOn(ClimbSubsystem.prepMove).changeOn { isClimbing = true; wantsHab3Mode = false }
     }
 
-    val operatorWPIJoystick = XboxController(1)
-    val operatorFalconXbox = operatorWPIJoystick.mapControls {
-        button(kX).changeOn(Superstructure.kCargoLow) // .changeOff { Superstructure.kStowed.schedule() }
-        button(kY).changeOn(Superstructure.kCargoMid) // .changeOff { Superstructure.kStowed.schedule() }
-        button(kB).changeOn(Superstructure.kCargoHigh) // .changeOff { Superstructure.kStowed.schedule() }
-        button(kA).changeOn(Superstructure.kCargoShip) // .changeOff { Superstructure.kStowed.schedule() }
-        // pov(0).change(ClosedLoopElevatorMove{Elevator.currentState.position + 1.inch})
+//    val operatorWPIJoystick = XboxController(1)
+//    val operatorFalconXbox = operatorWPIJoystick.mapControls {
+//        button(kX).changeOn(Superstructure.kCargoLow) // .changeOff { Superstructure.kStowed.schedule() }
+//        button(kY).changeOn(Superstructure.kCargoMid) // .changeOff { Superstructure.kStowed.schedule() }
+//        button(kB).changeOn(Superstructure.kCargoHigh) // .changeOff { Superstructure.kStowed.schedule() }
+//        button(kA).changeOn(Superstructure.kCargoShip) // .changeOff { Superstructure.kStowed.schedule() }
+//        // pov(0).change(ClosedLoopElevatorMove{Elevator.currentState.position + 1.inch})
+//        // hatch presets
+//        pov(270).changeOn(Superstructure.kHatchLow) // .changeOff { Superstructure.kStowed.schedule() }
+//        pov(0).changeOn(Superstructure.kHatchMid) // .changeOff { Superstructure.kStowed.schedule() }
+//        pov(90).changeOn(Superstructure.kHatchHigh) // .changeOff { Superstructure.kStowed.schedule() }
+//        pov(180).changeOn(Superstructure.kStowed)
+//
+//        // hab climb
+//        button(kStart).changeOn(ClimbSubsystem.hab3prepMove).changeOn { isClimbing = true; wantsHab3Mode = true }
+//        button(kBack).changeOn(ClimbSubsystem.prepMove).changeOn { isClimbing = true; wantsHab3Mode = false }
+//
+//        // Left Stick Button
+//        button(9).changeOn(Superstructure.kStowed)
+//
+//        // jogging
+//        lessThanAxisButton(1, 0.8).changeOn(ClosedLoopElevatorMove { Elevator.currentState.position + 1.inch })
+//        greaterThanAxisButton(1, 0.8).changeOn(ClosedLoopElevatorMove { Elevator.currentState.position - 1.inch })
+//        lessThanAxisButton(0, 0.8).changeOn { Wrist.offset += 4.degree }
+//        greaterThanAxisButton(0, 0.8).changeOn { Wrist.offset -= 4.degree }
+//
+//        // boring intake
+//        lessThanAxisButton(5).change(IntakeHatchCommand(releasing = true, shouldMutateArms = false))
+//        greaterThanAxisButton(5).change(
+//                StartEndCommand(Runnable{IntakeSubsystem.hatchMotorOutput = 3.volt; IntakeSubsystem.wantsOpen = true},
+//                        Runnable{IntakeSubsystem.setNeutral()})
+//        )
+//
+//        // intake hatches
+//        val poked = Superstructure.kPokedStowed
+//        val stowed = Superstructure.kStowed
+//        val intake = IntakeHatchCommand(false)
+//        val delayedYote = StartEndCommand(Runnable{IntakeSubsystem.hatchMotorOutput = 8.volt
+//            IntakeSubsystem.wantsOpen = true},
+//                Runnable{IntakeSubsystem.setNeutral()}).withTimeout(0.75)
+//        triggerAxisButton(GenericHID.Hand.kLeft).changeOn { delayedYote.cancel(); poked.schedule(); intake.schedule() }
+//                .changeOff { poked.cancel(); intake.cancel(); stowed.schedule(); delayedYote.schedule()
+//        }.changeOn(IntakeHatchCommand(releasing = false))
+//
+//        // outtake hatches
+//        triggerAxisButton(GenericHID.Hand.kRight).change(IntakeHatchCommand(true))
+//
+//        // cargo -- intake is a bit tricky, it'll go to the intake preset automatically
+//        // the lessThanAxisButton represents "intaking", and the greaterThanAxisButton represents "outtaking"
+//        val cargoCommand = sequential { +PrintCommand("running cargoCommand"); +Superstructure.kCargoIntake.beforeStarting { IntakeSubsystem.wantsOpen = true }; +IntakeCargoCommand(releasing = false) }
+//        button(kBumperLeft).changeOff { Superstructure.kStowed.schedule() }.change(cargoCommand)
+//        button(kBumperRight).change(IntakeCargoCommand(true))
+//
+//    }
+
+    val operatorJoy = Joystick(5)
+    val operatorFalconHID = operatorJoy.mapControls {
+        // cargo presets
+//            button(12).changeOn(Superstructure.kCargoIntake.andThen { IntakeSubsystem.wantsOpen = true }) // .changeOff { Superstructure.kStowed.schedule() }
+        button(7).changeOn(Superstructure.kCargoLow) // .changeOff { Superstructure.kStowed.schedule() }
+        button(6).changeOn(Superstructure.kCargoMid) // .changeOff { Superstructure.kStowed.schedule() }
+        button(5).changeOn(Superstructure.kCargoHigh) // .changeOff { Superstructure.kStowed.schedule() }
+        button(8).changeOn(Superstructure.kCargoShip) // .changeOff { Superstructure.kStowed.schedule() }
+
         // hatch presets
-        pov(270).changeOn(Superstructure.kHatchLow) // .changeOff { Superstructure.kStowed.schedule() }
-        pov(0).changeOn(Superstructure.kHatchMid) // .changeOff { Superstructure.kStowed.schedule() }
-        pov(90).changeOn(Superstructure.kHatchHigh) // .changeOff { Superstructure.kStowed.schedule() }
-        pov(180).changeOn(Superstructure.kStowed)
+        button(3).changeOn(Superstructure.kHatchLow) // .changeOff { Superstructure.kStowed.schedule() }
+        button(2).changeOn(Superstructure.kHatchMid) // .changeOff { Superstructure.kStowed.schedule() }
+        button(1).changeOn(Superstructure.kHatchHigh) // .changeOff { Superstructure.kStowed.schedule() }
 
-        // hab climb
-        button(kStart).changeOn(ClimbSubsystem.hab3prepMove).changeOn { isClimbing = true; wantsHab3Mode = true }
-        button(kBack).changeOn(ClimbSubsystem.prepMove).changeOn { isClimbing = true; wantsHab3Mode = false }
+        // Stow (for now like this coz i dont wanna break anything
+        button(10).changeOn(Superstructure.kStowed)
 
-        // Left Stick Button
-        button(9).changeOn(Superstructure.kStowed)
+        button(9).changeOn(ClosedLoopElevatorMove { Elevator.currentState.position + 1.inch })
+        button(11).changeOn(ClosedLoopElevatorMove { Elevator.currentState.position - 1.inch })
 
-        // jogging
-        lessThanAxisButton(1, 0.8).changeOn(ClosedLoopElevatorMove { Elevator.currentState.position + 1.inch })
-        greaterThanAxisButton(1, 0.8).changeOn(ClosedLoopElevatorMove { Elevator.currentState.position - 1.inch })
-        lessThanAxisButton(0, 0.8).changeOn { Wrist.offset += 4.degree }
-        greaterThanAxisButton(0, 0.8).changeOn { Wrist.offset -= 4.degree }
-
-        // boring intake
-        lessThanAxisButton(5).change(IntakeHatchCommand(releasing = true, shouldMutateArms = false))
-        greaterThanAxisButton(5).change(
-                StartEndCommand(Runnable{IntakeSubsystem.hatchMotorOutput = 3.volt; IntakeSubsystem.wantsOpen = true},
-                        Runnable{IntakeSubsystem.setNeutral()})
-        )
+        // that one passthrough preset that doesnt snap back to normal
+//            button(4).changeOn(Superstructure.kBackHatchFromLoadingStation)
 
         // intake hatches
         val poked = Superstructure.kPokedStowed
@@ -118,72 +163,32 @@ object Controls : Updatable {
         val delayedYote = StartEndCommand(Runnable{IntakeSubsystem.hatchMotorOutput = 8.volt
             IntakeSubsystem.wantsOpen = true},
                 Runnable{IntakeSubsystem.setNeutral()}).withTimeout(0.75)
-        triggerAxisButton(GenericHID.Hand.kLeft).changeOn { delayedYote.cancel(); poked.schedule(); intake.schedule() }
+        lessThanAxisButton(1).changeOn { delayedYote.cancel(); poked.schedule(); intake.schedule() }
                 .changeOff { poked.cancel(); intake.cancel(); stowed.schedule(); delayedYote.schedule()
         }.changeOn(IntakeHatchCommand(releasing = false))
 
-        // outtake hatches
-        triggerAxisButton(GenericHID.Hand.kRight).change(IntakeHatchCommand(true))
+        greaterThanAxisButton(1).change(IntakeHatchCommand(releasing = true))
 
         // cargo -- intake is a bit tricky, it'll go to the intake preset automatically
         // the lessThanAxisButton represents "intaking", and the greaterThanAxisButton represents "outtaking"
         val cargoCommand = sequential { +PrintCommand("running cargoCommand"); +Superstructure.kCargoIntake.beforeStarting { IntakeSubsystem.wantsOpen = true }; +IntakeCargoCommand(releasing = false) }
-        button(kBumperLeft).changeOff { Superstructure.kStowed.schedule() }.change(cargoCommand)
-        button(kBumperRight).change(IntakeCargoCommand(true))
+        lessThanAxisButton(0).changeOff { (sequential { +ClosedLoopWristMove(40.degree) ; +Superstructure.kStowed; }).schedule() }.change(cargoCommand)
+        greaterThanAxisButton(0).changeOff { }.change(IntakeCargoCommand(true))
+
+        button(4).changeOn(ClimbSubsystem.prepMove).changeOn { isClimbing = true; wantsHab3Mode = false }
+        state({ isClimbing && !wantsHab3Mode }) {
+            button(12).changeOn(ClimbSubsystem.hab2ClimbCommand)
+        }
+        state({ isClimbing && wantsHab3Mode }) {
+            button(12).changeOn(ClimbSubsystem.hab3ClimbCommand)
+        }
 
     }
 
-//    val operatorJoy = Joystick(5)
-//    val operatorFalconHID = operatorJoy.mapControls {
-//        // cargo presets
-////            button(12).changeOn(Superstructure.kCargoIntake.andThen { IntakeSubsystem.wantsOpen = true }) // .changeOff { Superstructure.kStowed.schedule() }
-//        button(7).changeOn(Superstructure.kCargoLow) // .changeOff { Superstructure.kStowed.schedule() }
-//        button(6).changeOn(Superstructure.kCargoMid) // .changeOff { Superstructure.kStowed.schedule() }
-//        button(5).changeOn(Superstructure.kCargoHigh) // .changeOff { Superstructure.kStowed.schedule() }
-//        button(8).changeOn(Superstructure.kCargoShip) // .changeOff { Superstructure.kStowed.schedule() }
-//
-//        // hatch presets
-//        button(3).changeOn(Superstructure.kHatchLow) // .changeOff { Superstructure.kStowed.schedule() }
-//        button(2).changeOn(Superstructure.kHatchMid) // .changeOff { Superstructure.kStowed.schedule() }
-//        button(1).changeOn(Superstructure.kHatchHigh) // .changeOff { Superstructure.kStowed.schedule() }
-//
-//        // Stow (for now like this coz i dont wanna break anything
-//        button(10).changeOn(Superstructure.kStowed)
-//
-//        button(9).changeOn(ClosedLoopElevatorMove { Elevator.currentState.position + 1.inch })
-//        button(11).changeOn(ClosedLoopElevatorMove { Elevator.currentState.position - 1.inch })
-//
-//        // that one passthrough preset that doesnt snap back to normal
-////            button(4).changeOn(Superstructure.kBackHatchFromLoadingStation)
-//
-//        // hatches
-//        val poked = Superstructure.kPokedStowed
-//        val stowed = Superstructure.kStowed
-//        lessThanAxisButton(1).changeOn { poked.schedule() }.changeOff { poked.cancel(); stowed.schedule() }
-//                .change(IntakeHatchCommand(releasing = false))
-//
-//        greaterThanAxisButton(1).change(IntakeHatchCommand(releasing = true))
-//
-//        // cargo -- intake is a bit tricky, it'll go to the intake preset automatically
-//        // the lessThanAxisButton represents "intaking", and the greaterThanAxisButton represents "outtaking"
-//        val cargoCommand = sequential { +PrintCommand("running cargoCommand"); +Superstructure.kCargoIntake.beforeStarting { IntakeSubsystem.wantsOpen = true }; +IntakeCargoCommand(releasing = false) }
-//        lessThanAxisButton(0).changeOff { (sequential { +ClosedLoopWristMove(40.degree) ; +Superstructure.kStowed; }).schedule() }.change(cargoCommand)
-//        greaterThanAxisButton(0).changeOff { }.change(IntakeCargoCommand(true))
-//
-//        button(4).changeOn(ClimbSubsystem.prepMove).changeOn { isClimbing = true; wantsHab3Mode = false }
-//        state({ isClimbing && !wantsHab3Mode }) {
-//            button(12).changeOn(ClimbSubsystem.hab2ClimbCommand)
-//        }
-//        state({ isClimbing && wantsHab3Mode }) {
-//            button(12).changeOn(ClimbSubsystem.hab3ClimbCommand)
-//        }
-//
-//    }
-
     override fun update() {
         driverFalconXbox.update()
-//        operatorFalconHID.update()
-        operatorFalconXbox.update()
+        operatorFalconHID.update()
+//        operatorFalconXbox.update()
     }
 }
 

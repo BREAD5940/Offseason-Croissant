@@ -3,6 +3,7 @@ package frc.robot.subsystems.drive
 import frc.robot.Constants
 import frc.robot.Network
 import frc.robot.subsystems.sensors.LimeLight
+import frc.robot.subsystems.superstructure.LEDs
 import frc.robot.subsystems.superstructure.Length
 import frc.robot.vision.TargetTracker
 import org.ghrobotics.lib.commands.FalconCommand
@@ -16,6 +17,7 @@ import org.ghrobotics.lib.mathematics.twodim.trajectory.types.Trajectory
 import org.ghrobotics.lib.mathematics.units.* // ktlint-disable no-wildcard-imports
 import org.ghrobotics.lib.mathematics.units.derived.* // ktlint-disable no-wildcard-imports
 import org.ghrobotics.lib.utils.Source
+import java.awt.Color
 
 /**
  * Command to follow a smooth trajectory using a trajectory following controller
@@ -66,6 +68,8 @@ class VisionAssistedTrajectoryTracker(
                         radiusFromEnd.meter
 
         if (withinVisionRadius) {
+            LEDs.wantedState = LEDs.State.Off
+
             val newTarget = if (!useAbsoluteVision) {
                 TargetTracker.getBestTarget(!trajectory.reversed)
             } else {
@@ -142,6 +146,7 @@ class VisionAssistedTrajectoryTracker(
         LiveDashboard.isFollowingPath = false
         visionActive = false
         shouldVision = false
+        LEDs.wantedState = LEDs.State.Solid(Color.red)
     }
 
     companion object {
