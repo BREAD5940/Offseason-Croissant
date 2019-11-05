@@ -134,7 +134,7 @@ class SecondClosedVisionDriveCommand(private val isFront: Boolean, private val s
         val kStaticKp = 1.0 * 0.85
         val kStaticKd = 4.0
 
-        val kDynamicKp = 6.0
+        val kDynamicKp = 4.5
         val kDynamicKd = 10.0
 
 
