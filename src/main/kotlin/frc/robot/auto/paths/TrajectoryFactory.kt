@@ -314,6 +314,17 @@ object TrajectoryFactory {
             getConstraints(true, cargoShipS1Adjusted), 2.feet.velocity, kMaxAcceleration * 1.5, kMaxVoltage
     ) }
 
+    val testTrajectory2 = generateTrajectory(
+            false,
+            listOf(
+                    Pose2d(5.396.feet, 5.551.feet, 0.degree).asWaypoint(),
+                    Pose2d(10.004.feet, 5.648.feet, 0.degree).asWaypoint(),
+                    Pose2d(8.334.feet, 2.474.feet, (-145.637).degree).asWaypoint(),
+                    Pose2d(7.102.feet, 6.796.feet, 71.162.degree).asWaypoint()
+            ),
+            getConstraints(true, Pose2d()), 5.feet.velocity, kMaxAcceleration, kMaxVoltage
+    )
+
     val s1PrepTranslation = Pose2d(23.992.feet, 7.121.feet, (-168.246).degree).asWaypoint()
 
     val cargoShipS1ToS1Prep by lazy { generateTrajectory(

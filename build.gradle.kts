@@ -63,7 +63,9 @@ dependencies {
     compile("com.fazecast:jSerialComm:2.4.1") // jserialcomm for jevois
     compile("com.github.salomonbrys.kotson", "kotson", "2.5.0") // gson
 
-    implementation("org.mockito:mockito-core:2.23.+")
+//    implementation("org.mockito:mockito-core:2.23.+")
+
+    compile("org.ejml:ejml-simple:0.38")
 
     // WPILib and Vendors
     wpi.deps.wpilib().forEach { compile(it) }
@@ -74,7 +76,7 @@ dependencies {
     compile("com.github.Oblarg:Oblog:2.8.1")
 
     // XChart for Simulations and Tests
-    compile("org.knowm.xchart", "xchart", "3.2.2")
+    testCompile("org.knowm.xchart", "xchart", "3.2.2")
 
     // Unit Testing
     testCompile("junit", "junit", "4.12")
