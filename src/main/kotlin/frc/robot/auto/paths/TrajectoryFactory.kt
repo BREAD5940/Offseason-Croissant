@@ -234,7 +234,7 @@ object TrajectoryFactory {
             listOf(
                     rocketFPrepare,
 //                    rocketFAdjusted
-                    Pose2d(22.312.feet, 2.82.feet, (-151.25).degree).transformBy(Pose2d(3.inch, 4.inch, 0.degree)).asWaypoint()
+                    Pose2d(22.312.feet, 2.82.feet, (-151.25).degree).transformBy(Pose2d(8.inch, 4.inch, 0.degree)).asWaypoint()
             ),
             getConstraints(false, Pose2d()), 2.0.feet.velocity, kMaxAcceleration / 1.5, kMaxVoltage
     ) }

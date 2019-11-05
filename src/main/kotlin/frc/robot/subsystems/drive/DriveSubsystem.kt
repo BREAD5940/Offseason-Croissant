@@ -155,7 +155,7 @@ object DriveSubsystem : TankDriveSubsystem(), EmergencyHandleable, ConcurrentlyU
     }
 
     // Ramsete gang is the only true gang
-    override var trajectoryTracker = defaultLTVUnicycleController //RamseteTracker(Constants.DriveConstants.kBeta, Constants.DriveConstants.kZeta)
+    override var trajectoryTracker = RamseteTracker(Constants.DriveConstants.kBeta, Constants.DriveConstants.kZeta)
 
     // the "differential drive" model, with a custom getter which changes based on the current gear
     override val differentialDrive: DifferentialDrive
