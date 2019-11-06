@@ -105,6 +105,17 @@ tasks {
                 commandLine("python3.7", "src/main/python/LTVUnicycleLRQ.py")
             }
         }
+        doLast {
+            println("\nDid you ever hear the tragedy of Darth Plagueis the Wise? I thought not.\n" +
+                    "It's not a story the Jedi would tell you. It's a Sith legend. Darth Plagueis was a \n" +
+                    "Dark Lord of the Sith, so powerful and so wise he could use the Force to influence \n" +
+                    "the midichlorians to create life... He had such a knowledge of the dark side that \n" +
+                    "he could even keep the ones he cared about from dying. The dark side of the Force \n" +
+                    "is a pathway to many abilities some consider to be unnatural. He became so powerful... \n" +
+                    "the only thing he was afraid of was losing his power, which eventually, of course, \n" +
+                    "he did. Unfortunately, he taught his apprentice everything he knew, then his apprentice \n" +
+                    "killed him in his sleep. Ironic, he could save others from death, but not himself.\n")
+        }
     }
     withType<JavaCompile>().configureEach {
         doFirst {

@@ -81,10 +81,3 @@ class LTVUnicycleController(
 //            calculate(currentPose, desiredState.poseMeters, desiredState.velocityMetersPerSecond,
 //                    desiredState.velocityMetersPerSecond * desiredState.curvatureRadPerMeter)
 }
-
-/**
- * A unicycle controller with gains calculated at q = [0.1, 0.1, 10deg] and r = [3.96meters/sec, 180deg/second]
- */
-val defaultLTVUnicycleController get() = LTVUnicycleController(
-        11.195525843132865, 14.557715539096787, 14.004305286376457, 5.584621512970303
-)

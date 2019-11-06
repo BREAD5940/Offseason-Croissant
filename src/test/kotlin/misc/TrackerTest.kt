@@ -1,6 +1,7 @@
 package misc
 
 import frc.robot.auto.paths.TrajectoryFactory
+import frc.robot.subsystems.drive.optimalLTVUnicycleController
 import java.awt.Color
 import java.awt.Font
 import java.text.DecimalFormat
@@ -13,7 +14,6 @@ import org.ghrobotics.lib.mathematics.units.derived.* // ktlint-disable no-wildc
 import org.junit.Test
 import org.knowm.xchart.SwingWrapper
 import org.knowm.xchart.XYChartBuilder
-import org.team5940.pantry.lib.defaultLTVUnicycleController
 
 class TrackerTest {
 
@@ -40,7 +40,7 @@ class TrackerTest {
 
         val trajectory = TrajectoryFactory.testTrajectory2
 
-        val controller = defaultLTVUnicycleController // RamseteController(2.0, 0.7) //defaultLTVUnicycleController
+        val controller = optimalLTVUnicycleController // RamseteController(2.0, 0.7) //defaultLTVUnicycleController
         val drive = SimDiffDrive()
 
         drive.robotLocation = trajectory.firstState.state.pose // Pose2d(4.feet, 4.feet, 45.degree)
