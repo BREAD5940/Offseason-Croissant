@@ -3,6 +3,7 @@ import edu.wpi.first.gradlerio.frc.FRCJavaArtifact
 import edu.wpi.first.gradlerio.frc.RoboRIO
 import edu.wpi.first.toolchain.NativePlatforms
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.gradle.api.tasks.compile.JavaCompile
 
 plugins {
     id("edu.wpi.first.GradleRIO") version "2019.4" +
@@ -13,7 +14,6 @@ plugins {
 }
 
 val roborioTargetName = "roborio"
-
 val kMainRobotClass = "frc.robot.RobotKt"
 
 deploy {
@@ -99,6 +99,16 @@ tasks {
         kotlinOptions {
             jvmTarget = "1.8"
             freeCompilerArgs += "-Xjvm-default=compatibility"
+        }
+        doFirst {
+            exec {
+                commandLine("python3.7", "src/main/python/LTVUnicycleLRQ.py")
+            }
+        }
+    }
+    withType<JavaCompile>().configureEach {
+        doFirst {
+            println("Hullo")
         }
     }
 }
