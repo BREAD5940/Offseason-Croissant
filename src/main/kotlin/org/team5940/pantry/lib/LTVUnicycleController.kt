@@ -1,7 +1,7 @@
 package org.team5940.pantry.lib
 
 import com.team254.lib.physics.DifferentialDrive
-import frc.robot.Constants
+import kotlin.math.* // ktlint-disable no-wildcard-imports
 import org.ejml.simple.SimpleMatrix
 import org.ghrobotics.lib.mathematics.twodim.control.TrajectoryTracker
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
@@ -10,21 +10,20 @@ import org.ghrobotics.lib.mathematics.twodim.trajectory.TrajectoryIterator
 import org.ghrobotics.lib.mathematics.twodim.trajectory.types.TimedEntry
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.Second
-import org.ghrobotics.lib.mathematics.units.derived.*
+import org.ghrobotics.lib.mathematics.units.derived.* // ktlint-disable no-wildcard-imports
 import org.ghrobotics.lib.mathematics.units.feet
 import org.ghrobotics.lib.mathematics.units.meter
-import kotlin.math.*
 
 /**
  * A cascaded Linear time-varying unicycle controller. See Theorem 8.7.2
  * from https://github.com/calcmogul/controls-engineering-in-frc
  */
 class LTVUnicycleController(
-        private val kX: Double,
-        private val kY_0: Double,
-        private val kY_1: Double,
-        private val kTheta: Double
-): TrajectoryTracker()  {
+    private val kX: Double,
+    private val kY_0: Double,
+    private val kY_1: Double,
+    private val kTheta: Double
+) : TrajectoryTracker() {
 
     /**
      * Calculate the desired state
@@ -91,7 +90,6 @@ class LTVUnicycleController(
 //    fun calculate(currentPose: Pose2d, desiredState: Trajectory.State) =
 //            calculate(currentPose, desiredState.poseMeters, desiredState.velocityMetersPerSecond,
 //                    desiredState.velocityMetersPerSecond * desiredState.curvatureRadPerMeter)
-
 }
 
 /**

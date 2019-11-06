@@ -6,13 +6,12 @@ import edu.wpi.first.wpilibj2.command.* // ktlint-disable no-wildcard-imports
 import frc.robot.auto.paths.TrajectoryFactory
 import frc.robot.auto.routines.TestRoutine
 import frc.robot.subsystems.climb.ClimbSubsystem
-import frc.robot.subsystems.drive.ClosedLoopVisionDriveCommand
 import frc.robot.subsystems.drive.DriveSubsystem
 import frc.robot.subsystems.drive.OpenLoopVisionDriveCommand
 import frc.robot.subsystems.drive.SecondClosedVisionDriveCommand
-import frc.robot.subsystems.intake.IntakeSubsystem
 import frc.robot.subsystems.intake.IntakeCargoCommand
 import frc.robot.subsystems.intake.IntakeHatchCommand
+import frc.robot.subsystems.intake.IntakeSubsystem
 import frc.robot.subsystems.superstructure.* // ktlint-disable no-wildcard-imports
 import org.ghrobotics.lib.commands.FalconCommand
 import org.ghrobotics.lib.commands.sequential
@@ -112,17 +111,17 @@ object Controls : Updatable {
         // boring intake
         lessThanAxisButton(5).change(IntakeHatchCommand(releasing = true, shouldMutateArms = false))
         greaterThanAxisButton(5).change(
-                StartEndCommand(Runnable{IntakeSubsystem.hatchMotorOutput = 3.volt; IntakeSubsystem.wantsOpen = true},
-                        Runnable{IntakeSubsystem.setNeutral()})
+                StartEndCommand(Runnable { IntakeSubsystem.hatchMotorOutput = 3.volt; IntakeSubsystem.wantsOpen = true },
+                        Runnable { IntakeSubsystem.setNeutral() })
         )
 
         // intake hatches
         val poked = Superstructure.kPokedStowed
         val stowed = Superstructure.kStowed
         val intake = IntakeHatchCommand(false)
-        val delayedYote = StartEndCommand(Runnable{IntakeSubsystem.hatchMotorOutput = 8.volt
-            IntakeSubsystem.wantsOpen = true},
-                Runnable{IntakeSubsystem.setNeutral()}).withTimeout(0.75)
+        val delayedYote = StartEndCommand(Runnable { IntakeSubsystem.hatchMotorOutput = 8.volt
+            IntakeSubsystem.wantsOpen = true },
+                Runnable { IntakeSubsystem.setNeutral() }).withTimeout(0.75)
         triggerAxisButton(GenericHID.Hand.kLeft).changeOn { delayedYote.cancel(); poked.schedule(); intake.schedule() }
                 .changeOff { poked.cancel(); intake.cancel(); stowed.schedule(); delayedYote.schedule()
         }.changeOn(IntakeHatchCommand(releasing = false))
@@ -135,13 +134,12 @@ object Controls : Updatable {
         val cargoCommand = sequential { +PrintCommand("running cargoCommand"); +Superstructure.kCargoIntake.beforeStarting { IntakeSubsystem.wantsOpen = true }; +IntakeCargoCommand(releasing = false) }
         button(kBumperLeft).changeOff { Superstructure.kStowed.schedule() }.change(cargoCommand)
         button(kBumperRight).change(IntakeCargoCommand(true))
-
     }
 
 //    val operatorJoy = Joystick(5)
 //    val operatorFalconHID = operatorJoy.mapControls {
 //        // cargo presets
-////            button(12).changeOn(Superstructure.kCargoIntake.andThen { IntakeSubsystem.wantsOpen = true }) // .changeOff { Superstructure.kStowed.schedule() }
+// //            button(12).changeOn(Superstructure.kCargoIntake.andThen { IntakeSubsystem.wantsOpen = true }) // .changeOff { Superstructure.kStowed.schedule() }
 //        button(7).changeOn(Superstructure.kCargoLow) // .changeOff { Superstructure.kStowed.schedule() }
 //        button(6).changeOn(Superstructure.kCargoMid) // .changeOff { Superstructure.kStowed.schedule() }
 //        button(5).changeOn(Superstructure.kCargoHigh) // .changeOff { Superstructure.kStowed.schedule() }
@@ -159,7 +157,7 @@ object Controls : Updatable {
 //        button(11).changeOn(ClosedLoopElevatorMove { Elevator.currentState.position - 1.inch })
 //
 //        // that one passthrough preset that doesnt snap back to normal
-////            button(4).changeOn(Superstructure.kBackHatchFromLoadingStation)
+// //            button(4).changeOn(Superstructure.kBackHatchFromLoadingStation)
 //
 //        // intake hatches
 //        val poked = Superstructure.kPokedStowed
@@ -190,7 +188,7 @@ object Controls : Updatable {
 //
 //    }
 
-    override fun update() { 
+    override fun update() {
         driverFalconXbox.update()
 //        operatorFalconHID.update()
         operatorFalconXbox.update()

@@ -1,13 +1,13 @@
 package frc.robot.auto.routines
 
-import edu.wpi.first.wpilibj2.command.*
+import edu.wpi.first.wpilibj2.command.* // ktlint-disable no-wildcard-imports
 import frc.robot.auto.Autonomous
 import frc.robot.auto.paths.TrajectoryFactory
 import frc.robot.auto.paths.TrajectoryWaypoints
 import frc.robot.subsystems.drive.DriveSubsystem
 import frc.robot.subsystems.drive.PointTurnCommand
-import frc.robot.subsystems.intake.IntakeSubsystem
 import frc.robot.subsystems.intake.IntakeHatchCommand
+import frc.robot.subsystems.intake.IntakeSubsystem
 import frc.robot.subsystems.superstructure.Superstructure
 import org.ghrobotics.lib.commands.parallel
 import org.ghrobotics.lib.commands.sequential
@@ -16,7 +16,6 @@ import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.Second
 import org.ghrobotics.lib.mathematics.units.derived.degree
 import org.ghrobotics.lib.mathematics.units.derived.toRotation2d
-import org.ghrobotics.lib.mathematics.units.derived.volt
 import org.ghrobotics.lib.mathematics.units.feet
 import org.ghrobotics.lib.mathematics.units.second
 import org.ghrobotics.lib.utils.map
@@ -57,7 +56,7 @@ class CargoShipRoutine : AutoRoutine() {
                             Autonomous.isStartingOnLeft
                     )
                     +PointTurnCommand {
-                       90.degree.toRotation2d() * if (Autonomous.isStartingOnLeft()) -1.0 else 1.0
+                        90.degree.toRotation2d() * if (Autonomous.isStartingOnLeft()) -1.0 else 1.0
                     }
                     // drive forward
                     +super.followVisionAssistedTrajectory(

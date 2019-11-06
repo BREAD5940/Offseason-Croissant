@@ -64,6 +64,8 @@ qTheta = math.radians(90) # allowable heading error
 vMax = 0.61 * 2.5 # excursion from reference velocity
 wMax = math.radians(170.0) # max turn excursion from reference
 
+print("Calculating cost matrix for LTV Unicycle with costs qX %d qY %d qTheta %d vMax %d wMax %d" % (qX, qY, qTheta, vMax, wMax))
+
 Q =  __make_cost_matrix([qX, qY, qTheta])
 R = __make_cost_matrix([vMax, wMax])
 
@@ -91,16 +93,16 @@ sysd = sys.sample(1.0/50.0)
 
 K_1 = frccnt.lqr(sysd, Q, R)
 
-print("\nK0 = \n%s\n " % K_0)
-print("K1 = \n%s\n" % K_1)
+# print("\nK0 = \n%s\n " % K_0)
+# print("K1 = \n%s\n" % K_1)
 
 print("kx = %s" % K_0[1-1,1-1])
 print("ky_0 = %s" % K_0[2-1,2-1])
 print("ky_1 = %s" % K_1[2-1,2-1])
 print("kTheta = %s\n" % K_1[2-1,3-1])
 
-gains = ("%s, %s, %s, %s" % (K_0[1-1,1-1], K_0[2-1,2-1], K_1[2-1,2-1], K_1[2-1,3-1]))
-print(gains)
+# gains = ("%s, %s, %s, %s" % (K_0[1-1,1-1], K_0[2-1,2-1], K_1[2-1,2-1], K_1[2-1,3-1]))
+# print(gains)
 
 # Save it to a file
 fileName = "LTVUnicycleGains.kt"
@@ -110,5 +112,5 @@ file.write(
     "import org.team5940.pantry.lib.LTVUnicycleController\n\n" +
     "val optimalLTVUnicycleController get() = LTVUnicycleController(\n" +
     "    %s\n" % gains +
-    ") "
+    ")\n"
 )

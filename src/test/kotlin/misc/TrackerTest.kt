@@ -1,21 +1,21 @@
 package misc
 
 import frc.robot.auto.paths.TrajectoryFactory
+import java.awt.Color
+import java.awt.Font
+import java.text.DecimalFormat
 import org.ghrobotics.lib.mathematics.twodim.control.TrajectoryTrackerOutput
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
 import org.ghrobotics.lib.mathematics.twodim.geometry.Twist2d
 import org.ghrobotics.lib.mathematics.twodim.trajectory.types.duration
-import org.ghrobotics.lib.mathematics.units.*
-import org.ghrobotics.lib.mathematics.units.derived.*
+import org.ghrobotics.lib.mathematics.units.* // ktlint-disable no-wildcard-imports
+import org.ghrobotics.lib.mathematics.units.derived.* // ktlint-disable no-wildcard-imports
 import org.junit.Test
 import org.knowm.xchart.SwingWrapper
 import org.knowm.xchart.XYChartBuilder
 import org.team5940.pantry.lib.defaultLTVUnicycleController
-import java.awt.Color
-import java.awt.Font
-import java.text.DecimalFormat
 
-class trackerTest {
+class TrackerTest {
 
     class SimDiffDrive {
         var robotLocation = Pose2d(0.meter, 0.meter, 0.radian)
@@ -43,7 +43,7 @@ class trackerTest {
         val controller = defaultLTVUnicycleController // RamseteController(2.0, 0.7) //defaultLTVUnicycleController
         val drive = SimDiffDrive()
 
-        drive.robotLocation = trajectory.firstState.state.pose //Pose2d(4.feet, 4.feet, 45.degree)
+        drive.robotLocation = trajectory.firstState.state.pose // Pose2d(4.feet, 4.feet, 45.degree)
 
         var currentTime = 0.second
         val deltaTime = 20.milli.second
@@ -56,7 +56,7 @@ class trackerTest {
 
         controller.reset(trajectory)
 
-        while(currentTime.second < trajectory.duration.second) {
+        while (currentTime.second < trajectory.duration.second) {
 
             val nextTime = currentTime + deltaTime
             val state = trajectory.sample(nextTime)
@@ -78,7 +78,6 @@ class trackerTest {
             refYList += wantedY.feet
 
             currentTime = nextTime
-
         }
 
         val fm = DecimalFormat("#.###").format(trajectory.duration.second)
@@ -127,7 +126,5 @@ class trackerTest {
 
         SwingWrapper(chart).displayChart()
         Thread.sleep(1000000)
-
     }
-
 }

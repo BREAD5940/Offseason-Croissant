@@ -9,17 +9,12 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab
 import frc.robot.auto.Autonomous
-import frc.robot.subsystems.superstructure.Elevator
 import frc.robot.subsystems.superstructure.Superstructure
 import frc.robot.subsystems.superstructure.SuperstructureState
-import org.ghrobotics.lib.mathematics.units.derived.inchesPerSecond
-import org.ghrobotics.lib.mathematics.units.inch
-import org.ghrobotics.lib.mathematics.units.kInchToMeter
-import org.ghrobotics.lib.wrappers.networktables.enumSendableChooser
-import org.team5940.pantry.lib.Updatable
-import org.team5940.pantry.lib.WantedState
 import org.ghrobotics.lib.mathematics.units.operations.div
 import org.ghrobotics.lib.mathematics.units.operations.times
+import org.ghrobotics.lib.wrappers.networktables.enumSendableChooser
+import org.team5940.pantry.lib.Updatable
 
 object Network : Updatable {
 

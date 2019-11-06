@@ -7,6 +7,7 @@ import com.ctre.phoenix.motorcontrol.RemoteSensorSource
 import edu.wpi.first.wpilibj.DriverStation
 import frc.robot.Constants
 import frc.robot.Ports
+import kotlin.math.abs
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.derived.Radian
 import org.ghrobotics.lib.mathematics.units.derived.degree
@@ -16,7 +17,6 @@ import org.team5940.pantry.lib.ConcurrentFalconJoint
 import org.team5940.pantry.lib.MultiMotorTransmission
 import org.team5940.pantry.lib.WantedState
 import org.team5940.pantry.lib.asPWMSource
-import kotlin.math.abs
 
 object Wrist : ConcurrentFalconJoint<Radian, FalconSRX<Radian>>() {
 
@@ -105,7 +105,7 @@ object Wrist : ConcurrentFalconJoint<Radian, FalconSRX<Radian>>() {
     }
 
     override fun customizeWantedState(wantedState: WantedState): WantedState {
-        return when(wantedState) {
+        return when (wantedState) {
             is WantedState.Position<*> -> WantedState.Position(
                     SIUnit<Radian>(wantedState.targetPosition.value + offset.value),
                     wantedState.feedForward,

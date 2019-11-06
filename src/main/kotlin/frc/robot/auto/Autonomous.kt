@@ -1,7 +1,7 @@
 package frc.robot.auto
 
-import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.CommandBase
+import edu.wpi.first.wpilibj2.command.InstantCommand
 import frc.robot.Network
 import frc.robot.Robot
 import frc.robot.auto.paths.TrajectoryWaypoints
@@ -48,6 +48,7 @@ object Autonomous : Updatable {
         // update our selected auto mode
         selectedAutonomous = possibleAutos[autoMode()] ?: doNothing
 
+        @Suppress("UNUSED_ANONYMOUS_PARAMETER")
         robotModeMonitor.onChange { newValue ->
             // maybe stop auto on change to enabled?
         }

@@ -6,6 +6,7 @@ import frc.robot.subsystems.sensors.LimeLight
 import frc.robot.subsystems.superstructure.LEDs
 import frc.robot.subsystems.superstructure.Length
 import frc.robot.vision.TargetTracker
+import java.awt.Color
 import org.ghrobotics.lib.commands.FalconCommand
 import org.ghrobotics.lib.debug.LiveDashboard
 import org.ghrobotics.lib.mathematics.twodim.control.TrajectoryTrackerOutput
@@ -17,7 +18,6 @@ import org.ghrobotics.lib.mathematics.twodim.trajectory.types.Trajectory
 import org.ghrobotics.lib.mathematics.units.* // ktlint-disable no-wildcard-imports
 import org.ghrobotics.lib.mathematics.units.derived.* // ktlint-disable no-wildcard-imports
 import org.ghrobotics.lib.utils.Source
-import java.awt.Color
 
 /**
  * Command to follow a smooth trajectory using a trajectory following controller
@@ -91,7 +91,7 @@ class VisionAssistedTrajectoryTracker(
             Network.visionDriveAngle.setDouble(angle.degree)
             Network.visionDriveActive.setBoolean(true)
 
-            val error = LimeLight.lastYaw.radian //(angle + if (!trajectory.reversed) Rotation2d() else Math.PI.radian.toRotation2d()).radian
+            val error = LimeLight.lastYaw.radian // (angle + if (!trajectory.reversed) Rotation2d() else Math.PI.radian.toRotation2d()).radian
 
             // at 0 speed this should be 1, and at 10ft/sec it should be 2
             // so (0, 1) and (10, 2)
@@ -114,7 +114,7 @@ class VisionAssistedTrajectoryTracker(
                     nextState.linearVelocity,
                     SIUnit((nextState.linearVelocity - lastOutput.linearVelocity).value / 0.020),
                     turn.radian.velocity,
-                    0.radian.acceleration))//SIUnit((turn.radian.velocity - lastOutput.angularVelocity).value / 0.020)))
+                    0.radian.acceleration)) // SIUnit((turn.radian.velocity - lastOutput.angularVelocity).value / 0.020)))
             lastOutput = nextState
 
             prevError = error

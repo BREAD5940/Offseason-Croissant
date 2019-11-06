@@ -5,13 +5,18 @@ package frc.robot.subsystems.climb
 import com.revrobotics.CANSparkMaxLowLevel
 import edu.wpi.first.wpilibj.GenericHID
 import edu.wpi.first.wpilibj.Timer
-import edu.wpi.first.wpilibj2.command.RunCommand
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
+import edu.wpi.first.wpilibj2.command.RunCommand
 import frc.robot.Controls
 import frc.robot.auto.routines.withExit
 import frc.robot.subsystems.drive.DriveSubsystem
 import frc.robot.subsystems.drive.ManualDriveCommand
 import frc.robot.subsystems.superstructure.* // ktlint-disable no-wildcard-imports
+import java.awt.Color
+import kotlin.math.PI
+import kotlin.math.absoluteValue
+import kotlin.math.sign
+import kotlin.math.withSign
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -31,11 +36,6 @@ import org.ghrobotics.lib.motors.ctre.FalconSRX
 import org.ghrobotics.lib.motors.rev.FalconMAX
 import org.team5940.pantry.lib.MultiMotorTransmission
 import org.team5940.pantry.lib.WantedState
-import java.awt.Color
-import kotlin.math.PI
-import kotlin.math.absoluteValue
-import kotlin.math.sign
-import kotlin.math.withSign
 
 object ClimbSubsystem : FalconSubsystem() {
 

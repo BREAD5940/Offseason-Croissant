@@ -10,10 +10,10 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.JsonParseException
 import edu.wpi.first.wpilibj.Timer
+import kotlin.concurrent.fixedRateTimer
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.Second
 import org.ghrobotics.lib.mathematics.units.second
-import kotlin.concurrent.fixedRateTimer
 
 object JeVoisManager {
 

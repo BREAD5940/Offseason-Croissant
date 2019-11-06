@@ -1,10 +1,13 @@
 package frc.robot.subsystems.superstructure
 
-import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.CommandBase
+import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand
 import frc.robot.Constants.SuperStructureConstants.kProximalLen
 import frc.robot.auto.routines.withExit
+import java.awt.Color
+import java.lang.IllegalStateException
+import kotlin.math.min
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -17,9 +20,6 @@ import org.ghrobotics.lib.mathematics.units.* // ktlint-disable no-wildcard-impo
 import org.ghrobotics.lib.mathematics.units.derived.Radian
 import org.ghrobotics.lib.mathematics.units.derived.degree
 import org.ghrobotics.lib.mathematics.units.derived.toRotation2d
-import java.awt.Color
-import java.lang.IllegalStateException
-import kotlin.math.min
 
 object SuperstructurePlanner {
 

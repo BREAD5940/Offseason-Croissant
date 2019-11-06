@@ -6,17 +6,12 @@ import frc.robot.Constants.kCenterToFrontCamera
 import frc.robot.Constants.kRobotLength
 import frc.robot.Constants.kRobotWidth
 import frc.robot.subsystems.drive.DriveSubsystem
-// import frc.robot.subsystems.DriveTrain
-// import org.ghrobotics.frc2019.Constants
-// import org.ghrobotics.frc2019.subsystems.drive.DriveSubsystem
-// import org.ghrobotics.frc2019.subsystems.elevator.ElevatorSubsystem
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
 import org.ghrobotics.lib.mathematics.twodim.geometry.Translation2d
 import org.ghrobotics.lib.mathematics.units.derived.degree
 import org.ghrobotics.lib.mathematics.units.derived.toRotation2d
 import org.ghrobotics.lib.mathematics.units.inch
 import org.ghrobotics.lib.mathematics.units.second
-import kotlin.math.absoluteValue
 
 object VisionProcessing {
 

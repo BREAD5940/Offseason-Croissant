@@ -2,13 +2,13 @@
 
 package org.team5940.pantry.lib
 
+import kotlin.math.abs
 import org.ghrobotics.lib.commands.FalconSubsystem
 import org.ghrobotics.lib.mathematics.units.SIKey
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.derived.volt
 import org.ghrobotics.lib.motors.FalconMotor
 import org.ghrobotics.lib.subsystems.EmergencyHandleable
-import kotlin.math.abs
 
 interface ConcurrentlyUpdatingJoint<T : SIKey> {
     fun updateState(): MultiMotorTransmission.State<T>

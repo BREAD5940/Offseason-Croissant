@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.PrintCommand
 import frc.robot.subsystems.intake.IntakeSubsystem
 import frc.robot.subsystems.superstructure.Superstructure.getDumbWrist
+import kotlin.math.abs
 import org.ghrobotics.lib.commands.FalconCommand
 import org.ghrobotics.lib.commands.parallel
 import org.ghrobotics.lib.commands.sequential
@@ -13,7 +14,6 @@ import org.ghrobotics.lib.mathematics.units.* // ktlint-disable no-wildcard-impo
 import org.ghrobotics.lib.mathematics.units.derived.* // ktlint-disable no-wildcard-imports
 import org.team5940.pantry.lib.SIRotationConstants.kRadianToDegrees
 import org.team5940.pantry.lib.WantedState
-import kotlin.math.abs
 
 class SyncedMove(goalAngle: SIUnit<Radian>, proximalMaxVel: SIUnit<AngularVelocity>, wristMaxVel: SIUnit<AngularVelocity>, private val isFrontToBack: Boolean) : FalconCommand(
         Superstructure, Proximal, Wrist
