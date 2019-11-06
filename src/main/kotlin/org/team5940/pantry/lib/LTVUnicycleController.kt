@@ -53,22 +53,12 @@ class LTVUnicycleController(
         val eX = this.poseError.translation.x
         val eY = this.poseError.translation.y
         val eTheta = this.poseError.rotation.radian
-        val heading = currentPose.rotation.radian
 
         val error = SimpleMatrix(3, 1, false, doubleArrayOf(
                 eX.meter, eY.meter, eTheta
         ))
 
         val u = K(linearVelocityRefMetersPerSec).mult(error)
-
-        val string = K(linearVelocityRefMetersPerSec).toString()
-
-        val u0 = u[0]
-        val u1 = u[1]
-
-        val x = error[0]
-        val y = error[1]
-        val t = error[2]
 
         val toRet = DifferentialDrive.ChassisState(u[0] + linearVelocityRefMetersPerSec,
                 u[1] + angularVelocityRefRadiansPerSecond)
