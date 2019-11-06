@@ -23,8 +23,7 @@ class LTVUnicycleController(
         private val kX: Double,
         private val kY_0: Double,
         private val kY_1: Double,
-        private val kTheta: Double,
-        private val diffDrive: DifferentialDrive, private val maxVoltage: SIUnit<Volt>
+        private val kTheta: Double
 ): TrajectoryTracker()  {
 
     /**
@@ -41,9 +40,10 @@ class LTVUnicycleController(
 
         // angular velocity / linVelocity = curvature
         val curvature = newState.angular / newState.linear
-        val maxSpeed = diffDrive.getMaxAbsVelocity(curvature, maxVoltage.value)
+//        val maxSpeed = diffDrive.getMaxAbsVelocity(curvature, maxVoltage.value)
+        return TrajectoryTrackerVelocityOutput(newState.linear.meter.velocity, newState.angular.radian.velocity)
 
-        return TrajectoryTrackerVelocityOutput(newState.linear.coerceIn(-maxSpeed, maxSpeed).meter.velocity, newState.angular.radian.velocity)
+//        return TrajectoryTrackerVelocityOutput(newState.linear.coerceIn(-maxSpeed, maxSpeed).meter.velocity, newState.angular.radian.velocity)
     }
 
     private var poseError = Pose2d()
@@ -56,30 +56,20 @@ class LTVUnicycleController(
         val eTheta = this.poseError.rotation.radian
         val heading = currentPose.rotation.radian
 
-//        // Rotate error into robot reference frame
-//        val rotationMatrix = SimpleMatrix(3, 3, true, doubleArrayOf(
-//            cos(heading), sin(heading), 0.0,
-//            -sin(heading), cos(heading), 0.0,
-//            0.0, 0.0, 1.0
-//        ))
-
         val error = SimpleMatrix(3, 1, false, doubleArrayOf(
                 eX.meter, eY.meter, eTheta
         ))
 
-        val rotatedError = error// rotationMatrix.mult(error)
-
-
-        val u = K(linearVelocityRefMetersPerSec).mult(rotatedError)
+        val u = K(linearVelocityRefMetersPerSec).mult(error)
 
         val string = K(linearVelocityRefMetersPerSec).toString()
 
         val u0 = u[0]
         val u1 = u[1]
 
-        val x = rotatedError[0]
-        val y = rotatedError[1]
-        val t = rotatedError[2]
+        val x = error[0]
+        val y = error[1]
+        val t = error[2]
 
         val toRet = DifferentialDrive.ChassisState(u[0] + linearVelocityRefMetersPerSec,
                 u[1] + angularVelocityRefRadiansPerSecond)
@@ -108,5 +98,5 @@ class LTVUnicycleController(
  * A unicycle controller with gains calculated at q = [0.1, 0.1, 10deg] and r = [3.96meters/sec, 180deg/second]
  */
 val defaultLTVUnicycleController get() = LTVUnicycleController(
-        11.195525843132865, 19.410289939191696, 18.523330615355434, 6.33841334186717, Constants.DriveConstants.kHighGearDifferentialDrive, 10.volt
+        11.195525843132865, 14.557715539096787, 14.004305286376457, 5.584621512970303
 )

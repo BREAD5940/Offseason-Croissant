@@ -58,7 +58,7 @@ D = np.array([
 ])
 
 qX = 0.12 # allowable linear error
-qY = 0.15 # allowable cross track error
+qY = 0.2 # allowable cross track error
 qTheta = math.radians(90) # allowable heading error
 
 vMax = 0.61 * 2.5 # excursion from reference velocity
@@ -83,13 +83,6 @@ A = np.array([
     [0, 0, 0]
 ])
 
-# qX = 0.0625
-# qY = 0.125
-# qTheta = math.radians(10)
-
-# vMax = 3.96
-# wMax = math.radians(140.0)
-
 Q =  __make_cost_matrix([qX, qY, qTheta])
 R = __make_cost_matrix([vMax, wMax])
 
@@ -97,11 +90,6 @@ sys = ct.StateSpace(A, B, C, D, remove_useless = False)
 sysd = sys.sample(1.0/50.0)
 
 K_1 = frccnt.lqr(sysd, Q, R)
-
-# Kx = K_0 1,1
-# Ky_0 = K_0 2,2
-# Ky_1 = K_1 2,2
-# Ktheta = K_1 2,3
 
 print("\nK0 = \n%s\n " % K_0)
 print("K1 = \n%s\n" % K_1)
@@ -111,22 +99,16 @@ print("ky_0 = %s" % K_0[2-1,2-1])
 print("ky_1 = %s" % K_1[2-1,2-1])
 print("kTheta = %s\n" % K_1[2-1,3-1])
 
-print("%s, %s, %s, %s" % (K_0[1-1,1-1], K_0[2-1,2-1], K_1[2-1,2-1], K_1[2-1,3-1]))
+gains = ("%s, %s, %s, %s" % (K_0[1-1,1-1], K_0[2-1,2-1], K_1[2-1,2-1], K_1[2-1,3-1]))
+print(gains)
 
-# print(K)
-
-# [[ 3.48624521e+01 -2.36365963e-11  1.68784118e-16]
-#  [ 6.42706700e-17  1.90968954e+01  2.27952481e+00]]
-
-# [[3.48624521e+01 1.74507062e-15 3.99678488e-16]
-#  [1.45526701e-16 1.82859275e+01 6.42931796e+00]]
-
-# 3.48624521e+01 
-# 1.90968954e+01
-# 1.82859275e+01
-# 6.42931796e+00
-
-# kx = 3.48624521e+01
-# ky_0 = 1.70016509e+01
-# ky_1 = 1.67766520e+01
-# kTheta = 1.33387761e+01
+# Save it to a file
+fileName = "LTVUnicycleGains.kt"
+file = open("src/main/kotlin/frc/robot/subsystems/drive/" + fileName, "w")
+file.write(
+    "package frc.robot.subsystems.drive\n\n" + 
+    "import org.team5940.pantry.lib.LTVUnicycleController\n\n" +
+    "val optimalLTVUnicycleController get() = LTVUnicycleController(\n" +
+    "    %s\n" % gains +
+    ") "
+)
