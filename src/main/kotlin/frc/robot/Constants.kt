@@ -1,7 +1,7 @@
 package frc.robot
 
-import com.team254.lib.physics.DifferentialDrive
 import com.team254.lib.physics.DCMotorTransmission
+import com.team254.lib.physics.DifferentialDrive
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
 import org.ghrobotics.lib.mathematics.units.* // ktlint-disable no-wildcard-imports
 import org.ghrobotics.lib.mathematics.units.derived.degree
@@ -114,7 +114,9 @@ object Constants {
 
     val kForwardIntakeToCenter = Pose2d(-(kRobotLength / 2.0) - kIntakeProtrusionFrontExtended, kBadIntakeOffset, 0.degree) // -34
     val kForwardIntakeStowedToCenter = Pose2d(-(kRobotLength / 2.0) - 8.inch, kBadIntakeOffset, 0.degree) // -23.5
+    val kForwardIntakePokedStowedToCenter = Pose2d(-(kRobotLength / 2.0) - 8.inch - 12.7.inch, kBadIntakeOffset, 0.degree) // -23.5 TODO change this for poked out
     val kCenterToForwardIntake = Pose2d((kRobotLength / 2.0) + kIntakeProtrusionFrontExtended, -kBadIntakeOffset, 0.degree) // 34
+    val kCenterToForwardIntakeStowed = Pose2d((kRobotLength / 2.0) + 8.inch, kBadIntakeOffset, 0.degree) // 23.5
     val kBackwardIntakeToCenter = Pose2d(kCenterToForwardIntake.translation.x - kCenterToElevator, -kBadIntakeOffset, 0.degree) // 29.5
 
     val kCenterToFrontCamera = Pose2d(kRobotLength / 2 - 13.inch, 0.0.inch, 0.degree)

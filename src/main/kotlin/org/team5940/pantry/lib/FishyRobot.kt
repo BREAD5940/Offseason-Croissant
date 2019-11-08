@@ -1,11 +1,12 @@
 package org.team5940.pantry.lib
 
 import edu.wpi.first.wpilibj.Timer
-import edu.wpi.first.wpilibj2.command.CommandScheduler
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
+import edu.wpi.first.wpilibj2.command.CommandScheduler
 import frc.robot.subsystems.drive.DriveSubsystem
 import frc.robot.subsystems.sensors.LimeLight
 import frc.robot.subsystems.superstructure.* // ktlint-disable no-wildcard-imports
+import frc.robot.vision.LimeLightManager
 import kotlinx.coroutines.* // ktlint-disable no-wildcard-imports
 import org.ghrobotics.lib.utils.loopFrequency
 import org.ghrobotics.lib.wrappers.FalconTimedRobot
@@ -27,6 +28,7 @@ abstract class FishyRobot : FalconTimedRobot() {
         Superstructure.useState()
 
         LimeLight.update()
+        LimeLightManager.periodic()
     }
 
 //    private val job = arrayListOf<Job>()
@@ -74,13 +76,12 @@ var updateJob: Job? = null
         updatableSubsystems.forEach { it.update() }
 
         val job = this.updateJob
-        if(job != null) {
-            if(!job.isActive) job.start()
+        if (job != null) {
+            if (!job.isActive) job.start()
         }
 
 //        runBlocking { periodicUpdate() }
         super.robotPeriodic()
-
     }
 
     private val updatableSubsystems = arrayListOf<Updatable>()

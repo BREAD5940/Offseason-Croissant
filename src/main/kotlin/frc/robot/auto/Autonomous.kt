@@ -1,12 +1,13 @@
 package frc.robot.auto
 
-import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.CommandBase
+import edu.wpi.first.wpilibj2.command.InstantCommand
 import frc.robot.Network
 import frc.robot.Robot
 import frc.robot.auto.paths.TrajectoryWaypoints
 import frc.robot.auto.routines.BottomRocketRoutine2
 import frc.robot.auto.routines.CargoShipRoutine
+import frc.robot.auto.routines.HybridRoutine
 import frc.robot.subsystems.drive.DriveSubsystem
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
 import org.ghrobotics.lib.utils.Source
@@ -47,6 +48,7 @@ object Autonomous : Updatable {
         // update our selected auto mode
         selectedAutonomous = possibleAutos[autoMode()] ?: doNothing
 
+        @Suppress("UNUSED_ANONYMOUS_PARAMETER")
         robotModeMonitor.onChange { newValue ->
             // maybe stop auto on change to enabled?
         }
@@ -57,8 +59,10 @@ object Autonomous : Updatable {
     }
 
     val possibleAutos = hashMapOf(
-            Mode.BOTTOM_ROCKET_2 to BottomRocketRoutine2()()//,
-//            Mode.SIDE_CARGO_SHIP to CargoShipRoutine()()
+            Mode.BOTTOM_ROCKET_2 to BottomRocketRoutine2()(),
+            Mode.SIDE_CARGO_SHIP to CargoShipRoutine()(),
+            Mode.HYBRID to HybridRoutine()(),
+            Mode.DO_NOTHING to InstantCommand()
     )
     var selectedAutonomous: CommandBase = InstantCommand()
     val doNothing = selectedAutonomous
@@ -82,5 +86,5 @@ object Autonomous : Updatable {
         RIGHT_REVERSED(TrajectoryWaypoints.kSideStartReversed)
     }
 
-    enum class Mode { BOTTOM_ROCKET_2, FORWARD_CARGO_SHIP, SIDE_CARGO_SHIP, HYBRID_LEFT, HYBRID_RIGHT, DO_NOTHING }
+    enum class Mode { BOTTOM_ROCKET_2, FORWARD_CARGO_SHIP, SIDE_CARGO_SHIP, HYBRID, DO_NOTHING }
 }

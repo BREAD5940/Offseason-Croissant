@@ -2,13 +2,13 @@
 
 package org.team5940.pantry.lib
 
+import kotlin.math.abs
 import org.ghrobotics.lib.commands.FalconSubsystem
 import org.ghrobotics.lib.mathematics.units.SIKey
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.derived.volt
 import org.ghrobotics.lib.motors.FalconMotor
 import org.ghrobotics.lib.subsystems.EmergencyHandleable
-import kotlin.math.abs
 
 interface ConcurrentlyUpdatingJoint<T : SIKey> {
     fun updateState(): MultiMotorTransmission.State<T>
@@ -53,10 +53,10 @@ abstract class ConcurrentFalconJoint<T : SIKey, V : FalconMotor<T>> : Concurrent
      * Determine if the joint is within the [tolerance] of the current wantedState.
      * If the wantedState isn't [WantedState.Position<*>], return false.
      */
-    fun isWithTolerance(tolerance: SIUnit<T> /* radian */): Boolean {
+    open fun isWithTolerance(tolerance: SIUnit<T> /* radian */): Boolean {
         val state = wantedState as? WantedState.Position<*> ?: return false // smart cast state, return false if it's not Position
 
-        return abs(state.targetPosition.value - currentState.position.value) < tolerance.value
+        return abs(state.targetPosition.value - (currentState.position.value)) < tolerance.value
     }
 
     fun isWithTolerance(goal: SIUnit<T>, tolerance: SIUnit<T>): Boolean {

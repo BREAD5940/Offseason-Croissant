@@ -1,9 +1,9 @@
 package frc.robot.subsystems.superstructure
 
 import com.ctre.phoenix.motorcontrol.ControlMode
-
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import frc.robot.subsystems.climb.ClimbSubsystem
+import java.awt.Color
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -11,7 +11,6 @@ import org.ghrobotics.lib.commands.FalconCommand
 import org.ghrobotics.lib.mathematics.units.derived.degree
 import org.ghrobotics.lib.mathematics.units.inch
 import org.ghrobotics.lib.mathematics.units.second
-import java.awt.Color
 
 class ZeroSuperStructureRoutine(private val mZeroHeight: Length = kZeroHeight) : FalconCommand(Superstructure,
         Elevator, Proximal, Wrist) {
@@ -74,7 +73,7 @@ class ZeroSuperStructureRoutine(private val mZeroHeight: Length = kZeroHeight) :
         SmartDashboard.putBoolean("Wrist zeroed", true)
 
         val proxPos = Proximal.absoluteEncoder() - 6.degree //  (-90).degree
-        val wristPos = Wrist.absoluteEncoder()
+        val wristPos = Wrist.absoluteEncoder() - 0.degree
         Proximal.resetPosition(proxPos)
         Wrist.resetPosition(wristPos)
         ClimbSubsystem.zero()

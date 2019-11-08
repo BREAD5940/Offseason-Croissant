@@ -2,6 +2,7 @@ import edu.wpi.first.gradlerio.GradleRIOPlugin
 import edu.wpi.first.gradlerio.frc.FRCJavaArtifact
 import edu.wpi.first.gradlerio.frc.RoboRIO
 import edu.wpi.first.toolchain.NativePlatforms
+import org.gradle.api.tasks.compile.JavaCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -9,11 +10,10 @@ plugins {
             ".1"
     id("org.jetbrains.kotlin.jvm") version "1.3.50"
     id("idea")
-    id("org.jlleitschuh.gradle.ktlint") version "8.0.0"
+    id("org.jlleitschuh.gradle.ktlint") version "9.0.0"
 }
 
 val roborioTargetName = "roborio"
-
 val kMainRobotClass = "frc.robot.RobotKt"
 
 deploy {
@@ -63,7 +63,9 @@ dependencies {
     compile("com.fazecast:jSerialComm:2.4.1") // jserialcomm for jevois
     compile("com.github.salomonbrys.kotson", "kotson", "2.5.0") // gson
 
-    implementation("org.mockito:mockito-core:2.23.+")
+//    implementation("org.mockito:mockito-core:2.23.+")
+
+    compile("org.ejml:ejml-simple:0.38")
 
     // WPILib and Vendors
     wpi.deps.wpilib().forEach { compile(it) }
@@ -74,7 +76,7 @@ dependencies {
     compile("com.github.Oblarg:Oblog:2.8.1")
 
     // XChart for Simulations and Tests
-    compile("org.knowm.xchart", "xchart", "3.2.2")
+    testCompile("org.knowm.xchart", "xchart", "3.2.2")
 
     // Unit Testing
     testCompile("junit", "junit", "4.12")
@@ -97,6 +99,27 @@ tasks {
         kotlinOptions {
             jvmTarget = "1.8"
             freeCompilerArgs += "-Xjvm-default=compatibility"
+        }
+        doFirst {
+            exec {
+                commandLine("python3.7", "src/main/python/LTVUnicycleLRQ.py")
+            }
+        }
+        doLast {
+            println("\nDid you ever hear the tragedy of Darth Plagueis the Wise? I thought not.\n" +
+                    "It's not a story the Jedi would tell you. It's a Sith legend. Darth Plagueis was a \n" +
+                    "Dark Lord of the Sith, so powerful and so wise he could use the Force to influence \n" +
+                    "the midichlorians to create life... He had such a knowledge of the dark side that \n" +
+                    "he could even keep the ones he cared about from dying. The dark side of the Force \n" +
+                    "is a pathway to many abilities some consider to be unnatural. He became so powerful... \n" +
+                    "the only thing he was afraid of was losing his power, which eventually, of course, \n" +
+                    "he did. Unfortunately, he taught his apprentice everything he knew, then his apprentice \n" +
+                    "killed him in his sleep. Ironic, he could save others from death, but not himself.\n")
+        }
+    }
+    withType<JavaCompile>().configureEach {
+        doFirst {
+            println("Hullo")
         }
     }
 }

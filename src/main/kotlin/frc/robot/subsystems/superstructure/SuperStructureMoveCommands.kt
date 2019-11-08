@@ -60,8 +60,8 @@ class ClosedLoopSourceProximalMove(private val endState: SIUnit<Radian>, private
         }
     }
 
-    override fun isFinished()= (endState - Proximal.currentState.position).absoluteValue < 3.degree
-    //Proximal.isWithTolerance(3.0.degree) // toDegrees(abs(target - Proximal.currentState.position)) < 5.0
+    override fun isFinished() = (endState - Proximal.currentState.position).absoluteValue < 3.degree
+    // Proximal.isWithTolerance(3.0.degree) // toDegrees(abs(target - Proximal.currentState.position)) < 5.0
 }
 
 class ClosedLoopWristMove(private val target: SIUnit<Radian>) : FalconCommand(Wrist) {
@@ -77,7 +77,7 @@ class ClosedLoopWristMove(private val target: SIUnit<Radian>) : FalconCommand(Wr
         }
     }
 
-    override fun isFinished() = Wrist.isWithTolerance(5.0.degree) // toDegrees(abs(target - Wrist.currentState.position)) < 5.0
+    override fun isFinished() = Wrist.isWithToleranceWithOffset(5.0.degree) // toDegrees(abs(target - Wrist.currentState.position)) < 5.0
 }
 
 // class JogElevator : FalconCommand(Superstructure, Elevator) {

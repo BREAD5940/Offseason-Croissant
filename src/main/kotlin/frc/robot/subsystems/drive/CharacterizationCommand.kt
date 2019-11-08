@@ -11,8 +11,8 @@ package frc.robot.subsystems.drive
 import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.wpilibj.RobotController
 import edu.wpi.first.wpilibj.Timer
-import org.ghrobotics.lib.commands.FalconCommand
 import kotlin.math.PI
+import org.ghrobotics.lib.commands.FalconCommand
 
 /**
  * Command that characterizes the robot using the robotpy-characterization

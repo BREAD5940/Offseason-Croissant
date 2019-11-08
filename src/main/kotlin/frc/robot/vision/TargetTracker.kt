@@ -54,19 +54,18 @@ object TargetTracker : Loggable, Updatable {
                 !it.isAlive
             }
             // Publish to dashboard
-//            visionTargets = ArrayList(targets.asSequence()
-//                    .filter { it.isReal }
-//                    .map { it.averagedPose2d }
-//                    .toList()).also { synchronized(mutex) { it.add(augmentedPose) } }
-            visionTargets = synchronized(mutex) { listOf(augmentedPose) }
+            visionTargets = ArrayList(targets.asSequence()
+                    .filter { it.isReal }
+                    .map { it.averagedPose2d }
+                    .toList()) // .also { synchronized(mutex) { it.add(augmentedPose) } }
+//            visionTargets = synchronized(mutex) { listOf(augmentedPose) }
         }
     }
 
-    private val mutex = Object()
-    var augmentedPose = Pose2d()
-        get() = synchronized(mutex) { field }
-        set(value) = synchronized(mutex) { field = value }
-
+//    private val mutex = Object()
+//    var augmentedPose = Pose2d()
+//        get() = synchronized(mutex) { field }
+//        set(value) = synchronized(mutex) { field = value }
 
     fun addSamples(creationTime: Double, samples: Iterable<Pose2d>) {
         if (creationTime >= Timer.getFPGATimestamp()) return // Cannot predict the future
@@ -200,5 +199,5 @@ object TargetTracker : Loggable, Updatable {
     val kVisionCameraTimeout = 2.second
     val kTargetTrackingDistanceErrorTolerance = 16.inch
     val kTargetTrackingMinLifetime = 0.1.second
-    val kTargetTrackingMaxLifetime = 0.5.second
+    val kTargetTrackingMaxLifetime = 0.4.second
 }

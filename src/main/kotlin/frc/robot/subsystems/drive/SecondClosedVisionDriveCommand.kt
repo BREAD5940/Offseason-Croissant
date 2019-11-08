@@ -13,13 +13,11 @@ import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
 import org.ghrobotics.lib.mathematics.twodim.geometry.Rotation2d
 import org.ghrobotics.lib.mathematics.units.derived.degree
 import org.ghrobotics.lib.mathematics.units.derived.radian
-import org.ghrobotics.lib.mathematics.units.derived.velocity
-import org.ghrobotics.lib.mathematics.units.feet
 import org.ghrobotics.lib.mathematics.units.inch
 import org.ghrobotics.lib.mathematics.units.kFeetToMeter
 import org.ghrobotics.lib.mathematics.units.meter
 
-class ClosedLoopVisionDriveCommand(private val isFront: Boolean, private val skewCorrect: Boolean = false) : ManualDriveCommand() {
+class SecondClosedVisionDriveCommand(private val isFront: Boolean, private val skewCorrect: Boolean = false) : ManualDriveCommand() {
 
     override fun isFinished() = false
 
@@ -83,28 +81,35 @@ class ClosedLoopVisionDriveCommand(private val isFront: Boolean, private val ske
 //            if (skew > (-45).degree) skew = skew.absoluteValue else skew += 90.degree
 //            if (skew > 5.degree && skewCorrect) offset = 0.05.degree * (if (LimeLight.targetToTheLeft) 1 else -1) * (skew.degree / 13)
 
-            val error = angle.radian // - offset.radian
+            val error = angle.radian * -1.0 // - offset.radian
 
             // at 0 speed this should be 1, and at 10ft/sec it should be 2
             // so (0, 1) and (10, 2)
             // y = (2-1)/(10-0) * (x - 0) + 1
-            val velocity = (with(DriveSubsystem) {
-                leftMotor.encoder.velocity + rightMotor.encoder.velocity
-            }).absoluteValue / 2.0
-            val scaler = velocity.value * (/* max scaler */ 4.0 - /* min scaler */ 1.0) /
-                    (/* velocity at max scaler */10.feet.meter) + 1.0
-            var kp = (kCorrectionKp * scaler)
-            if (kp > 0.7) kp = 0.7
+//            val velocity = (with(DriveSubsystem) {
+//                leftMotor.encoder.velocity + rightMotor.encoder.velocity
+//            }).absoluteValue / 2.0
+//            val scaler = velocity.value * (/* max scaler */ 4.0 - /* min scaler */ 1.0) /
+//                    (/* velocity at max scaler */10.feet.meter) + 1.0
+//            var kp = (kCorrectionKp * scaler)
+//            if (kp > 0.7) kp = 0.7
 //            val kp = kCorrectionKp
 
 //            println("kp $kp")
 
-            var turn = kp * error // + kCorrectionKd * (error - prevError)
-            if (turn.absoluteValue > maxTurn.value) turn = maxTurn.value
+            val isQuickTurn = linear.absoluteValue < 0.1
+            val turn = if (isQuickTurn) {
+                kStaticKp * error + kStaticKd * (error - prevError)
+            } else {
+                kDynamicKp * error + kDynamicKd * (error - prevError)
+            }
 
-//            val wheelState = curvatureDrive(linear, turn, false)
+            println("QUICK TURN? $isQuickTurn turn $turn")
 
-            DriveSubsystem.setWheelVelocities(DifferentialDrive.WheelState((linear - turn) * multiplier, (linear + turn) * multiplier))
+            var wheelSpeeds = curvatureDrive(linear, turn, isQuickTurn)
+            wheelSpeeds = DifferentialDrive.WheelState(wheelSpeeds.left * multiplier, wheelSpeeds.right * multiplier)
+
+            DriveSubsystem.setWheelVelocities(wheelSpeeds)
 
             prevError = error
         }
@@ -122,9 +127,13 @@ class ClosedLoopVisionDriveCommand(private val isFront: Boolean, private val ske
     }
 
     companion object {
-        var kCorrectionKp = 0.35
-        var kCorrectionKd = 0.0
-        val maxTurn = 90.degree.velocity
+
+        val kStaticKp = 1.0 * 0.85
+        val kStaticKd = 4.0
+
+        val kDynamicKp = 4.5
+        val kDynamicKd = 10.0
+
         var isActive = false
             private set
     }

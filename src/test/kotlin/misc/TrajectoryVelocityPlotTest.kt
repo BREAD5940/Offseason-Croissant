@@ -2,6 +2,12 @@ package misc
 
 import com.team254.lib.physics.DifferentialDrive
 import frc.robot.Constants
+import frc.robot.auto.paths.TrajectoryFactory
+import java.awt.Color
+import java.awt.Font
+import java.text.DecimalFormat
+import kotlin.math.max
+import kotlin.math.min
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2dWithCurvature
 import org.ghrobotics.lib.mathematics.twodim.trajectory.types.TimedTrajectory
 import org.ghrobotics.lib.mathematics.units.derived.feetPerSecond
@@ -10,12 +16,6 @@ import org.ghrobotics.lib.mathematics.units.second
 import org.junit.Test
 import org.knowm.xchart.SwingWrapper
 import org.knowm.xchart.XYChartBuilder
-import java.awt.Color
-import java.awt.Font
-import java.text.DecimalFormat
-import frc.robot.auto.paths.TrajectoryFactory
-import kotlin.math.max
-import kotlin.math.min
 
 class TrajectoryVelocityPlotTest {
 

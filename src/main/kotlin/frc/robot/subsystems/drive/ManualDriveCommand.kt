@@ -4,11 +4,11 @@ import com.team254.lib.physics.DifferentialDrive
 import edu.wpi.first.wpilibj.GenericHID
 import frc.robot.Constants
 import frc.robot.Controls
+import kotlin.math.* // ktlint-disable no-wildcard-imports
 import org.ghrobotics.lib.commands.FalconCommand
 import org.ghrobotics.lib.subsystems.drive.TankDriveSubsystem
 import org.ghrobotics.lib.utils.withDeadband
 import org.ghrobotics.lib.wrappers.hid.* // ktlint-disable no-wildcard-imports
-import kotlin.math.* // ktlint-disable no-wildcard-imports
 
 open class ManualDriveCommand : FalconCommand(DriveSubsystem) {
 

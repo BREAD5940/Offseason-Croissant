@@ -34,7 +34,7 @@ class StandardTrajectoryTrackerCommand(
         LiveDashboard.isFollowingPath = true
     }
 
-    var lastOutput = TrajectoryTrackerOutput(0.feet.velocity, 0.feet.acceleration, 0.degree.velocity, 0.degree.acceleration)
+    private var lastOutput = TrajectoryTrackerOutput(0.feet.velocity, 0.feet.acceleration, 0.degree.velocity, 0.degree.acceleration)
 
     override fun execute() {
         val output = DriveSubsystem.trajectoryTracker.nextState(DriveSubsystem.robotPosition)

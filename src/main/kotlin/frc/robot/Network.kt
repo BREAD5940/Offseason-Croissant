@@ -9,17 +9,12 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab
 import frc.robot.auto.Autonomous
-import frc.robot.subsystems.superstructure.Elevator
 import frc.robot.subsystems.superstructure.Superstructure
 import frc.robot.subsystems.superstructure.SuperstructureState
-import org.ghrobotics.lib.mathematics.units.derived.inchesPerSecond
-import org.ghrobotics.lib.mathematics.units.inch
-import org.ghrobotics.lib.mathematics.units.kInchToMeter
-import org.ghrobotics.lib.wrappers.networktables.enumSendableChooser
-import org.team5940.pantry.lib.Updatable
-import org.team5940.pantry.lib.WantedState
 import org.ghrobotics.lib.mathematics.units.operations.div
 import org.ghrobotics.lib.mathematics.units.operations.times
+import org.ghrobotics.lib.wrappers.networktables.enumSendableChooser
+import org.team5940.pantry.lib.Updatable
 
 object Network : Updatable {
 
@@ -53,6 +48,9 @@ object Network : Updatable {
     private val elevatorSetpoint = elevatorSubsystemLayout.add("Setpoint (in)", 0.0).entry
     private val elevatorVelocity = elevatorSubsystemLayout.add("Velocity (ips)", 0.0).entry
 
+    val autoVisionP = visionLayout.add("Auto kP", 0.0).entry
+    val autoVisionD = visionLayout.add("Auto kD", 0.0).entry
+
     val visionDriveAngle = visionLayout.add("Vision Drive Angle", 0.0).entry
     val visionDriveActive = visionLayout.add("Vision Drive Active", false).entry
 
@@ -73,12 +71,12 @@ object Network : Updatable {
     }
 
     override fun update() {
-        elevatorPosition.setDouble(Elevator.currentState.position.inch)
-        elevatorVelocity.setDouble(Elevator.currentState.velocity.inchesPerSecond)
-        elevatorSetpoint.setDouble(let {
-            val wantedState = Elevator.wantedState as? WantedState.Position<*> ?: return@let 0.0
-            wantedState.targetPosition.value / kInchToMeter
-        })
+//        elevatorPosition.setDouble(Elevator.currentState.position.inch)
+//        elevatorVelocity.setDouble(Elevator.currentState.velocity.inchesPerSecond)
+//        elevatorSetpoint.setDouble(let {
+//            val wantedState = Elevator.wantedState as? WantedState.Position<*> ?: return@let 0.0
+//            wantedState.targetPosition.value / kInchToMeter
+//        })
         jointPosition.setString(Superstructure.currentState.toString())
     }
 }

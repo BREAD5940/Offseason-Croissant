@@ -3,6 +3,7 @@
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import frc.robot.Constants.SuperStructureConstants.kProximalLen
+import kotlin.math.roundToInt
 import org.ghrobotics.lib.commands.FalconSubsystem
 import org.ghrobotics.lib.commands.parallel
 import org.ghrobotics.lib.commands.sequential
@@ -13,7 +14,6 @@ import org.ghrobotics.lib.mathematics.units.derived.degree
 import org.ghrobotics.lib.mathematics.units.derived.toRotation2d
 import org.ghrobotics.lib.subsystems.EmergencyHandleable
 import org.team5940.pantry.lib.* // ktlint-disable no-wildcard-imports
-import kotlin.math.roundToInt
 
 typealias Length = SIUnit<Meter>
 
@@ -27,7 +27,10 @@ object Superstructure : FalconSubsystem(), EmergencyHandleable, ConcurrentlyUpda
     }
 
     val kStowed
-        get() = everythingMoveTo(30.25.inch + 1.2.inch, (-70).degree, 40.degree)
+        get() = everythingMoveTo(30.25.inch + 1.2.inch - 0.75.inch, (-70).degree, 40.degree)
+
+    val kPokedStowed get() = everythingMoveTo(31.45.inch - 2.2.inch - 1.5.inch + 0.5.inch - 1.8.inch, (-40).degree, 30.degree)
+
     val kMatchStartToStowed get() = sequential {
         +parallel {
             +ClosedLoopProximalMove((-70).degree)
@@ -39,7 +42,7 @@ object Superstructure : FalconSubsystem(), EmergencyHandleable, ConcurrentlyUpda
     val kBackHatchFromLoadingStation get() = SyncedMove.frontToBack
     val kHatchLow get() = everythingMoveTo(19.inch, 0.degree, 4.degree)
     val kHatchMid get() = everythingMoveTo(43.inch, 0.degree, 4.degree)
-    val kHatchHigh get() = everythingMoveTo(67.inch, 0.degree, 4.degree)
+    val kHatchHigh get() = everythingMoveTo(65.25.inch, (6).degree, 6.5.degree)
 
     val kCargoIntake get() = everythingMoveTo(25.0.inch, (-44).degree, (-20).degree)
     val kCargoShip get() = everythingMoveTo(47.5.inch, (-5).degree, (-50).degree)
@@ -49,15 +52,15 @@ object Superstructure : FalconSubsystem(), EmergencyHandleable, ConcurrentlyUpda
     val kCargoMid get() = everythingMoveTo(45.inch, 6.degree, 6.degree)
     val kCargoHigh get() = everythingMoveTo(64.5.inch, 7.degree, 30.degree)
 
-    val kStraightDown get() = sequential {
-        +kHatchMid
-        +ClosedLoopElevatorMove(35.5.inch)
-        +parallel {
-            +ClosedLoopProximalMove((-100).degree)
-            +ClosedLoopWristMove(-50.degree)
-        }
-//        +kStowed
-    }
+    val kStraightDown get() = everythingMoveTo(32.inch, (-70).degree, (-51).degree) // sequential {
+//        +kHatchMid
+//        +ClosedLoopElevatorMove(35.5.inch)
+//        +parallel {
+//            +ClosedLoopProximalMove((-100).degree)
+//            +ClosedLoopWristMove(-50.degree)
+//        }
+// //        +kStowed
+//    }
 
     fun everythingMoveTo(elevator: Length, proximal: SIUnit<Radian>, wrist: SIUnit<Radian>) = everythingMoveTo(State.Position(elevator, proximal, wrist))
 

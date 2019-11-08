@@ -7,6 +7,7 @@ import com.ctre.phoenix.motorcontrol.RemoteSensorSource
 import edu.wpi.first.wpilibj.DriverStation
 import frc.robot.Constants
 import frc.robot.Ports
+import kotlin.math.abs
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.derived.Radian
 import org.ghrobotics.lib.mathematics.units.derived.degree
@@ -14,6 +15,7 @@ import org.ghrobotics.lib.mathematics.units.nativeunit.toNativeUnitPosition
 import org.ghrobotics.lib.motors.ctre.FalconSRX
 import org.team5940.pantry.lib.ConcurrentFalconJoint
 import org.team5940.pantry.lib.MultiMotorTransmission
+import org.team5940.pantry.lib.WantedState
 import org.team5940.pantry.lib.asPWMSource
 
 object Wrist : ConcurrentFalconJoint<Radian, FalconSRX<Radian>>() {
@@ -83,6 +85,32 @@ object Wrist : ConcurrentFalconJoint<Radian, FalconSRX<Radian>>() {
             master.setClosedLoopGains(
                     2.0, 0.0, ff = 0.4
             )
+        }
+    }
+
+    private val safeOffset = (-30).degree..30.degree
+    var offset = 0.degree
+        set(value) {
+            field = value.coerceIn(safeOffset)
+        }
+
+    /**
+     * Determine if the joint is within the [tolerance] of the current wantedState.
+     * If the wantedState isn't [WantedState.Position<*>], return false.
+     */
+    fun isWithToleranceWithOffset(tolerance: SIUnit<Radian> /* radian */): Boolean {
+        val state = wantedState as? WantedState.Position<*> ?: return false // smart cast state, return false if it's not Position
+
+        return abs(state.targetPosition.value - (currentState.position.value + offset.value)) < tolerance.value
+    }
+
+    override fun customizeWantedState(wantedState: WantedState): WantedState {
+        return when (wantedState) {
+            is WantedState.Position<*> -> WantedState.Position(
+                    SIUnit<Radian>(wantedState.targetPosition.value + offset.value),
+                    wantedState.feedForward,
+                    wantedState.ignoreDefaultFF)
+            else -> wantedState
         }
     }
 

@@ -62,7 +62,9 @@ object TrajectoryWaypoints {
         val rotationalOffset: Rotation2d = Rotation2d(0.0)
     ) {
 
-        private val trueAndTransform = trueLocation + transform
+        val trueAndTransform = trueLocation + transform
+
+        fun transformBy(other: Pose2d) = Waypoint(trueLocation, transform.transformBy(other), translationalOffset, rotationalOffset)
 
         val position = Pose2d(
                 trueAndTransform.translation + translationalOffset,

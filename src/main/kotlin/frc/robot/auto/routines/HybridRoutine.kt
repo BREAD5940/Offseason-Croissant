@@ -18,16 +18,15 @@ import org.ghrobotics.lib.mathematics.units.derived.degree
 import org.ghrobotics.lib.mathematics.units.derived.toRotation2d
 import org.ghrobotics.lib.mathematics.units.feet
 import org.ghrobotics.lib.mathematics.units.second
-import org.ghrobotics.lib.utils.map
 import org.ghrobotics.lib.utils.withEquals
 
-class CargoShipRoutine : AutoRoutine() {
+class HybridRoutine : AutoRoutine() {
 
     val path1 = TrajectoryFactory.sideStartToCargoShipS1Prep
     val path2 = TrajectoryFactory.cargoShipS1ToS1Prep
     val path3 = TrajectoryFactory.cargoS1PrepToLoadingStation
-    val path4 = TrajectoryFactory.loadingStationToCargoS2Prep
-    val path5 = TrajectoryFactory.cargoPrepToCargoS2
+    val path4 = TrajectoryFactory.loadingStationToRocketFPrep
+    val path5 = TrajectoryFactory.rocketFPrepareToRocketF
 
     private val pathMirrored = Autonomous.startingPosition.withEquals(Autonomous.StartingPositions.LEFT)
 
@@ -108,7 +107,7 @@ class CargoShipRoutine : AutoRoutine() {
                 +Superstructure.kStowed
                 +DriveSubsystem.followTrajectory(path4, pathMirrored)
             }
-            +PointTurnCommand(pathMirrored.map(-90.degree.toRotation2d(), 90.degree.toRotation2d()))
+            +PointTurnCommand { (-143 - 8).degree.toRotation2d() * if (Autonomous.isStartingOnLeft()) -1.0 else 1.0 }
 
             +super.followVisionAssistedTrajectory(
                     path5,

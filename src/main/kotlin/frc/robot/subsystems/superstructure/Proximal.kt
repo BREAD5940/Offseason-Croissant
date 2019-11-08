@@ -7,6 +7,8 @@ import frc.robot.Constants
 import frc.robot.Constants.SuperStructureConstants.kProximalCos
 import frc.robot.Constants.SuperStructureConstants.kProximalStatic
 import frc.robot.Ports
+import kotlin.math.cos
+import kotlin.math.withSign
 import org.ghrobotics.lib.mathematics.units.SIKey
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.derived.AngularVelocity
@@ -15,8 +17,6 @@ import org.ghrobotics.lib.mathematics.units.derived.degree
 import org.ghrobotics.lib.mathematics.units.nativeunit.* // ktlint-disable no-wildcard-imports
 import org.ghrobotics.lib.motors.ctre.FalconSRX
 import org.team5940.pantry.lib.* // ktlint-disable no-wildcard-imports
-import kotlin.math.cos
-import kotlin.math.withSign
 
 object Proximal : ConcurrentFalconJoint<Radian, FalconSRX<Radian>>() {
 

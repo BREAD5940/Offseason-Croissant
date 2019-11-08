@@ -7,6 +7,9 @@ import frc.robot.Constants.SuperStructureConstants.kElevatorRange
 import frc.robot.Ports
 import frc.robot.Ports.SuperStructurePorts.ElevatorPorts
 import frc.robot.Ports.SuperStructurePorts.ElevatorPorts.MASTER_INVERTED
+import kotlin.math.PI
+import kotlin.math.withSign
+import kotlin.properties.Delegates
 import org.ghrobotics.lib.mathematics.units.* // ktlint-disable no-wildcard-imports
 import org.ghrobotics.lib.mathematics.units.derived.* // ktlint-disable no-wildcard-imports
 import org.ghrobotics.lib.mathematics.units.nativeunit.DefaultNativeUnitModel
@@ -14,9 +17,6 @@ import org.ghrobotics.lib.motors.ctre.FalconSRX
 import org.ghrobotics.lib.wrappers.FalconDoubleSolenoid
 import org.ghrobotics.lib.wrappers.FalconSolenoid
 import org.team5940.pantry.lib.* // ktlint-disable no-wildcard-imports
-import kotlin.math.PI
-import kotlin.math.withSign
-import kotlin.properties.Delegates
 
 /**
  * The (singleton) [ConcurrentFalconJoint] elevator of Croissant.

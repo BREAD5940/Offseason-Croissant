@@ -5,13 +5,18 @@ package frc.robot.subsystems.climb
 import com.revrobotics.CANSparkMaxLowLevel
 import edu.wpi.first.wpilibj.GenericHID
 import edu.wpi.first.wpilibj.Timer
-import edu.wpi.first.wpilibj2.command.RunCommand
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
+import edu.wpi.first.wpilibj2.command.RunCommand
 import frc.robot.Controls
 import frc.robot.auto.routines.withExit
 import frc.robot.subsystems.drive.DriveSubsystem
 import frc.robot.subsystems.drive.ManualDriveCommand
 import frc.robot.subsystems.superstructure.* // ktlint-disable no-wildcard-imports
+import java.awt.Color
+import kotlin.math.PI
+import kotlin.math.absoluteValue
+import kotlin.math.sign
+import kotlin.math.withSign
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -29,14 +34,8 @@ import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitLengthModel
 import org.ghrobotics.lib.mathematics.units.nativeunit.nativeUnits
 import org.ghrobotics.lib.motors.ctre.FalconSRX
 import org.ghrobotics.lib.motors.rev.FalconMAX
-import org.ghrobotics.lib.wrappers.hid.getY
 import org.team5940.pantry.lib.MultiMotorTransmission
 import org.team5940.pantry.lib.WantedState
-import java.awt.Color
-import kotlin.math.PI
-import kotlin.math.absoluteValue
-import kotlin.math.sign
-import kotlin.math.withSign
 
 object ClimbSubsystem : FalconSubsystem() {
 
@@ -137,6 +136,7 @@ object ClimbSubsystem : FalconSubsystem() {
         var voltageArray: ArrayList<Double> = arrayListOf()
 
         override fun initialize() {
+            DriveSubsystem.compressor.stop()
             stiltMotor.controller.setOutputRange(-1.0, 1.0)
             Elevator.motor.master.talonSRX.configClosedLoopPeakOutput(0, 0.3)
             Proximal.wantedState = WantedState.Position((-15).degree)
@@ -189,6 +189,7 @@ object ClimbSubsystem : FalconSubsystem() {
         override fun isFinished() = endCommand()
 
         override fun end(interrupted: Boolean) {
+            DriveSubsystem.compressor.start()
             Elevator.wantsLowGear = false
             Elevator.motor.master.talonSRX.configClosedLoopPeakOutput(0, 1.0)
             Proximal.setMotionMagicMode()
@@ -243,6 +244,7 @@ object ClimbSubsystem : FalconSubsystem() {
         var voltageArray: ArrayList<Double> = arrayListOf()
 
         override fun initialize() {
+            DriveSubsystem.compressor.stop()
             stiltMotor.controller.setOutputRange(-1.0, 1.0)
             Elevator.motor.master.talonSRX.configClosedLoopPeakOutput(0, 0.25)
             Proximal.wantedState = WantedState.Position((-15).degree)
@@ -284,6 +286,7 @@ object ClimbSubsystem : FalconSubsystem() {
         override fun isFinished() = endCommand()
 
         override fun end(interrupted: Boolean) {
+            DriveSubsystem.compressor.start()
             Elevator.wantsLowGear = false
             Elevator.motor.master.talonSRX.configClosedLoopPeakOutput(0, 1.0)
             Proximal.setMotionMagicMode()

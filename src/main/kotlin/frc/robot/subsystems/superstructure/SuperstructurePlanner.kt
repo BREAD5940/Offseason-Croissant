@@ -1,10 +1,13 @@
 package frc.robot.subsystems.superstructure
 
-import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.CommandBase
+import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand
 import frc.robot.Constants.SuperStructureConstants.kProximalLen
 import frc.robot.auto.routines.withExit
+import java.awt.Color
+import java.lang.IllegalStateException
+import kotlin.math.min
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -17,9 +20,6 @@ import org.ghrobotics.lib.mathematics.units.* // ktlint-disable no-wildcard-impo
 import org.ghrobotics.lib.mathematics.units.derived.Radian
 import org.ghrobotics.lib.mathematics.units.derived.degree
 import org.ghrobotics.lib.mathematics.units.derived.toRotation2d
-import java.awt.Color
-import java.lang.IllegalStateException
-import kotlin.math.min
 
 object SuperstructurePlanner {
 
@@ -157,10 +157,10 @@ object SuperstructurePlanner {
         }
 
         // choose between everything at the same time, elevator first or arm first
-        val proximalThreshold = (-72).degree
+        val proximalThreshold = (-73).degree
         val nowOutsideCrossbar = currentState.proximal > proximalThreshold
         val willBeOutsideCrossbar = goalState.proximal > proximalThreshold
-        var mightHitElectronics = (goalState.elevator < 26.inch && goalState.proximal > proximalThreshold) || (goalState.elevator < 31.inch && goalState.proximal < proximalThreshold) // TODO check angles?
+        var mightHitElectronics = (goalState.elevator < 23.inch && goalState.proximal > proximalThreshold) || (goalState.elevator < 31.inch && goalState.proximal < proximalThreshold) // TODO check angles?
 
         val proximalStartSafe = currentState.proximal > -80.degree
         val proximalEndSafe = goalState.proximal > -80.degree
@@ -172,8 +172,8 @@ object SuperstructurePlanner {
         val safeToMoveSynced = (nowOutsideCrossbar && willBeOutsideCrossbar && (!mightHitElectronics || needsExceptionForCargoGrab)) ||
                 (proximalStartSafe && proximalEndSafe && startHighEnough && endHighEnough)
 
-        val needsLongMoveAboveCrossbarException = currentState.elevator > 54.inch
-                && goalState.elevator < 54.inch && goalState.proximal < (-60).degree
+        val needsLongMoveAboveCrossbarException = currentState.elevator > 54.inch &&
+                goalState.elevator < 54.inch && goalState.proximal < (-60).degree
 
         if (safeToMoveSynced && !needsLongMoveAboveCrossbarException) {
             // yeet everything at the same time
@@ -182,17 +182,16 @@ object SuperstructurePlanner {
                 +ClosedLoopWristMove(goalState.wrist)
                 +ClosedLoopProximalMove(goalState.proximal)
             }
-        } else if(safeToMoveSynced && needsLongMoveAboveCrossbarException) {
+        } else if (safeToMoveSynced && needsLongMoveAboveCrossbarException) {
             +parallel {
                 +ClosedLoopElevatorMove(goalState.elevator)
                 +ClosedLoopWristMove(goalState.wrist)
                 +ClosedLoopSourceProximalMove(goalState.proximal) {
                     @Suppress("RemoveRedundantQualifierName")
-                    if(Superstructure.currentState.elevator < 54.inch) { goalState.proximal } else { (-60).degree }
+                    if (Superstructure.currentState.elevator < 54.inch) { goalState.proximal } else { (-60).degree }
                 }
             }
-        }
-        else {
+        } else {
             // choose between arm first or elevator first
             val proximalThresh = (-18).degree
             val startAboveSafe = goalState.elevator > 36.inch

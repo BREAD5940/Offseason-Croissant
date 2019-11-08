@@ -5,6 +5,9 @@ import com.team254.lib.physics.DifferentialDrive
 import edu.wpi.first.wpilibj.GenericHID
 import frc.robot.Controls
 import frc.robot.subsystems.drive.times
+import kotlin.math.abs
+import kotlin.math.absoluteValue
+import kotlin.math.max
 import org.ghrobotics.lib.mathematics.units.inch
 import org.ghrobotics.lib.mathematics.units.meter
 import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitLengthModel
@@ -15,9 +18,6 @@ import org.ghrobotics.lib.wrappers.hid.getRawButton
 import org.ghrobotics.lib.wrappers.hid.getX
 import org.ghrobotics.lib.wrappers.hid.getY
 import org.ghrobotics.lib.wrappers.hid.kBumperRight
-import kotlin.math.abs
-import kotlin.math.absoluteValue
-import kotlin.math.max
 
 object DriveConstants {
     const val kBeta = 2.0

@@ -46,8 +46,8 @@ object TrajectoryFactory {
     )
     private val cargoShipS1Adjusted = TrajectoryWaypoints.Waypoint(
             trueLocation = TrajectoryWaypoints.kCargoShipS1,
-            transform = Constants.kForwardIntakeStowedToCenter,
-            translationalOffset = Translation2d(1.9.inch, 0.inch)
+            transform = Constants.kForwardIntakeStowedToCenter + Pose2d((6).inch, 0.inch, 0.degree),
+            translationalOffset = Translation2d(8.inch, 0.inch)
     )
     private val cargoShipS2Adjusted = TrajectoryWaypoints.Waypoint(
             trueLocation = TrajectoryWaypoints.kCargoShipS2,
@@ -172,14 +172,15 @@ object TrajectoryFactory {
             getConstraints(false, cargoShipS2Adjusted), kMaxVelocity, kMaxAcceleration, kMaxVoltage
     ) }
 
-    val loadingStationToRocketF by lazy { generateTrajectory(
-            false,
+    val loadingStationToRocketFPrep by lazy { generateTrajectory(
+            true,
             listOf(
-                    loadingStationAdjusted,
-                    Pose2d(17.039.feet, 6.378.feet, 9.degree).asWaypoint(),
-                    rocketFAdjusted
+                    loadingStationUnPassedthroughAdjusted,
+//                    Pose2d(17.039.feet, 6.378.feet, 9.degree).asWaypoint(),
+//                    Pose2d(15.214.feet, 8.7.feet, 165.degree).asWaypoint(),
+                    rocketFPrepareRotated.transformBy(Pose2d((-0).inch, 0.inch, 0.degree)).asWaypoint()
             ),
-            getConstraints(true, rocketFAdjusted), kMaxVelocity, kMaxAcceleration, kMaxVoltage
+            getConstraints(true, Pose2d()), 9.5.feet.velocity, kMaxAcceleration * 2.0, kMaxVoltage
     ) }
 
     val loadingStationToRocketN by lazy { generateTrajectory(
@@ -198,7 +199,7 @@ object TrajectoryFactory {
 //                    Pose2d(7.55.feet, 2.63.feet, -172.428.degree).asWaypoint()
                     rocketNPrep
             ),
-            getConstraints(true, rocketNAdjusted), kMaxVelocity, kMaxAcceleration * 2.0, kMaxVoltage,
+            getConstraints(true, rocketNAdjusted), 9.5.feet.velocity, kMaxAcceleration * 2.0, kMaxVoltage,
             endVelocity = 0.feet.velocity
     ) }
 
@@ -233,7 +234,7 @@ object TrajectoryFactory {
             listOf(
                     rocketFPrepare,
 //                    rocketFAdjusted
-                    Pose2d(22.312.feet, 2.82.feet, (-151.25).degree).transformBy(Pose2d(9.inch, 4.inch, 0.degree)).asWaypoint()
+                    Pose2d(22.312.feet, 2.82.feet, (-151.25).degree).transformBy(Pose2d(8.inch, 4.inch, 0.degree)).asWaypoint()
             ),
             getConstraints(false, Pose2d()), 2.0.feet.velocity, kMaxAcceleration / 1.5, kMaxVoltage
     ) }
@@ -255,7 +256,7 @@ object TrajectoryFactory {
             listOf(
                     Pose2d(24.467.feet, 3.018.feet, (160).degree).asWaypoint(),
                     Pose2d(19.216.feet, 5.345.feet, 185.degree).asWaypoint(),
-                    Pose2d(8.318.feet, 3.157.feet, 180.degree).asWaypoint(),
+                    loadingStationUnPassedthroughAdjusted.transformBy(Pose2d((-6).feet, 0.feet, 0.degree)),
                     loadingStationUnPassedthroughAdjusted
             ),
             getConstraints(false, loadingStationUnPassedthroughAdjusted.position,
@@ -292,59 +293,84 @@ object TrajectoryFactory {
             getConstraints(false, loadingStationAdjusted), kMaxVelocity, kMaxAcceleration, kMaxVoltage
     ) }
 
-    val sideStartToCargoShipS1 by lazy { generateTrajectory(
+    val s1PrepTranslationEarly = Translation2d(21.3.feet, 7.feet)
+
+    val sideStartToCargoShipS1Prep by lazy { generateTrajectory(
+            true,
+            listOf(
+                    TrajectoryWaypoints.kSideStartReversed.asWaypoint(),
+                    TrajectoryWaypoints.kSideStartReversed.transformBy(Pose2d((-4).feet, 0.feet, 0.degree)).asWaypoint(),
+                    Pose2d(s1PrepTranslationEarly, 180.degree.toRotation2d()).asWaypoint()
+            ),
+            getConstraints(true, Pose2d()), 9.5.feet.velocity, kMaxAcceleration * 1.5, kMaxVoltage
+    ) }
+
+    val cargoS1PrepToCargoS1 by lazy { generateTrajectory(
             false,
             listOf(
-                    TrajectoryWaypoints.kSideStart.asWaypoint(),
-                    TrajectoryWaypoints.kSideStart.transformBy(Pose2d(4.feet, 0.feet, 0.degree)).asWaypoint(),
-                    Pose2d(18.123.feet, 5.691.feet, (-15.03).degree).asWaypoint(),
-                    cargoShipS1Adjusted.position.transformBy(Pose2d((-1).feet, 0.feet, 0.degree)).asWaypoint(),
-                    cargoShipS1Adjusted.position.transformBy(Pose2d((6).inch, 0.feet, 0.degree)).asWaypoint()
+                    Pose2d(s1PrepTranslationEarly, 90.degree.toRotation2d()).asWaypoint(),
+                    cargoShipS1Adjusted
             ),
-            getConstraints(true, cargoShipS1Adjusted), kMaxVelocity, kMaxAcceleration * 1.5, kMaxVoltage
+            getConstraints(true, cargoShipS1Adjusted), 2.feet.velocity, kMaxAcceleration * 1.5, kMaxVoltage
     ) }
+
+    val testTrajectory2 = generateTrajectory(
+            false,
+            listOf(
+                    Pose2d(5.396.feet, 5.551.feet, 0.degree).asWaypoint(),
+                    Pose2d(10.004.feet, 5.648.feet, 0.degree).asWaypoint(),
+                    Pose2d(8.334.feet, 2.474.feet, (-145.637).degree).asWaypoint(),
+                    Pose2d(7.102.feet, 6.796.feet, 71.162.degree).asWaypoint()
+            ),
+            getConstraints(true, Pose2d()), 5.feet.velocity, kMaxAcceleration, kMaxVoltage
+    )
 
     val s1PrepTranslation = Pose2d(23.992.feet, 7.121.feet, (-168.246).degree).asWaypoint()
 
     val cargoShipS1ToS1Prep by lazy { generateTrajectory(
             true,
             listOf(
-                    cargoShipS1Adjusted,
-                    Pose2d(15.831.feet, 5.489.feet, (-165.226).degree).asWaypoint(),
+                    cargoShipS1Adjusted.trueAndTransform.asWaypoint(),
+//                    Pose2d(15.831.feet, 5.489.feet, (-165.226).degree).asWaypoint(),
                     s1PrepTranslation
 //                    cargoShipS1Adjusted.position.transformBy(Pose2d((-1).feet, 0.feet, 0.degree)).asWaypoint(),
             ),
-            getConstraints(true, Pose2d()), 9.feet.velocity, kMaxAcceleration * 2.0, kMaxVoltage
+            getConstraints(true, Pose2d()), 9.feet.velocity, kMaxAcceleration * 1.0, kMaxVoltage
     ) }
 
     val cargoS1PrepToLoadingStation by lazy { generateTrajectory(
             false,
             listOf(
                     s1PrepTranslation,
+                    loadingStationUnPassedthroughAdjusted.transformBy(Pose2d((-6).feet, (-7).inch, 0.degree)),
                     loadingStationUnPassedthroughAdjusted
-//                    cargoShipS1Adjusted.position.transformBy(Pose2d((-1).feet, 0.feet, 0.degree)).asWaypoint(),
             ),
-            getConstraints(true, loadingStationUnPassedthroughAdjusted), kMaxVelocity, kFirstPathMaxAcceleration, kMaxVoltage
+            getConstraints(true, loadingStationUnPassedthroughAdjusted,
+                    3.feet.velocity, 6.feet), 9.5.feet.velocity, kMaxAcceleration * 1.75, kMaxVoltage
     ) }
 
-    val offsetCargoS1 = cargoShipS1Adjusted.position.transformBy(Pose2d(-2.feet, 0.feet, 0.degree)).translation
+    val offsetCargoS2 = Translation2d(22.5.feet, 7.feet)
 
-    val loadingStationToCargoS1Prep by lazy { generateTrajectory(
+    val loadingStationToCargoS2Prep by lazy { generateTrajectory(
             true,
             listOf(
                     loadingStationUnPassedthroughAdjusted,
-                    Pose2d(offsetCargoS1, -180.degree).asWaypoint()
+                    Pose2d(14.47.feet, 5.97.feet, (-163.25).degree).asWaypoint(),
+                    Pose2d(offsetCargoS2, (-160).degree).transformBy(Pose2d(-18.inch, 0.inch, 0.degree)).asWaypoint()
             ),
-            getConstraints(true, Pose2d()), kMaxVelocity, kFirstPathMaxAcceleration, kMaxVoltage
+            getConstraints(true, Pose2d()), 9.5.feet.velocity, kFirstPathMaxAcceleration * 1.5, kMaxVoltage
     ) }
 
-    val cargoPrepToCargoS1 by lazy { generateTrajectory(
+    fun Pose2d.withRotation(rotation: SIUnit<Radian>) = Pose2d(this.translation, rotation.toRotation2d())
+    fun TrajectoryWaypoints.Waypoint.withRotation(rotation: SIUnit<Radian>) = Pose2d(this.position.translation, rotation.toRotation2d()).asWaypoint()
+
+    val cargoPrepToCargoS2 by lazy { generateTrajectory(
             false,
             listOf(
-                    Pose2d(offsetCargoS1, 90.degree).asWaypoint(),
-                    cargoShipS1Adjusted
+                    Pose2d(offsetCargoS2, (-160).degree).transformBy(Pose2d(-18.inch, 0.inch, 0.degree)).asWaypoint().withRotation(90.degree),
+                    Pose2d(23.425.feet, 9.879.feet, 90.degree).asWaypoint()
             ),
-            getConstraints(true, loadingStationUnPassedthroughAdjusted), kMaxVelocity, kFirstPathMaxAcceleration, kMaxVoltage
+            getConstraints(true, cargoShipS2Adjusted), 2.feet.velocity, kFirstPathMaxAcceleration, kMaxVoltage
     ) }
 
     val sideStartToRocketF by lazy { generateTrajectory(
@@ -359,14 +385,14 @@ object TrajectoryFactory {
             maxVoltage = kMaxVoltage
     ) }
 
-    val rocketFPrepTransform = Pose2d(23.809.feet, 3.399.feet, -143.degree).transformBy(Pose2d((-3).inch, -3.inch, 0.degree)).translation
+    val rocketFPrepTransform = Pose2d(23.809.feet, 3.399.feet, -143.degree).transformBy(Pose2d((-3).inch - 3.inch, -3.inch, 0.degree)).translation
 
     val rocketFPrepare = TrajectoryWaypoints.Waypoint(
             Pose2d(rocketFPrepTransform, (-143).degree),
             transform = Pose2d((-3).inch, (-12).inch, 0.degree) // x is forward, y is left (so towards rocket)
     )
 
-    val rocketFPrepareRotated = Pose2d(rocketFPrepTransform, 127.862.degree)//.transformBy(Pose2d((-3).inch, -3.inch, 0.degree))
+    val rocketFPrepareRotated = Pose2d(rocketFPrepTransform, 127.862.degree) // .transformBy(Pose2d((-3).inch, -3.inch, 0.degree))
 
     val sideStartReversedToRocketFPrepare by lazy { generateTrajectory(
             true,
