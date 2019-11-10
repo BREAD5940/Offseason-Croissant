@@ -75,7 +75,10 @@ object ClimbSubsystem : FalconSubsystem() {
     }
 
     private val kZero = 25.inch
-    fun zero() = stiltMotor.encoder.resetPosition(kZero)
+    fun zero() {
+        stiltMotor.encoder.resetPosition(kZero)
+        stiltMotor.setPosition(kZero)
+    }
 
     val hab2prepMove = sequential {
         +SuperstructurePlanner.everythingMoveTo(35.inch, 0.degree, 0.degree) // TODO check preset
