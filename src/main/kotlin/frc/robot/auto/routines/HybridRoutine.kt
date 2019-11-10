@@ -10,6 +10,7 @@ import frc.robot.subsystems.intake.IntakeHatchCommand
 import frc.robot.subsystems.intake.IntakeSubsystem
 import frc.robot.subsystems.superstructure.Superstructure
 import org.ghrobotics.lib.commands.parallel
+import org.ghrobotics.lib.commands.parallelRace
 import org.ghrobotics.lib.commands.sequential
 import org.ghrobotics.lib.mathematics.twodim.trajectory.types.duration
 import org.ghrobotics.lib.mathematics.units.SIUnit
@@ -28,7 +29,7 @@ class HybridRoutine : AutoRoutine() {
     val path4 = TrajectoryFactory.loadingStationToRocketFPrep
     val path5 = TrajectoryFactory.rocketFPrepareToRocketF
 
-    private val pathMirrored = Autonomous.startingPosition.withEquals(Autonomous.StartingPositions.LEFT)
+    private val pathMirrored = Autonomous.isStartingOnLeft
 
     override val duration: SIUnit<Second> = 0.second
 //        get() = path1.duration + path2.duration + path3.duration
@@ -85,19 +86,30 @@ class HybridRoutine : AutoRoutine() {
 //                +IntakeHatchCommand(true).withTimeout(1.second)
 //            }
 //
+//            +parallel {
+
+//                +sequential {
+//                    +path2_
+//                    +parallel {
+//                        +path3_
+//                        +Superstructure.kPokedStowed
+//                    }
+//                }
+//                +sequential {
+//                    +IntakeHatchCommand(true).withTimeout(1.5)
+//                    +WaitCommand(path3.duration.second + path2.duration.second - 4)
+//                    +IntakeHatchCommand(false).withExit { path3_.isFinished }
+//                }.withExit { path3_.isFinished }
+//            }
+
+            +parallelRace { +path2_; +IntakeHatchCommand(true) }
             +parallel {
+                +path3_
+                +Superstructure.kPokedStowed
                 +sequential {
-                    +path2_
-                    +parallel {
-                        +path3_
-                        +Superstructure.kPokedStowed
-                    }
-                }
-                +sequential {
-                    +IntakeHatchCommand(true).withTimeout(1.5)
-                    +WaitCommand(path3.duration.second + path2.duration.second - 4)
+                    +WaitCommand(path3.duration.second - 2.5)
                     +IntakeHatchCommand(false).withExit { path3_.isFinished }
-                }.withExit { path3_.isFinished }
+                }
             }
 
             +relocalize(TrajectoryWaypoints.kLoadingStationReversed, true, pathMirrored, isStowed = true, isPoked = true)
