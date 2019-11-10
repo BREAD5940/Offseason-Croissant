@@ -101,7 +101,7 @@ object Wrist : ConcurrentFalconJoint<Radian, FalconSRX<Radian>>() {
     fun isWithToleranceWithOffset(tolerance: SIUnit<Radian> /* radian */): Boolean {
         val state = wantedState as? WantedState.Position<*> ?: return false // smart cast state, return false if it's not Position
 
-        return abs(state.targetPosition.value - (currentState.position.value + offset.value)) < tolerance.value
+        return abs(state.targetPosition.value - (currentState.position.value - offset.value)) < tolerance.value
     }
 
     override fun customizeWantedState(wantedState: WantedState): WantedState {

@@ -16,6 +16,7 @@ import frc.robot.subsystems.intake.IntakeHatchCommand
 import frc.robot.subsystems.intake.IntakeSubsystem
 import frc.robot.subsystems.superstructure.* // ktlint-disable no-wildcard-imports
 import org.ghrobotics.lib.commands.FalconCommand
+import org.ghrobotics.lib.commands.parallel
 import org.ghrobotics.lib.commands.sequential
 import org.ghrobotics.lib.mathematics.units.derived.degree
 import org.ghrobotics.lib.mathematics.units.derived.volt
@@ -65,8 +66,7 @@ object Controls : Updatable {
             pov(0).changeOn(ClimbSubsystem.hab2ClimbCommand)
             pov(90).changeOn(ClimbSubsystem.hab2ClimbCommand)
             pov(180).changeOn(ClimbSubsystem.hab2ClimbCommand)
-            pov(280).changeOn(ClimbSubsystem.hab2C
-                    limbCommand)
+            pov(280).changeOn(ClimbSubsystem.hab2ClimbCommand)
         }
         state({ isClimbing && wantsHab3Mode }) {
             pov(0).changeOn(ClimbSubsystem.hab3ClimbCommand)
@@ -75,9 +75,17 @@ object Controls : Updatable {
             pov(270).changeOn(ClimbSubsystem.hab3ClimbCommand)
         }
         state({ isClimbing }) {
-            // retract stilt
+            // retract stuff
+            button(kY).changeOn(ClimbWithElevatorRetracted())
             button(kA).changeOn(RetractStiltCommand())
-            button(kX).changeOn(ClimbWithElevatorRetracted())
+        }
+
+        // succcccc
+        state({!isClimbing}) {
+            greaterThanAxisButton(5, 0.5).changeOn { IntakeSubsystem.hatchMotorOutput = -12.volt; IntakeSubsystem.cargoMotorOutput = 12.volt }
+                    .changeOff { IntakeSubsystem.hatchMotorOutput = 0.volt; IntakeSubsystem.cargoMotorOutput = 0.volt }
+            lessThanAxisButton(5, 0.5).changeOn { IntakeSubsystem.hatchMotorOutput = 12.volt; IntakeSubsystem.cargoMotorOutput = -12.volt }
+                    .changeOff { IntakeSubsystem.hatchMotorOutput = 0.volt; IntakeSubsystem.cargoMotorOutput = 0.volt }
         }
 
         // get both the buttons that are close together
@@ -147,7 +155,7 @@ object Controls : Updatable {
 
         // cargo -- intake is a bit tricky, it'll go to the intake preset automatically
         // the lessThanAxisButton represents "intaking", and the greaterThanAxisButton represents "outtaking"
-        val cargoCommand = sequential { +PrintCommand("running cargoCommand"); +Superstructure.kCargoIntake.beforeStarting { IntakeSubsystem.wantsOpen = true }; +IntakeCargoCommand(releasing = false) }
+        val cargoCommand = parallel { +PrintCommand("running cargoCommand"); +Superstructure.kCargoIntake.beforeStarting { IntakeSubsystem.wantsOpen = true }; +IntakeCargoCommand(releasing = false) }
         button(kBumperLeft).changeOff { Superstructure.kStowed.schedule() }.change(cargoCommand)
         button(kBumperRight).change(IntakeCargoCommand(true))
     }
