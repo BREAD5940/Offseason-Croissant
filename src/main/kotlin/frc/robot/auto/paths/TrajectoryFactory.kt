@@ -178,7 +178,7 @@ object TrajectoryFactory {
                     loadingStationUnPassedthroughAdjusted,
 //                    Pose2d(17.039.feet, 6.378.feet, 9.degree).asWaypoint(),
 //                    Pose2d(15.214.feet, 8.7.feet, 165.degree).asWaypoint(),
-                    rocketFPrepareRotated.transformBy(Pose2d((-0).inch, 0.inch, 0.degree)).asWaypoint()
+                    rocketFPrepareRotated.transformBy(Pose2d((-7).inch, 4.inch, 0.degree)).asWaypoint()
             ),
             getConstraints(true, Pose2d()), 9.5.feet.velocity, kMaxAcceleration * 2.0, kMaxVoltage
     ) }
