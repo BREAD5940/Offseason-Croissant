@@ -6,6 +6,8 @@ import edu.wpi.first.wpilibj2.command.* // ktlint-disable no-wildcard-imports
 import frc.robot.auto.paths.TrajectoryFactory
 import frc.robot.auto.routines.TestRoutine
 import frc.robot.subsystems.climb.ClimbSubsystem
+import frc.robot.subsystems.climb.ClimbWithElevatorRetracted
+import frc.robot.subsystems.climb.RetractStiltCommand
 import frc.robot.subsystems.drive.DriveSubsystem
 import frc.robot.subsystems.drive.OpenLoopVisionDriveCommand
 import frc.robot.subsystems.drive.SecondClosedVisionDriveCommand
@@ -63,13 +65,19 @@ object Controls : Updatable {
             pov(0).changeOn(ClimbSubsystem.hab2ClimbCommand)
             pov(90).changeOn(ClimbSubsystem.hab2ClimbCommand)
             pov(180).changeOn(ClimbSubsystem.hab2ClimbCommand)
-            pov(280).changeOn(ClimbSubsystem.hab2ClimbCommand)
+            pov(280).changeOn(ClimbSubsystem.hab2C
+                    limbCommand)
         }
         state({ isClimbing && wantsHab3Mode }) {
             pov(0).changeOn(ClimbSubsystem.hab3ClimbCommand)
             pov(90).changeOn(ClimbSubsystem.hab3ClimbCommand)
             pov(180).changeOn(ClimbSubsystem.hab3ClimbCommand)
             pov(270).changeOn(ClimbSubsystem.hab3ClimbCommand)
+        }
+        state({ isClimbing }) {
+            // retract stilt
+            button(kA).changeOn(RetractStiltCommand())
+            button(kX).changeOn(ClimbWithElevatorRetracted())
         }
 
         // get both the buttons that are close together
@@ -97,14 +105,22 @@ object Controls : Updatable {
 
         // hab climb
         button(kStart).changeOn(ClimbSubsystem.hab3prepMove).changeOn { isClimbing = true; wantsHab3Mode = true }
-        button(kBack).changeOn(ClimbSubsystem.prepMove).changeOn { isClimbing = true; wantsHab3Mode = false }
+        button(kBack).changeOn(ClimbSubsystem.hab2prepMove).changeOn { isClimbing = true; wantsHab3Mode = false }
 
         // Left Stick Button
         button(9).changeOn(Superstructure.kStowed)
 
         // jogging
-        lessThanAxisButton(1, 0.8).changeOn(ClosedLoopElevatorMove { Elevator.currentState.position + 1.inch })
-        greaterThanAxisButton(1, 0.8).changeOn(ClosedLoopElevatorMove { Elevator.currentState.position - 1.inch })
+        state({!isClimbing}) {
+            lessThanAxisButton(1, 0.8).changeOn(ClosedLoopElevatorMove { Elevator.currentState.position + 1.inch })
+            greaterThanAxisButton(1, 0.8).changeOn(ClosedLoopElevatorMove { Elevator.currentState.position - 1.inch })
+        }
+        state({ isClimbing}) {
+            lessThanAxisButton(1, 0.8).changeOn { ClimbSubsystem
+                    .currentHab3Offset = (ClimbSubsystem.currentHab3Offset + 0.5.inch).coerceIn((-2).inch, 2.inch) }
+            greaterThanAxisButton(1, 0.8).changeOn { ClimbSubsystem
+                    .currentHab3Offset = (ClimbSubsystem.currentHab3Offset - 0.5.inch).coerceIn((-2).inch, 2.inch) }
+        }
         lessThanAxisButton(0, 0.8).changeOn { Wrist.offset += 4.degree }
         greaterThanAxisButton(0, 0.8).changeOn { Wrist.offset -= 4.degree }
 

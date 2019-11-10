@@ -100,7 +100,7 @@ object Proximal : ConcurrentFalconJoint<Radian, FalconSRX<Radian>>() {
             master.talonSRX.configClosedLoopPeakOutput(0, 1.0)
 
             master.setClosedLoopGains(
-                    0.5, 6.0, ff = 0.45 // used to be p = 0.85, got oscolation
+                    0.5 * 1.2, 6.0, ff = 0.45 // used to be p = 0.85, got oscolation
             )
         }
     }

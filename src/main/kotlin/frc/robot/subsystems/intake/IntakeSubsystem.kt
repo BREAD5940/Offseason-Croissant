@@ -20,6 +20,10 @@ object IntakeSubsystem : FalconSubsystem() {
     private val cargoMotor = FalconSRX(CARGO_PORT, DefaultNativeUnitModel)
     private val solenoid = FalconDoubleSolenoid(PISTON_PORTS[0], PISTON_PORTS[1], kPCMID)
 
+    override fun lateInit() {
+//        defaultCommand = DefaultIntakeCommand()
+    }
+
     // Open and close the intake
     var wantsOpen: Boolean by Delegates.observable(false) { _, _, wantsClosed ->
         if (wantsClosed) {

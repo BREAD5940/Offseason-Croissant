@@ -27,7 +27,6 @@ import org.ghrobotics.lib.commands.sequential
 import org.ghrobotics.lib.mathematics.units.* // ktlint-disable no-wildcard-imports
 import org.ghrobotics.lib.mathematics.units.derived.Velocity
 import org.ghrobotics.lib.mathematics.units.derived.degree
-import org.ghrobotics.lib.mathematics.units.derived.velocity
 import org.ghrobotics.lib.mathematics.units.derived.volt
 import org.ghrobotics.lib.mathematics.units.nativeunit.DefaultNativeUnitModel
 import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitLengthModel
@@ -78,9 +77,9 @@ object ClimbSubsystem : FalconSubsystem() {
     private val kZero = 25.inch
     fun zero() = stiltMotor.encoder.resetPosition(kZero)
 
-    val prepMove = sequential {
+    val hab2prepMove = sequential {
         +SuperstructurePlanner.everythingMoveTo(35.inch, 0.degree, 0.degree) // TODO check preset
-        +SuperstructurePlanner.everythingMoveTo(35.inch, (-5).degree, 93.degree) // TODO check preset
+//        +SuperstructurePlanner.everythingMoveTo(35.inch, (-5).degree, 93.degree) // TODO check preset
         val move = SuperstructurePlanner.everythingMoveTo(25.inch - 10.inch /* hab 2 */, (-5).degree, 93.degree) // TODO check preset
         +parallel {
             +move
@@ -90,10 +89,10 @@ object ClimbSubsystem : FalconSubsystem() {
 
     val hab3prepMove = sequential {
         +SuperstructurePlanner.everythingMoveTo(35.inch, 0.degree, 0.degree) // TODO check preset
-        +SuperstructurePlanner.everythingMoveTo(35.inch, (-5).degree, 93.degree) // TODO check preset
+//        +SuperstructurePlanner.everythingMoveTo(35.inch, (-5).degree, 93.degree) // TODO check preset
         val move = SuperstructurePlanner.everythingMoveTo(25.inch, (-5).degree, 93.degree) // TODO check preset
         +parallel {
-            +move
+            +move.withTimeout(2.0)
             +(RunCommand(Runnable { intakeWheels.setDutyCycle(0.3) }, ClimbSubsystem).withExit { !move.isScheduled }.whenFinished { intakeWheels.setNeutral() })
         }
     }
@@ -152,7 +151,7 @@ object ClimbSubsystem : FalconSubsystem() {
             if (Elevator.currentState.position < 18.inch + hab2Offset && Elevator.currentState.position > 13.inch + hab2Offset) Proximal.wantedState = WantedState.Position((-37).degree)
             else if (Elevator.currentState.position < 12.5.inch + hab2Offset) {
                 Proximal.wantedState = WantedState.Position((-45).degree)
-                Wrist.wantedState = WantedState.Position(86.degree)
+                Wrist.wantedState = WantedState.Position(88.degree)
             }
 //            }
             if (!elevatorInPosition) elevatorInPosition = Elevator.currentState.position < 13.inch + hab2Offset
@@ -194,25 +193,27 @@ object ClimbSubsystem : FalconSubsystem() {
             Elevator.motor.master.talonSRX.configClosedLoopPeakOutput(0, 1.0)
             Proximal.setMotionMagicMode()
             intakeWheels.setNeutral()
-            stiltMotor.controller.setOutputRange(-0.2, 0.2)
-            stiltMotor.setPosition(25.inch)
+//            stiltMotor.controller.setOutputRange(-0.2, 0.2)
+//            stiltMotor.setPosition(25.inch)
             Controls.isClimbing = false
 
-            if (stiltsInPosition && elevatorInPosition) {
-                Elevator.wantedState = WantedState.Position(24.inch)
-                Proximal.wantedState = WantedState.Position((-20).degree)
-                LEDs.wantedState = LEDs.State.Solid(Color.GREEN)
-                GlobalScope.launch {
-                    delay(1500)
-                    LEDs.wantedState = LEDs.State.Off
-                    delay(250)
-                    LEDs.wantedState = LEDs.State.Default
-                }
-            }
+//            if (stiltsInPosition && elevatorInPosition) {
+//                Elevator.wantedState = WantedState.Position(24.inch)
+//                Proximal.wantedState = WantedState.Position((-20).degree)
+//                LEDs.wantedState = LEDs.State.Solid(Color.GREEN)
+//                GlobalScope.launch {
+//                    delay(1500)
+//                    LEDs.wantedState = LEDs.State.Off
+//                    delay(250)
+//                    LEDs.wantedState = LEDs.State.Default
+//                }
+//            }
 
 //            Superstructure.kMatchStartToStowed.schedule()
         }
     }
+
+    var currentHab3Offset = 0.inch
 
     val hab3ClimbCommand = object : FalconCommand(ClimbSubsystem,
             Elevator, Proximal, Wrist, Superstructure) {
@@ -222,7 +223,7 @@ object ClimbSubsystem : FalconSubsystem() {
 //        val endCommand by lazy { { Controls.operatorJoy.getRawButton(12) } }
 //        val yeetForwardSource by lazy { { Controls.driverControllerLowLevel.getY(GenericHID.Hand.kLeft) } }
         val endCommand by lazy { { Controls.driverControllerLowLevel.getRawButton(1) } }
-        val elevatorSource by lazy { { Controls.driverControllerLowLevel.getTriggerAxis(GenericHID.Hand.kLeft) } }
+        val elevatorSource by lazy { { -Controls.driverControllerLowLevel.getRawAxis(1) } }
 
         val yeetForwardSource by lazy {
             { val toRet = Controls.driverControllerLowLevel.getTriggerAxis(GenericHID.Hand.kRight) - Controls
@@ -247,7 +248,7 @@ object ClimbSubsystem : FalconSubsystem() {
             DriveSubsystem.compressor.stop()
             stiltMotor.controller.setOutputRange(-1.0, 1.0)
             Elevator.motor.master.talonSRX.configClosedLoopPeakOutput(0, 0.25)
-            Proximal.wantedState = WantedState.Position((-15).degree)
+            Proximal.wantedState = WantedState.Position((-37).degree)
             Elevator.wantsLowGear = true
 //            Elevator.setClimbVelocityMode()
             Proximal.setClimbPositionMode()
@@ -257,10 +258,10 @@ object ClimbSubsystem : FalconSubsystem() {
             LEDs.wantedState = LEDs.State.Blink(0.15.second, Color(130, 24, 30))
         }
         override fun execute() {
-            if (Elevator.currentState.position < 18.inch && Elevator.currentState.position > 13.inch) Proximal.wantedState = WantedState.Position((-37).degree)
+            if (Elevator.currentState.position < 18.inch && Elevator.currentState.position > 13.inch) Proximal.wantedState = WantedState.Position((-40).degree)
             else if (Elevator.currentState.position < 12.5.inch) {
                 Proximal.wantedState = WantedState.Position((-47).degree)
-                Wrist.wantedState = WantedState.Position(86.degree)
+                Wrist.wantedState = WantedState.Position(88.degree)
             }
 //            }
             if (!elevatorInPosition) elevatorInPosition = Elevator.currentState.position < 13.inch
@@ -269,7 +270,8 @@ object ClimbSubsystem : FalconSubsystem() {
             println("elevator current ${Elevator.motor.drawnCurrent}, stilt current ${stiltMotor.drawnCurrent}")
             println("average elevator voltage ${voltageArray.average()}")
             stiltMotor.setPosition(12.inch - 4.5.inch - 1.inch)
-            Elevator.wantedState = WantedState.Position(12.inch)
+
+            Elevator.wantedState = WantedState.Position(11.2.inch + currentHab3Offset)
 
             var s3nd = yeetForwardSource() * -1.0
             if (s3nd < -0.1) s3nd = -0.2
@@ -291,21 +293,21 @@ object ClimbSubsystem : FalconSubsystem() {
             Elevator.motor.master.talonSRX.configClosedLoopPeakOutput(0, 1.0)
             Proximal.setMotionMagicMode()
             intakeWheels.setNeutral()
-            stiltMotor.controller.setOutputRange(-0.2, 0.2)
-            stiltMotor.setPosition(25.inch)
+//            stiltMotor.controller.setOutputRange(-0.6, 0.6)
+//            stiltMotor.setPosition(25.inch)
             Controls.isClimbing = false
 
-            if (stiltsInPosition && elevatorInPosition) {
-                Elevator.wantedState = WantedState.Position(24.inch)
-                Proximal.wantedState = WantedState.Position((-20).degree)
-                LEDs.wantedState = LEDs.State.Solid(Color.GREEN)
-                GlobalScope.launch {
-                    delay(1500)
-                    LEDs.wantedState = LEDs.State.Off
-                    delay(250)
-                    LEDs.wantedState = LEDs.State.Default
-                }
-            }
+//            if (stiltsInPosition && elevatorInPosition) {
+//                Elevator.wantedState = WantedState.Position(24.inch)
+//                Proximal.wantedState = WantedState.Position((-20).degree)
+//                LEDs.wantedState = LEDs.State.Solid(Color.GREEN)
+////                GlobalScope.launch {
+////                    delay(1500)
+////                    LEDs.wantedState = LEDs.State.Off
+////                    delay(250)
+////                    LEDs.wantedState = LEDs.State.Default
+////                }
+//            }
 
 //            Superstructure.kMatchStartToStowed.schedule()
         }

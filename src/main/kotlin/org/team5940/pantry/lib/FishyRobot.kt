@@ -8,6 +8,10 @@ import frc.robot.subsystems.sensors.LimeLight
 import frc.robot.subsystems.superstructure.* // ktlint-disable no-wildcard-imports
 import frc.robot.vision.LimeLightManager
 import kotlinx.coroutines.* // ktlint-disable no-wildcard-imports
+import org.ghrobotics.lib.mathematics.units.derived.degree
+import org.ghrobotics.lib.mathematics.units.derived.radian
+import org.ghrobotics.lib.mathematics.units.inch
+import org.ghrobotics.lib.mathematics.units.meter
 import org.ghrobotics.lib.utils.loopFrequency
 import org.ghrobotics.lib.wrappers.FalconTimedRobot
 
@@ -47,8 +51,19 @@ var updateJob: Job? = null
         })
 
         ntJob = (updateScope.launch {
-            loopFrequency(4) {
+            loopFrequency(2) {
                 SmartDashboard.putString("Joint states", Superstructure.currentState.asString())
+                val elevatorTarget = Elevator.wantedState as? WantedState.Position<*>
+                        ?: WantedState.Position(0.inch)
+                println("Elevator target ${elevatorTarget.targetPosition.value.meter.inch} position ${Elevator.currentState.position.inch}")
+
+                val proxTarget = Proximal.wantedState as? WantedState.Position<*>
+                        ?: WantedState.Position(0.degree)
+                println("Elevator target ${proxTarget.targetPosition.value.radian.degree} position ${Proximal.currentState.position.degree}")
+
+                val wristTarget = Wrist.wantedState as? WantedState.Position<*>
+                        ?: WantedState.Position(0.degree)
+                println("Elevator target ${wristTarget.targetPosition.value.radian.degree} position ${Wrist.currentState.position.degree}")
             }
         })
 
@@ -79,6 +94,12 @@ var updateJob: Job? = null
         if (job != null) {
             if (!job.isActive) job.start()
         }
+
+        val job2 = this.ntJob
+        if (job2 != null) {
+            if (!job2.isActive) job2.start()
+        }
+
 
 //        runBlocking { periodicUpdate() }
         super.robotPeriodic()

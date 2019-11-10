@@ -260,8 +260,8 @@ object TrajectoryFactory {
                     loadingStationUnPassedthroughAdjusted
             ),
             getConstraints(false, loadingStationUnPassedthroughAdjusted.position,
-                    3.feet.velocity, 6.feet), 10.feet.velocity,
-            kMaxAcceleration * 1.75, 10.5.volt
+                    3.feet.velocity, 6.feet), 11.feet.velocity,
+            kMaxAcceleration * 1.75, 11.5.volt
     ) }
 
     val rocketFToDepot by lazy { generateTrajectory(
@@ -293,7 +293,7 @@ object TrajectoryFactory {
             getConstraints(false, loadingStationAdjusted), kMaxVelocity, kMaxAcceleration, kMaxVoltage
     ) }
 
-    val s1PrepTranslationEarly = Translation2d(21.3.feet, 7.feet)
+    val s1PrepTranslationEarly = Translation2d(21.3.feet - 4.inch, 7.feet)
 
     val sideStartToCargoShipS1Prep by lazy { generateTrajectory(
             true,

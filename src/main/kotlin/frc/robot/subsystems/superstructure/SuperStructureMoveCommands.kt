@@ -60,7 +60,7 @@ class ClosedLoopSourceProximalMove(private val endState: SIUnit<Radian>, private
         }
     }
 
-    override fun isFinished() = (endState - Proximal.currentState.position).absoluteValue < 3.degree
+    override fun isFinished() = (endState - Proximal.currentState.position).absoluteValue < 5.degree
     // Proximal.isWithTolerance(3.0.degree) // toDegrees(abs(target - Proximal.currentState.position)) < 5.0
 }
 

@@ -3,10 +3,12 @@
 package frc.robot.subsystems.intake
 
 import edu.wpi.first.wpilibj2.command.InstantCommand
+import edu.wpi.first.wpilibj2.command.WaitCommand
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.ghrobotics.lib.commands.FalconCommand
+import org.ghrobotics.lib.commands.sequential
 import org.ghrobotics.lib.mathematics.units.derived.volt
 
 val closeIntake = InstantCommand(Runnable { IntakeSubsystem.wantsOpen = false })
@@ -32,7 +34,7 @@ class IntakeCargoCommand(val releasing: Boolean) : FalconCommand(IntakeSubsystem
 
 //    var wasOpen: Boolean = false
 
-    override fun initialize() {
+    override fun execute() {
         println("${if (releasing) "releasing" else "intaking"} cargo command!")
 //        wasOpen = IntakeSubsystem.wantsOpen
         IntakeSubsystem.wantsOpen = !releasing

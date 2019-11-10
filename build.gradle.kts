@@ -101,9 +101,9 @@ tasks {
             freeCompilerArgs += "-Xjvm-default=compatibility"
         }
         doFirst {
-            exec {
-                commandLine("python3.7", "src/main/python/LTVUnicycleLRQ.py")
-            }
+//            exec {
+//                commandLine("python3.7", "src/main/python/LTVUnicycleLRQ.py")
+//            }
         }
         doLast {
             println("\nDid you ever hear the tragedy of Darth Plagueis the Wise? I thought not.\n" +
