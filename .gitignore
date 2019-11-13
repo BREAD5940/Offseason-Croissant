@@ -167,3 +167,4 @@ bin/
 !*.xml
 *.xml
 .idea
+*.pyc
