@@ -2,6 +2,7 @@ package frc.robot.subsystems.superstructure
 
 import com.ctre.phoenix.motorcontrol.ControlMode
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
+import frc.robot.Ports
 import frc.robot.subsystems.climb.ClimbSubsystem
 import java.awt.Color
 import kotlinx.coroutines.GlobalScope
@@ -9,8 +10,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.ghrobotics.lib.commands.FalconCommand
 import org.ghrobotics.lib.mathematics.units.derived.degree
-import org.ghrobotics.lib.mathematics.units.inch
-import org.ghrobotics.lib.mathematics.units.second
+import org.ghrobotics.lib.mathematics.units.derived.degrees
+import org.ghrobotics.lib.mathematics.units.inches
+import org.ghrobotics.lib.mathematics.units.seconds
 
 class ZeroSuperStructureRoutine(private val mZeroHeight: Length = kZeroHeight) : FalconCommand(Superstructure,
         Elevator, Proximal, Wrist) {
@@ -77,7 +79,7 @@ class ZeroSuperStructureRoutine(private val mZeroHeight: Length = kZeroHeight) :
         Proximal.resetPosition(proxPos)
         Wrist.resetPosition(wristPos)
         ClimbSubsystem.zero()
-        Elevator.motor.encoder.resetPositionRaw(Elevator.motor.master.model.toNativeUnitPosition(mZeroHeight))
+        Elevator.motor.encoder.resetPositionRaw(Ports.SuperStructurePorts.ElevatorPorts.LENGTH_MODEL.toNativeUnitPosition(mZeroHeight))
     }
 
     // Make this return true when this Command no longer needs to run execute()
@@ -92,7 +94,7 @@ class ZeroSuperStructureRoutine(private val mZeroHeight: Length = kZeroHeight) :
         println("ENDING ${javaClass.simpleName}")
 //        Elevator.elevatorZeroed = !interrupted
         SmartDashboard.putString("Zeroing state", mCurrentState.name)
-        LEDs.wantedState = LEDs.State.Blink(0.125.second, Color.GREEN)
+        LEDs.wantedState = LEDs.State.Blink(0.125.seconds, Color.GREEN)
         GlobalScope.launch {
             delay(1500)
             LEDs.wantedState = LEDs.State.Off
@@ -102,6 +104,6 @@ class ZeroSuperStructureRoutine(private val mZeroHeight: Length = kZeroHeight) :
     }
 
     companion object {
-        private val kZeroHeight = 35.inch // 21.5.inch, delta is 11.5in
+        private val kZeroHeight = 35.inches // 21.5.inch, delta is 11.5in
     }
 }

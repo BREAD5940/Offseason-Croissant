@@ -1,6 +1,5 @@
 package frc.robot.subsystems.superstructure
 
-import com.team254.lib.physics.DCMotorTransmission
 import edu.wpi.first.wpilibj.DigitalInput
 import frc.robot.Constants
 import frc.robot.Constants.SuperStructureConstants.kElevatorRange
@@ -34,11 +33,11 @@ object Elevator : ConcurrentFalconJoint<Meter, FalconSRX<Meter>>() {
     private const val metersKa = (R * radius * m) / (G * internalKt)
     private const val metersKv = (G * G * internalKt * metersKa) / (R * radius * radius * m * internalKv)
 
-    private val lowGearTransmissionHAB = DCMotorTransmission(
-            1 / (metersKv * 1 / (2.0 / radius)), // 603.2 /* rad per sec free */ / R / 12.0, // 42:1 gearing
-            radius * radius * m / (2.0 * metersKa / (2.0 / radius)),
-            0.0 // totally a guess
-    )
+//    private val lowGearTransmissionHAB = DCMotorTransmission(
+//            1 / (metersKv * 1 / (2.0 / radius)), // 603.2 /* rad per sec free */ / R / 12.0, // 42:1 gearing
+//            radius * radius * m / (2.0 * metersKa / (2.0 / radius)),
+//            0.0 // totally a guess
+//    )
 
     /**
      * If the elevator should be in low gear right now.
@@ -72,7 +71,7 @@ object Elevator : ConcurrentFalconJoint<Meter, FalconSRX<Meter>>() {
         init {
             master.outputInverted = MASTER_INVERTED
             master.voltageCompSaturation = 12.volt
-            master.feedbackSensor = ElevatorPorts.SENSOR
+            master.talonSRX.configSelectedFeedbackSensor(ElevatorPorts.SENSOR)
             master.talonSRX.setSensorPhase(ElevatorPorts.MASTER_SENSOR_PHASE)
 
             followers.forEachIndexed {
@@ -100,6 +99,18 @@ object Elevator : ConcurrentFalconJoint<Meter, FalconSRX<Meter>>() {
 
         override fun setClosedLoopGains() =
                 setHighSpeedMotionMagicGains()
+
+        override var softLimitForward: SIUnit<Meter>
+            get() = master.softLimitForward
+            set(value) {
+                master.softLimitForward = value
+            }
+
+        override var softLimitReverse: SIUnit<Meter>
+            get() = master.softLimitReverse
+            set(value) {
+                master.softLimitReverse = value
+            }
 
         /**
          * Configure the master talon for motion magic control
@@ -143,10 +154,10 @@ object Elevator : ConcurrentFalconJoint<Meter, FalconSRX<Meter>>() {
     const val reduction = 14.66
     fun setClimbProfile(position: SIUnit<Meter>, velocity: SIUnit<Velocity<Meter>>) {
         // meters per second div meters per rotation is rotations per second
-        val rotPerSec = velocity.value / (PI * 1.5.inch.meter)
+        val rotPerSec = velocity.value / (PI * 1.5.inches.inMeters())
         val radPerSec = rotPerSec * PI * 2
 
-        val torque = 35.0 /* kg */ * 9.8 /* g */ * 0.75.inch.meter
+        val torque = 35.0 /* kg */ * 9.8 /* g */ * 0.75.inches.inMeters()
 
         val stallTorque = reduction * 0.71 * 4
         val freeYeet = 1961 /* rad per sec */ / reduction
@@ -175,7 +186,7 @@ object Elevator : ConcurrentFalconJoint<Meter, FalconSRX<Meter>>() {
 
     // Set the elevator height to a sane-ish number by default
     override fun lateInit() {
-        motor.encoder.resetPosition(35.0.inch)
+        motor.encoder.resetPosition(35.0.inches)
         wantsLowGear = false
     }
 
@@ -193,5 +204,5 @@ object Elevator : ConcurrentFalconJoint<Meter, FalconSRX<Meter>>() {
 
     /** Calculate the arbitrary feed forward given a [currentState] */
     override fun calculateFeedForward(currentState: MultiMotorTransmission.State<Meter>) =
-            if (currentState.position > 33.0.inch) 1.2.volt else (-0.72).volt // volts
+            if (currentState.position > 33.0.inches) 1.2.volts else (-0.72).volts // volts
 }

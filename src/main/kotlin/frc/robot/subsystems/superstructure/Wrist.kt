@@ -11,6 +11,7 @@ import kotlin.math.abs
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.derived.Radian
 import org.ghrobotics.lib.mathematics.units.derived.degree
+import org.ghrobotics.lib.mathematics.units.derived.degrees
 import org.ghrobotics.lib.mathematics.units.nativeunit.toNativeUnitPosition
 import org.ghrobotics.lib.motors.ctre.FalconSRX
 import org.team5940.pantry.lib.ConcurrentFalconJoint
@@ -21,7 +22,7 @@ import org.team5940.pantry.lib.asPWMSource
 object Wrist : ConcurrentFalconJoint<Radian, FalconSRX<Radian>>() {
 
     fun resetPosition(position: SIUnit<Radian>) {
-        val ticks = position.toNativeUnitPosition(motor.master.model)
+        val ticks = position.toNativeUnitPosition(Ports.SuperStructurePorts.WristPorts.ROTATION_MODEL)
         println("reseting position to ${position.degree} or ${ticks.value}")
         canifier.setQuadraturePosition(ticks.value.toInt() * -1, 0)
     }
@@ -32,7 +33,7 @@ object Wrist : ConcurrentFalconJoint<Radian, FalconSRX<Radian>>() {
     }
 
     private val canifier = CANifier(35)
-    val absoluteEncoder = Proximal.canifier.asPWMSource(1336.4 to (-45).degree, 2004.0 to 90.degree,
+    val absoluteEncoder = Proximal.canifier.asPWMSource(1336.4 to (-45).degrees, 2004.0 to 90.degrees,
             CANifier.PWMChannel.PWMChannel1)
 
     fun zero() = resetPosition(absoluteEncoder())
@@ -54,7 +55,7 @@ object Wrist : ConcurrentFalconJoint<Radian, FalconSRX<Radian>>() {
 
         init {
             master.outputInverted = Ports.SuperStructurePorts.WristPorts.TALON_INVERTED
-            master.feedbackSensor = Ports.SuperStructurePorts.WristPorts.SENSOR
+            master.talonSRX.configSelectedFeedbackSensor(Ports.SuperStructurePorts.WristPorts.SENSOR)
             master.talonSRX.setSensorPhase(Ports.SuperStructurePorts.WristPorts.TALON_SENSOR_PHASE)
 
             master.talonSRX.configClosedLoopPeakOutput(0, 1.0)
@@ -86,10 +87,22 @@ object Wrist : ConcurrentFalconJoint<Radian, FalconSRX<Radian>>() {
                     2.0 * 1.3, 0.0, ff = 0.4
             )
         }
+
+        override var softLimitForward: SIUnit<Radian>
+            get() = master.softLimitForward
+            set(value) {
+                master.softLimitForward = value
+            }
+
+        override var softLimitReverse: SIUnit<Radian>
+            get() = master.softLimitReverse
+            set(value) {
+                master.softLimitReverse = value
+            }
     }
 
-    private val safeOffset = (-30).degree..30.degree
-    var offset = 0.degree
+    private val safeOffset = (-30).degrees..30.degrees
+    var offset = 0.degrees
         set(value) {
             field = value.coerceIn(safeOffset)
         }

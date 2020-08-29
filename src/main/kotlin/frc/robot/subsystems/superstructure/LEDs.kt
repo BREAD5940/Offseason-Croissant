@@ -3,10 +3,7 @@ package frc.robot.subsystems.superstructure
 import com.ctre.phoenix.CANifier
 import java.awt.Color
 import org.ghrobotics.lib.commands.FalconSubsystem
-import org.ghrobotics.lib.mathematics.units.SIUnit
-import org.ghrobotics.lib.mathematics.units.Second
-import org.ghrobotics.lib.mathematics.units.millisecond
-import org.ghrobotics.lib.mathematics.units.second
+import org.ghrobotics.lib.mathematics.units.* // ktlint-disable no-wildcard-imports
 
 object LEDs : FalconSubsystem() {
 
@@ -16,7 +13,7 @@ object LEDs : FalconSubsystem() {
 
     fun setVisionMode(wantsVision: Boolean) {
         this.wantedState = if (wantsVision) {
-            State.Blink((1.0 / 8.0).second, Color.red)
+            State.Blink((1.0 / 8.0).seconds, Color.red)
         } else {
             State.Default
         }
@@ -44,9 +41,9 @@ object LEDs : FalconSubsystem() {
                 is State.Solid -> { setColor(wantedState.color); Thread.sleep(250) }
                 is State.Blink -> {
                     setColor(wantedState.color)
-                    Thread.sleep(wantedState.blinkTime.millisecond.toLong() / 2)
+                    Thread.sleep(wantedState.blinkTime.inMilliseconds().toLong() / 2)
                     setColor(Color.BLACK)
-                    Thread.sleep(wantedState.blinkTime.millisecond.toLong() / 2)
+                    Thread.sleep(wantedState.blinkTime.inMilliseconds().toLong() / 2)
                 }
 //                is State.Fade -> {
 //                    val startColor = lastWantedState.color

@@ -11,9 +11,8 @@ import frc.robot.subsystems.intake.IntakeSubsystem
 import frc.robot.subsystems.superstructure.Superstructure
 import org.ghrobotics.lib.commands.* // ktlint-disable no-wildcard-imports
 import org.ghrobotics.lib.commands.sequential
-import org.ghrobotics.lib.mathematics.twodim.trajectory.types.duration
 import org.ghrobotics.lib.mathematics.units.* // ktlint-disable no-wildcard-imports
-import org.ghrobotics.lib.mathematics.units.derived.degree
+import org.ghrobotics.lib.mathematics.units.derived.degrees
 import org.ghrobotics.lib.mathematics.units.derived.toRotation2d
 import org.ghrobotics.lib.mathematics.units.derived.volt
 
@@ -31,7 +30,7 @@ class BottomRocketRoutine2 : AutoRoutine() {
     private val path6 = TrajectoryFactory.rocketNPrepToRocketN
 
     override val duration: SIUnit<Second>
-        get() = path4.duration + path5.duration + path1.duration + path2.duration
+        get() = (path4.totalTimeSeconds + path5.totalTimeSeconds + path1.totalTimeSeconds + path2.totalTimeSeconds).seconds
 
     override val routine
         get() = sequential {
@@ -48,7 +47,7 @@ class BottomRocketRoutine2 : AutoRoutine() {
                     +DriveSubsystem.notWithinRegion(TrajectoryWaypoints.kHabitatL1Platform)
                     +WaitCommand(0.5)
                     +Superstructure.kMatchStartToStowed
-                }).beforeStarting { IntakeSubsystem.hatchMotorOutput = 6.volt; IntakeSubsystem.wantsOpen = true }.whenFinished { IntakeSubsystem.hatchMotorOutput = 0.volt }
+                }).beforeStarting { IntakeSubsystem.hatchMotorOutput = 6.volt; IntakeSubsystem.wantsOpen = true }.andThen { IntakeSubsystem.hatchMotorOutput = 0.volt }
             }
 
             +PointTurnCommand {
@@ -64,7 +63,7 @@ class BottomRocketRoutine2 : AutoRoutine() {
 //                } else {
 //                    -151.degree.toRotation2d()
 //                }
-                (-143).degree.toRotation2d() * if (Autonomous.isStartingOnLeft()) -1.0 else 1.0
+                (-143).degrees.toRotation2d() * if (Autonomous.isStartingOnLeft()) -1.0 else 1.0
             }
 
 //            +PointTurnCommand {
@@ -147,7 +146,7 @@ class BottomRocketRoutine2 : AutoRoutine() {
 //                    // plus the rotation of the dt at that timestamp
 //                    LimeLight.currentState.tx.toRotation2d() + DriveSubsystem.localization[LimeLight.currentState.timestamp].rotation
 //                } else {
-                -13.degree.toRotation2d() * if (Autonomous.isStartingOnLeft()) -1.0 else 1.0
+                -13.degrees.toRotation2d() * if (Autonomous.isStartingOnLeft()) -1.0 else 1.0
 //                }
 //
 // //                (-28.75).degree.toRotation2d()
@@ -167,7 +166,7 @@ class BottomRocketRoutine2 : AutoRoutine() {
 
             +parallel {
                 +IntakeHatchCommand(true).withTimeout(1.0)
-                +RunCommand(Runnable { DriveSubsystem.tankDrive(-0.3, -0.3) }).withTimeout(1.0)
+                +RunCommand(Runnable { DriveSubsystem.setPercent(-0.3, -0.3) }).withTimeout(1.0)
             }
         }
 }

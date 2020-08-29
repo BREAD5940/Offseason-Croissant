@@ -1,6 +1,8 @@
 package frc.robot.subsystems.drive
 
-import com.team254.lib.physics.DifferentialDrive
+import edu.wpi.first.wpilibj.geometry.Pose2d
+import edu.wpi.first.wpilibj.geometry.Rotation2d
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import frc.robot.Network
@@ -10,12 +12,9 @@ import frc.robot.subsystems.superstructure.LEDs
 import frc.robot.vision.TargetTracker
 import kotlin.math.absoluteValue
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
-import org.ghrobotics.lib.mathematics.twodim.geometry.Rotation2d
-import org.ghrobotics.lib.mathematics.units.derived.degree
-import org.ghrobotics.lib.mathematics.units.derived.radian
 import org.ghrobotics.lib.mathematics.units.inch
+import org.ghrobotics.lib.mathematics.units.inches
 import org.ghrobotics.lib.mathematics.units.kFeetToMeter
-import org.ghrobotics.lib.mathematics.units.meter
 
 class SecondClosedVisionDriveCommand(private val isFront: Boolean, private val skewCorrect: Boolean = false) : ManualDriveCommand() {
 
@@ -51,11 +50,11 @@ class SecondClosedVisionDriveCommand(private val isFront: Boolean, private val s
 //            ElevatorSubsystem.wantedVisionMode = true
             super.execute()
         } else {
-            val transform = lastKnownTargetPose inFrameOfReferenceOf DriveSubsystem.robotPosition
-            var angle = Rotation2d(transform.translation.x.meter, transform.translation.y.meter, true)
+            val transform = lastKnownTargetPose.relativeTo(DriveSubsystem.robotPosition)
+            var angle = Rotation2d(transform.translation.x, transform.translation.y)
             var linear = -ManualDriveCommand.speedSource()
 
-            if (angle.degree.absoluteValue > 45) {
+            if (angle.degrees.absoluteValue > 45) {
                 // plz no disable us when going to loading station, kthx
                 this.lastKnownTargetPose = null
                 super.execute()
@@ -63,12 +62,12 @@ class SecondClosedVisionDriveCommand(private val isFront: Boolean, private val s
 
 //            val angle = LimeLight.lastYaw
 
-            Network.visionDriveAngle.setDouble(angle.degree)
+            Network.visionDriveAngle.setDouble(angle.degrees)
             Network.visionDriveActive.setBoolean(true)
 
             // limit linear speed based on elevator height, linear function with height above stowed
             val elevator = Elevator.currentState.position
-            if (elevator > 32.inch) {
+            if (elevator > 32.inches) {
                 // y = mx + b, see https://www.desmos.com/calculator/quelminicu
                 // y=\left(\frac{0.35-1}{69-32}\right)\left(x-32\right)+1
                 linear *= (-0.0208108 * elevator.inch + 1.66696)
@@ -81,7 +80,7 @@ class SecondClosedVisionDriveCommand(private val isFront: Boolean, private val s
 //            if (skew > (-45).degree) skew = skew.absoluteValue else skew += 90.degree
 //            if (skew > 5.degree && skewCorrect) offset = 0.05.degree * (if (LimeLight.targetToTheLeft) 1 else -1) * (skew.degree / 13)
 
-            val error = angle.radian * -1.0 // - offset.radian
+            val error = angle.radians * -1.0 // - offset.radian
 
             // at 0 speed this should be 1, and at 10ft/sec it should be 2
             // so (0, 1) and (10, 2)
@@ -107,7 +106,7 @@ class SecondClosedVisionDriveCommand(private val isFront: Boolean, private val s
             println("QUICK TURN? $isQuickTurn turn $turn")
 
             var wheelSpeeds = curvatureDrive(linear, turn, isQuickTurn)
-            wheelSpeeds = DifferentialDrive.WheelState(wheelSpeeds.left * multiplier, wheelSpeeds.right * multiplier)
+            wheelSpeeds = DifferentialDriveWheelSpeeds(wheelSpeeds.leftMetersPerSecond * multiplier, wheelSpeeds.rightMetersPerSecond * multiplier)
 
             DriveSubsystem.setWheelVelocities(wheelSpeeds)
 

@@ -11,10 +11,9 @@ import frc.robot.subsystems.intake.IntakeSubsystem
 import frc.robot.subsystems.superstructure.Superstructure
 import org.ghrobotics.lib.commands.parallel
 import org.ghrobotics.lib.commands.sequential
-import org.ghrobotics.lib.mathematics.twodim.trajectory.types.duration
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.Second
-import org.ghrobotics.lib.mathematics.units.derived.degree
+import org.ghrobotics.lib.mathematics.units.derived.degrees
 import org.ghrobotics.lib.mathematics.units.derived.toRotation2d
 import org.ghrobotics.lib.mathematics.units.feet
 import org.ghrobotics.lib.mathematics.units.second
@@ -56,7 +55,7 @@ class CargoShipRoutine : AutoRoutine() {
                             Autonomous.isStartingOnLeft
                     )
                     +PointTurnCommand {
-                        90.degree.toRotation2d() * if (Autonomous.isStartingOnLeft()) -1.0 else 1.0
+                        90.degrees.toRotation2d() * if (Autonomous.isStartingOnLeft()) -1.0 else 1.0
                     }
                     // drive forward
                     +super.followVisionAssistedTrajectory(
@@ -96,7 +95,7 @@ class CargoShipRoutine : AutoRoutine() {
                 }
                 +sequential {
                     +IntakeHatchCommand(true).withTimeout(1.5)
-                    +WaitCommand(path3.duration.second + path2.duration.second - 4)
+                    +WaitCommand(path3.totalTimeSeconds + path2.totalTimeSeconds - 4)
                     +IntakeHatchCommand(false).withExit { path3_.isFinished }
                 }.withExit { path3_.isFinished }
             }
@@ -108,7 +107,7 @@ class CargoShipRoutine : AutoRoutine() {
                 +Superstructure.kStowed
                 +DriveSubsystem.followTrajectory(path4, pathMirrored)
             }
-            +PointTurnCommand(pathMirrored.map(-90.degree.toRotation2d(), 90.degree.toRotation2d()))
+            +PointTurnCommand(pathMirrored.map(-90.degrees.toRotation2d(), 90.degrees.toRotation2d()))
 
             +super.followVisionAssistedTrajectory(
                     path5,
@@ -119,7 +118,7 @@ class CargoShipRoutine : AutoRoutine() {
 
             +parallel {
                 +IntakeHatchCommand(true).withTimeout(1.0)
-                +RunCommand(Runnable { DriveSubsystem.tankDrive(-0.3, -0.3) }).withTimeout(1.0)
+                +RunCommand(Runnable { DriveSubsystem.setPercent(-0.3, -0.3) }).withTimeout(1.0)
             }
         }
 }

@@ -1,8 +1,9 @@
 package frc.robot.subsystems.drive
 
-import com.team254.lib.physics.DifferentialDrive
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds
 import frc.robot.subsystems.superstructure.Elevator
 import org.ghrobotics.lib.mathematics.units.inch
+import org.ghrobotics.lib.mathematics.units.inches
 import org.ghrobotics.lib.mathematics.units.kFeetToMeter
 
 class ClosedLoopChezyDriveCommand : ManualDriveCommand() {
@@ -25,7 +26,7 @@ class ClosedLoopChezyDriveCommand : ManualDriveCommand() {
 
         // limit linear speed based on elevator height, linear function with height above stowed
         val elevator = Elevator.currentState.position
-        if (elevator > 32.inch) {
+        if (elevator > 32.inches) {
             // y = mx + b, see https://www.desmos.com/calculator/quelminicu
             // y=\left(\frac{0.35-1}{69-32}\right)\left(x-32\right)+1
             linear *= (-0.0208108 * elevator.inch + 1.66696)
@@ -34,7 +35,7 @@ class ClosedLoopChezyDriveCommand : ManualDriveCommand() {
         val multiplier = if (DriveSubsystem.lowGear) 8.0 * kFeetToMeter else 12.0 * kFeetToMeter
 
         var wheelSpeeds = curvatureDrive(linear, curvature * if (isQuickTurn) 0.5 else 1.0, isQuickTurn)
-        wheelSpeeds = DifferentialDrive.WheelState(wheelSpeeds.left * multiplier, wheelSpeeds.right * multiplier)
+        wheelSpeeds = DifferentialDriveWheelSpeeds(wheelSpeeds.leftMetersPerSecond * multiplier, wheelSpeeds.rightMetersPerSecond * multiplier)
 
         DriveSubsystem.setWheelVelocities(wheelSpeeds)
 
@@ -48,4 +49,4 @@ class ClosedLoopChezyDriveCommand : ManualDriveCommand() {
     }
 }
 
-operator fun DifferentialDrive.WheelState.times(scaler: Double) = DifferentialDrive.WheelState(left * scaler, right * scaler)
+operator fun DifferentialDriveWheelSpeeds.times(scaler: Double) = DifferentialDriveWheelSpeeds(leftMetersPerSecond * scaler, rightMetersPerSecond * scaler)

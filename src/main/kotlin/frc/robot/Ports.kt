@@ -2,7 +2,7 @@ package frc.robot
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice
 import com.ctre.phoenix.motorcontrol.InvertType
-import org.ghrobotics.lib.mathematics.units.inch
+import org.ghrobotics.lib.mathematics.units.inches
 import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitLengthModel
 import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitRotationModel
 import org.ghrobotics.lib.mathematics.units.nativeunit.nativeUnits
@@ -29,7 +29,7 @@ object Ports {
             val MASTER_INVERTED = false
             val MASTER_SENSOR_PHASE = true
             val FOLLOWER_INVERSION = listOf(InvertType.OpposeMaster, InvertType.FollowMaster, InvertType.FollowMaster)
-            val LENGTH_MODEL = NativeUnitLengthModel(4096.nativeUnits, 1.5.inch / 2)
+            val LENGTH_MODEL = NativeUnitLengthModel(4096.nativeUnits, 1.5.inches / 2)
             val SENSOR = FeedbackDevice.CTRE_MagEncoder_Relative
         }
         object ProximalPorts {

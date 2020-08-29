@@ -3,7 +3,7 @@ package frc.robot.subsystems.climb
 import frc.robot.subsystems.superstructure.Elevator
 import org.ghrobotics.lib.commands.FalconCommand
 import org.ghrobotics.lib.mathematics.units.derived.volt
-import org.ghrobotics.lib.mathematics.units.inch
+import org.ghrobotics.lib.mathematics.units.inches
 import org.team5940.pantry.lib.WantedState
 
 class SyncronizedLiftClimbCommand : FalconCommand(ClimbSubsystem, Elevator) {
@@ -18,11 +18,11 @@ class SyncronizedLiftClimbCommand : FalconCommand(ClimbSubsystem, Elevator) {
     override fun execute() {
         // let's do voltage PID on the NEOOOOOOOOO
 //        val elevatorPosition = WantedState.Position(Elevator.currentState.position)
-        if (Elevator.currentState.position < 10.inch) elevatorInPosition = true
+        if (Elevator.currentState.position < 10.inches) elevatorInPosition = true
         if (!elevatorInPosition) Elevator.wantedState = WantedState.Voltage((-5).volt) else
-            Elevator.wantedState = WantedState.Position(10.inch)
+            Elevator.wantedState = WantedState.Position(10.inches)
 //        ClimbSubsystem.wantedState = if(!stiltsInPosition) WantedState.Voltage((-5).volt) else WantedState.Position(10.inch)
-        if (!stiltsInPosition) ClimbSubsystem.stiltMotor.setVoltage((-5).volt) else ClimbSubsystem.stiltMotor.setPosition(15.inch)
+        if (!stiltsInPosition) ClimbSubsystem.stiltMotor.setVoltage((-5).volt) else ClimbSubsystem.stiltMotor.setPosition(15.inches)
     }
 
     override fun isFinished(): Boolean = elevatorInPosition and stiltsInPosition

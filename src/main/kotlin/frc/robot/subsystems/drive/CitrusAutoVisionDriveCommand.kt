@@ -1,18 +1,21 @@
 package frc.robot.subsystems.drive
 
-import com.team254.lib.physics.DifferentialDrive
 import edu.wpi.first.wpilibj.Timer
+import edu.wpi.first.wpilibj.geometry.Pose2d
+import edu.wpi.first.wpilibj.geometry.Rotation2d
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds
 import frc.robot.Constants
 import frc.robot.subsystems.sensors.LimeLight
 import frc.robot.vision.TargetTracker
+import kotlin.math.absoluteValue
 import org.ghrobotics.lib.commands.FalconCommand
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
-import org.ghrobotics.lib.mathematics.twodim.geometry.Rotation2d
 import org.ghrobotics.lib.mathematics.units.derived.degree
+import org.ghrobotics.lib.mathematics.units.derived.degrees
 import org.ghrobotics.lib.mathematics.units.derived.toRotation2d
 import org.ghrobotics.lib.mathematics.units.derived.velocity
-import org.ghrobotics.lib.mathematics.units.inch
-import org.ghrobotics.lib.mathematics.units.meter
+import org.ghrobotics.lib.mathematics.units.inches
+import org.ghrobotics.lib.mathematics.units.meters
 
 class CitrusAutoVisionDriveCommand(private val isStowed: Boolean, private val skewCorrect: Boolean = true) : FalconCommand(DriveSubsystem) {
 
@@ -21,13 +24,14 @@ class CitrusAutoVisionDriveCommand(private val isStowed: Boolean, private val sk
     private var inRange = false
     private var inRangeTime = -1.0
     private val kEndTimeout = 0.6
-    private var prevAngleError = 0.degree.toRotation2d()
+    private var prevAngleError = 0.degrees.toRotation2d()
     private var lastKnownTargetPose: Pose2d? = null
 
     /**
      * Target distance from the center of the robot to the vision taret
      */
-    private val targetDistance = (if (isStowed) Constants.kCenterToForwardIntakeStowed else Constants.kCenterToForwardIntake).translation.x.absoluteValue
+    private val targetDistance = (if (isStowed) Constants.kCenterToForwardIntakeStowed else Constants.kCenterToForwardIntake)
+            .translation.x.absoluteValue.meters
 
     override fun end(interrupted: Boolean) {
         noTarget = 0
@@ -62,27 +66,27 @@ class CitrusAutoVisionDriveCommand(private val isStowed: Boolean, private val sk
         // we know we have a new target
         noTarget = 0
 
-        val offset = if (!skewCorrect) 0.degree else {
+        val offset = if (!skewCorrect) 0.degrees else {
             var skew = LimeLight.lastSkew
-            if (skew > (-45).degree) skew = skew.absoluteValue else skew += 90.degree
-            if (skew > 5.degree) {
-                0.05.degree * (if (LimeLight.targetToTheLeft) 1 else -1) * (skew.degree / 13)
-            } else 0.degree
+            if (skew > (-45).degrees) skew = skew.absoluteValue else skew += 90.degrees
+            if (skew > 5.degrees) {
+                0.05.degrees * (if (LimeLight.targetToTheLeft) 1 else -1) * (skew.degree / 13)
+            } else 0.degrees
         }
 
-        val transform = lastKnownTargetPose inFrameOfReferenceOf DriveSubsystem.robotPosition
-        val angle = Rotation2d(transform.translation.x.meter, transform.translation.y.meter, true)
+        val transform = lastKnownTargetPose.relativeTo(DriveSubsystem.robotPosition)
+        val angle = Rotation2d(transform.translation.x, transform.translation.y)
 
         // idk man maybe 1 feet per second at 1 ft of error?
         val currentDistance = LimeLight.estimateDistance()
-        val linear = (currentDistance - Constants.kCenterToFrontCamera.translation.x - targetDistance).velocity * kLinearKp // TODO tune
+        val linear = (currentDistance - Constants.kCenterToFrontCamera.translation.x.meters - targetDistance).velocity * kLinearKp // TODO tune
 
         // P loop on heading
-        val turn = kCorrectionKp * angle.radian + kCorrectionKd * (angle - prevAngleError).radian
+        val turn = kCorrectionKp * angle.radians + kCorrectionKd * (angle - prevAngleError).radians
 
-        DriveSubsystem.setWheelVelocities(DifferentialDrive.WheelState(linear.value + turn, linear.value - turn))
+        DriveSubsystem.setWheelVelocities(DifferentialDriveWheelSpeeds(linear.value + turn, linear.value - turn))
 
-        inRange = currentDistance < targetDistance + 2.inch
+        inRange = currentDistance < targetDistance + 2.inches
         if (inRange && inRangeTime > 0.0) inRangeTime = Timer.getFPGATimestamp()
 
         prevAngleError = angle

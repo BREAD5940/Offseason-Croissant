@@ -1,12 +1,14 @@
 package frc.robot.subsystems.drive
 
-import com.team254.lib.physics.DifferentialDrive
 import edu.wpi.first.wpilibj.GenericHID
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds
 import frc.robot.Constants
 import frc.robot.Controls
-import kotlin.math.* // ktlint-disable no-wildcard-imports
+import kotlin.math.absoluteValue
+import kotlin.math.max
+import kotlin.math.sign
 import org.ghrobotics.lib.commands.FalconCommand
-import org.ghrobotics.lib.subsystems.drive.TankDriveSubsystem
+import org.ghrobotics.lib.subsystems.drive.FalconDriveHelper
 import org.ghrobotics.lib.utils.withDeadband
 import org.ghrobotics.lib.wrappers.hid.* // ktlint-disable no-wildcard-imports
 
@@ -48,17 +50,6 @@ open class ManualDriveCommand : FalconCommand(DriveSubsystem) {
         }
     }
 
-    /**
-     * Tank drive control
-     */
-    private fun tankDrive(
-        leftPercent: Double,
-        rightPercent: Double
-    ) {
-        DriveSubsystem.leftMotor.setDutyCycle(leftPercent)
-        DriveSubsystem.rightMotor.setDutyCycle(rightPercent)
-    }
-
     companion object {
         /**
          * Curvature or cheezy drive control
@@ -68,14 +59,14 @@ open class ManualDriveCommand : FalconCommand(DriveSubsystem) {
             linearPercent: Double,
             curvaturePercent: Double,
             isQuickTurn: Boolean
-        ): DifferentialDrive.WheelState {
+        ): DifferentialDriveWheelSpeeds {
             val angularPower: Double
             val overPower: Boolean
 
             if (isQuickTurn) {
-                if (linearPercent.absoluteValue < TankDriveSubsystem.kQuickStopThreshold) {
-                    quickStopAccumulator = (1 - TankDriveSubsystem.kQuickStopAlpha) * quickStopAccumulator +
-                            TankDriveSubsystem.kQuickStopAlpha * curvaturePercent.coerceIn(-1.0, 1.0) * 2.0
+                if (linearPercent.absoluteValue < FalconDriveHelper.kQuickStopThreshold) {
+                    quickStopAccumulator = (1 - FalconDriveHelper.kQuickStopAlpha) * quickStopAccumulator +
+                            FalconDriveHelper.kQuickStopAlpha * curvaturePercent.coerceIn(-1.0, 1.0) * 2.0
                 }
                 overPower = true
                 angularPower = curvaturePercent
@@ -123,7 +114,7 @@ open class ManualDriveCommand : FalconCommand(DriveSubsystem) {
                 rightMotorOutput /= maxMagnitude
             }
 
-            return DifferentialDrive.WheelState(leftMotorOutput, rightMotorOutput)
+            return DifferentialDriveWheelSpeeds(leftMotorOutput, rightMotorOutput)
         }
 
         // KISS rate function
@@ -136,8 +127,8 @@ open class ManualDriveCommand : FalconCommand(DriveSubsystem) {
         }
 
         private var quickStopAccumulator = 0.0
-        private const val kQuickStopThreshold = TankDriveSubsystem.kQuickStopThreshold
-        private const val kQuickStopAlpha = TankDriveSubsystem.kQuickStopAlpha
+        private const val kQuickStopThreshold = FalconDriveHelper.kQuickStopThreshold
+        private const val kQuickStopAlpha = FalconDriveHelper.kQuickStopAlpha
         const val kDeadband = 0.05
         val speedSource: () -> Double by lazy {
             if (Constants.kIsRocketLeague) {

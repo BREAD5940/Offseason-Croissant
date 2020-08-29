@@ -1,10 +1,12 @@
 package frc.robot.subsystems.drive
 
-import asSource
 import com.kauailabs.navx.frc.AHRS
-import com.team254.lib.physics.DifferentialDrive
 import edu.wpi.first.wpilibj.Compressor
 import edu.wpi.first.wpilibj.SPI
+import edu.wpi.first.wpilibj.controller.RamseteController
+import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds
 import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand
 import frc.robot.Constants
@@ -13,29 +15,26 @@ import frc.robot.Ports.DrivePorts.LEFT_PORTS
 import frc.robot.Ports.DrivePorts.RIGHT_PORTS
 import frc.robot.Ports.DrivePorts.SHIFTER_PORTS
 import frc.robot.Ports.kPCMID
-import io.github.oblarg.oblog.Loggable
+import frc.robot.auto.paths.Pose2d
 import kotlin.properties.Delegates
-import org.ghrobotics.lib.localization.TankEncoderLocalization
-import org.ghrobotics.lib.mathematics.twodim.control.RamseteTracker
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
 import org.ghrobotics.lib.mathematics.twodim.geometry.Rectangle2d
 import org.ghrobotics.lib.mathematics.twodim.geometry.Translation2d
 import org.ghrobotics.lib.mathematics.units.* // ktlint-disable no-wildcard-imports
-import org.ghrobotics.lib.mathematics.units.derived.degree
-import org.ghrobotics.lib.mathematics.units.derived.velocity
-import org.ghrobotics.lib.mathematics.units.derived.volt
+import org.ghrobotics.lib.mathematics.units.derived.* // ktlint-disable no-wildcard-imports
 import org.ghrobotics.lib.mathematics.units.nativeunit.DefaultNativeUnitModel
 import org.ghrobotics.lib.motors.ctre.FalconSRX
-import org.ghrobotics.lib.subsystems.EmergencyHandleable
+import org.ghrobotics.lib.subsystems.SensorlessCompatibleSubsystem
+import org.ghrobotics.lib.subsystems.drive.FalconWestCoastDrivetrain
+import org.ghrobotics.lib.utils.asSource
 import org.ghrobotics.lib.wrappers.FalconDoubleSolenoid
 import org.ghrobotics.lib.wrappers.FalconSolenoid
 import org.team5940.pantry.lib.ConcurrentlyUpdatingComponent
 import org.team5940.pantry.lib.MultiMotorTransmission
-import org.team5940.pantry.lib.TankDriveSubsystem
 
-object DriveSubsystem : TankDriveSubsystem(), EmergencyHandleable, ConcurrentlyUpdatingComponent, Loggable {
+object DriveSubsystem : FalconWestCoastDrivetrain(), SensorlessCompatibleSubsystem, ConcurrentlyUpdatingComponent {
 
-    override val leftMotor: MultiMotorTransmission<Meter, FalconSRX<Meter>> = object : MultiMotorTransmission<Meter, FalconSRX<Meter>>() {
+    public override val leftMotor: MultiMotorTransmission<Meter, FalconSRX<Meter>> = object : MultiMotorTransmission<Meter, FalconSRX<Meter>>() {
 
         override val master = FalconSRX(LEFT_PORTS[0], kDriveLengthModel)
         override val followers = listOf(FalconSRX(LEFT_PORTS[1], DefaultNativeUnitModel))
@@ -57,6 +56,7 @@ object DriveSubsystem : TankDriveSubsystem(), EmergencyHandleable, ConcurrentlyU
             followers[0].talonSRX.enableCurrentLimit(true)
         }
 
+
         override fun setClosedLoopGains() {
 //            followers.forEach { configCurrentLimit(true, FalconSRX.CurrentLimitConfig(50.amp, 1.second, 38.amp)) }
 
@@ -71,9 +71,21 @@ object DriveSubsystem : TankDriveSubsystem(), EmergencyHandleable, ConcurrentlyU
             // old gains
 //            if (lowGear) setClosedLoopGains(0.45, 0.45*20.0) else setClosedLoopGains(1.0, 0.0)
         }
+
+        override var softLimitForward: SIUnit<Meter>
+            get() = master.softLimitForward
+            set(value) {
+                master.softLimitForward = value
+            }
+
+        override var softLimitReverse: SIUnit<Meter>
+            get() = master.softLimitReverse
+            set(value) {
+                master.softLimitReverse = value
+            }
     }
 
-    override val rightMotor: MultiMotorTransmission<Meter, FalconSRX<Meter>> = object : MultiMotorTransmission<Meter, FalconSRX<Meter>>() {
+    public override val rightMotor: MultiMotorTransmission<Meter, FalconSRX<Meter>> = object : MultiMotorTransmission<Meter, FalconSRX<Meter>>() {
 
         override val master = FalconSRX(RIGHT_PORTS[0], kDriveLengthModel)
         override val followers = listOf(FalconSRX(RIGHT_PORTS[1], DefaultNativeUnitModel))
@@ -107,20 +119,30 @@ object DriveSubsystem : TankDriveSubsystem(), EmergencyHandleable, ConcurrentlyU
             // Old gains
 //            if (lowGear) setClosedLoopGains(0.45, 0.45*20.0) else setClosedLoopGains(1.0, 0.0)
         }
+
+        override var softLimitForward: SIUnit<Meter>
+            get() = master.softLimitForward
+            set(value) {
+                master.softLimitForward = value
+            }
+
+        override var softLimitReverse: SIUnit<Meter>
+            get() = master.softLimitReverse
+            set(value) {
+                master.softLimitReverse = value
+            }
     }
 
-    override fun setNeutral() {
-        leftMotor.setNeutral(); rightMotor.setNeutral()
-        super.setNeutral()
-    }
-
-    override fun activateEmergency() { zeroOutputs(); leftMotor.zeroClosedLoopGains(); rightMotor.zeroClosedLoopGains()
+    override fun disableClosedLoopControl() {
+        setNeutral(); leftMotor.zeroClosedLoopGains(); rightMotor.zeroClosedLoopGains()
         defaultCommand = ManualDriveCommand()
     }
 
-    override fun recoverFromEmergency() { leftMotor.setClosedLoopGains(); rightMotor.setClosedLoopGains()
+    override fun enableClosedLoopControl() {
+        leftMotor.setClosedLoopGains(); rightMotor.setClosedLoopGains()
         defaultCommand = ClosedLoopChezyDriveCommand()
     }
+
     fun notWithinRegion(region: Rectangle2d) =
             WaitUntilCommand { !region.contains(robotPosition.translation) }
 
@@ -139,36 +161,61 @@ object DriveSubsystem : TankDriveSubsystem(), EmergencyHandleable, ConcurrentlyU
     class SetGearCommand(wantsLow: Boolean) : InstantCommand(Runnable { lowGear = wantsLow }, this)
 
     private val ahrs = AHRS(SPI.Port.kMXP)
-    override val localization = TankEncoderLocalization(
-            ahrs.asSource(),
-            { leftMotor.encoder.position },
-            { rightMotor.encoder.position })
+//    override val localization = TankEncoderLocalization(
+//            ahrs.asSource(),
+//            { leftMotor.encoder.position },
+//            { rightMotor.encoder.position })
+
+    override val gyro = ahrs.asSource()
+
+    override val leftCharacterization: SimpleMotorFeedforward
+        get() = if (lowGear) Constants.DriveConstants.kLeftTransmissionModelLowGear else Constants.DriveConstants.kLeftTransmissionModelHighGear
+
+    override val rightCharacterization: SimpleMotorFeedforward
+        get() = if (lowGear) Constants.DriveConstants.kRightTransmissionModelLowGear else Constants.DriveConstants.kRightTransmissionModelHighGear
+
+    override val kinematics = Constants.DriveConstants.kinematics
+
+    override val odometry = DifferentialDriveOdometry(gyro())
 
     // init localization stuff
     override fun lateInit() {
         // set the robot pose to a sane position
-        robotPosition = Pose2d(translation = Translation2d(20.feet, 20.feet), rotation = 0.degree)
+        odometry.resetPosition(Pose2d(20.feet, 20.feet, 0.degrees), gyro())
 //        defaultCommand = ManualDriveCommand() // set default command
         defaultCommand = ClosedLoopChezyDriveCommand()
         super.lateInit()
     }
 
     // Ramsete gang is the only true gang
-    override var trajectoryTracker = RamseteTracker(Constants.DriveConstants.kBeta, Constants.DriveConstants.kZeta)
+    override var controller = RamseteController(Constants.DriveConstants.kBeta, Constants.DriveConstants.kZeta)
 
     // the "differential drive" model, with a custom getter which changes based on the current gear
-    override val differentialDrive: DifferentialDrive
-        get() = if (lowGear) Constants.DriveConstants.kLowGearDifferentialDrive else Constants.DriveConstants.kHighGearDifferentialDrive
+//    override val differentialDrive: DifferentialDrive
+//        get() = if (lowGear) Constants.DriveConstants.kLowGearDifferentialDrive else Constants.DriveConstants.kHighGearDifferentialDrive
 
     override fun updateState() {
 //        localization.update()
     }
 
-    fun setWheelVelocities(wheelSpeeds: DifferentialDrive.WheelState) {
-        val left = wheelSpeeds.left / differentialDrive.wheelRadius // rad per sec
-        val right = wheelSpeeds.right / differentialDrive.wheelRadius // rad per sec
-        val ff = differentialDrive.getVoltagesFromkV(DifferentialDrive.WheelState(left, right))
-        leftMotor.setVelocity(wheelSpeeds.left.meter.velocity, ff.left.volt)
-        rightMotor.setVelocity(wheelSpeeds.right.meter.velocity, ff.right.volt)
+    fun setWheelVelocities(wheelSpeeds: DifferentialDriveWheelSpeeds) {
+        val leftFF = leftCharacterization.calculate(
+                wheelSpeeds.leftMetersPerSecond, 0.0
+        ).volts
+
+        val rightFF = rightCharacterization.calculate(
+                wheelSpeeds.rightMetersPerSecond, 0.0
+        ).volts
+
+        leftMotor.setVelocity(wheelSpeeds.leftMetersPerSecond.meters.velocity, leftFF)
+        rightMotor.setVelocity(wheelSpeeds.rightMetersPerSecond.meters.velocity, rightFF)
+    }
+
+    fun setTrajectoryOutput(
+            linearVelocity: SIUnit<LinearVelocity>,
+            lienarAcceleration: SIUnit<LinearAcceleration>,
+            angularVelocity: SIUnit<AngularVelocity>,
+            angularAcceleration: SIUnit<AngularAcceleration>
+    ) {
     }
 }

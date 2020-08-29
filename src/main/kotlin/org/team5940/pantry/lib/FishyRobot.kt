@@ -1,8 +1,8 @@
 package org.team5940.pantry.lib
 
 import edu.wpi.first.wpilibj.Timer
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.CommandScheduler
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import frc.robot.subsystems.drive.DriveSubsystem
 import frc.robot.subsystems.sensors.LimeLight
 import frc.robot.subsystems.superstructure.* // ktlint-disable no-wildcard-imports
@@ -12,6 +12,7 @@ import org.ghrobotics.lib.mathematics.units.derived.degree
 import org.ghrobotics.lib.mathematics.units.derived.radian
 import org.ghrobotics.lib.mathematics.units.inch
 import org.ghrobotics.lib.mathematics.units.meter
+import org.ghrobotics.lib.mathematics.units.meters
 import org.ghrobotics.lib.utils.loopFrequency
 import org.ghrobotics.lib.wrappers.FalconTimedRobot
 
@@ -55,7 +56,7 @@ var updateJob: Job? = null
                 SmartDashboard.putString("Joint states", Superstructure.currentState.asString())
                 val elevatorTarget = Elevator.wantedState as? WantedState.Position<*>
                         ?: WantedState.Position(0.inch)
-                println("Elevator target ${elevatorTarget.targetPosition.value.meter.inch} position ${Elevator.currentState.position.inch}")
+                println("Elevator target ${elevatorTarget.targetPosition.value.meters.inch} position ${Elevator.currentState.position.inch}")
 
                 val proxTarget = Proximal.wantedState as? WantedState.Position<*>
                         ?: WantedState.Position(0.degree)

@@ -51,7 +51,7 @@ class ClimbWithElevatorRetracted: FalconCommand(DriveSubsystem, Elevator, Proxim
         if (s3nd < -0.1) s3nd = -0.2
         ClimbSubsystem.intakeWheels.setDutyCycle(s3nd)
         DriveSubsystem.lowGear = true
-        DriveSubsystem.tankDrive(s3nd / 5.0, s3nd / 5.0)
+        DriveSubsystem.setPercent(s3nd / 5.0, s3nd / 5.0)
     }
 
     override fun isFinished() = Elevator.isWithTolerance(2.inch) && Proximal.isWithTolerance(6.degree)

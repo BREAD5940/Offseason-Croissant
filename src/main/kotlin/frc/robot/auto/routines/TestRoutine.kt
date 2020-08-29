@@ -29,7 +29,7 @@ class TestRoutine : AutoRoutine() {
                 100.feet,
                 false
         ).beforeStarting {
-            DriveSubsystem.robotPosition = TrajectoryFactory.cargoS1PrepToCargoS1.firstState.state.pose
+            DriveSubsystem.robotPosition = TrajectoryFactory.cargoS1PrepToCargoS1.states.first().poseMeters
         }
     }
 }

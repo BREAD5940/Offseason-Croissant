@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.TimedRobot
 import edu.wpi.first.wpilibj.livewindow.LiveWindow
 import edu.wpi.first.wpilibj2.command.CommandScheduler
 import org.ghrobotics.lib.commands.FalconSubsystem
-import org.ghrobotics.lib.subsystems.EmergencyHandleable
+import org.ghrobotics.lib.subsystems.SensorlessCompatibleSubsystem
 
 abstract class FalconTimedRobotTheSecond {
 
@@ -22,7 +22,7 @@ abstract class FalconTimedRobotTheSecond {
     var currentMode = Mode.NONE
         private set
 
-    private val emergencyReadySystems = arrayListOf<EmergencyHandleable>()
+    private val emergencyReadySystems = arrayListOf<SensorlessCompatibleSubsystem>()
     var emergencyActive = false
         protected set
 
@@ -97,18 +97,18 @@ abstract class FalconTimedRobotTheSecond {
 
     open operator fun FalconSubsystem.unaryPlus() {
         FalconSubsystemHandler.add(this)
-        if (this is EmergencyHandleable) {
+        if (this is SensorlessCompatibleSubsystem) {
             emergencyReadySystems.add(this)
         }
     }
 
     fun activateEmergency() {
-        emergencyReadySystems.forEach { it.activateEmergency() }
+        emergencyReadySystems.forEach { it.disableClosedLoopControl() }
         emergencyActive = true
     }
 
     fun recoverFromEmergency() {
-        emergencyReadySystems.forEach { it.recoverFromEmergency() }
+        emergencyReadySystems.forEach { it.enableClosedLoopControl() }
         emergencyActive = false
     }
 

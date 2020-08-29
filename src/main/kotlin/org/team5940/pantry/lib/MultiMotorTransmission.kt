@@ -7,7 +7,7 @@ import org.ghrobotics.lib.mathematics.units.derived.* // ktlint-disable no-wildc
 import org.ghrobotics.lib.motors.FalconMotor
 import org.ghrobotics.lib.motors.ctre.FalconCTRE
 import org.ghrobotics.lib.motors.rev.FalconMAX
-import org.ghrobotics.lib.subsystems.EmergencyHandleable
+import org.ghrobotics.lib.subsystems.SensorlessCompatibleSubsystem
 
 /**
  * A MultiMotorTransmission contains multiple motors.
@@ -15,7 +15,7 @@ import org.ghrobotics.lib.subsystems.EmergencyHandleable
  * and a master of type [M] with a model of type [T]
  */
 abstract class MultiMotorTransmission<T : SIKey, M : FalconMotor<T>> : FalconMotor<T>,
-        EmergencyHandleable, ConcurrentlyUpdatingJoint<T> {
+        SensorlessCompatibleSubsystem, ConcurrentlyUpdatingJoint<T> {
 
     abstract val master: M
 
@@ -145,11 +145,14 @@ abstract class MultiMotorTransmission<T : SIKey, M : FalconMotor<T>> : FalconMot
 
     fun setClosedLoopGains(p: Double, d: Double, ff: Double = 0.0) = master.setClosedLoopGains(p, d, ff)
 
-    override fun activateEmergency() {
+    override fun disableClosedLoopControl() {
         zeroClosedLoopGains()
         setNeutral()
     }
-    override fun recoverFromEmergency() = setClosedLoopGains()
+
+    override fun enableClosedLoopControl() {
+        setClosedLoopGains()
+    }
 
     data class State<T : SIKey>(
         val position: SIUnit<T>, // the position in [T] units

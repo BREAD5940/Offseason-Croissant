@@ -6,7 +6,7 @@ import org.ghrobotics.lib.commands.FalconCommand
 import org.ghrobotics.lib.mathematics.units.Meter
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.derived.Radian
-import org.ghrobotics.lib.mathematics.units.derived.degree
+import org.ghrobotics.lib.mathematics.units.derived.degrees
 import org.ghrobotics.lib.mathematics.units.derived.toRotation2d
 import org.team5940.pantry.lib.WantedState
 
@@ -29,14 +29,14 @@ class PrismaticWristPokeMove(private val mWristHeightToMaintain: SIUnit<Meter>, 
         val elevatorHeightDiff = kProximalLen * Proximal.activeTrajectoryPosition.toRotation2d().sin
         val elevatorHeight = (mWristHeightToMaintain - elevatorHeightDiff)
                 .coerceIn(Constants.SuperStructureConstants.kElevatorRange)
-        val wristPos = Superstructure.getDumbWrist(0.degree, Superstructure.currentState.proximal)
+        val wristPos = Superstructure.getDumbWrist(0.degrees, Superstructure.currentState.proximal)
 
         Elevator.wantedState = WantedState.Position(elevatorHeight)
         Proximal.wantedState = WantedState.Position(proximalAngle)
         Wrist.wantedState = WantedState.Position(wristPos)
     }
 
-    override fun isFinished() = Proximal.isWithTolerance(proximalAngle, 2.degree)
+    override fun isFinished() = Proximal.isWithTolerance(proximalAngle, 2.degrees)
 
     override fun end(interrupted: Boolean) {
         Proximal.motor.setClosedLoopGains()

@@ -7,13 +7,14 @@ import frc.robot.Constants
 import frc.robot.Constants.SuperStructureConstants.kProximalCos
 import frc.robot.Constants.SuperStructureConstants.kProximalStatic
 import frc.robot.Ports
+import org.ghrobotics.lib.mathematics.units.Meter
 import kotlin.math.cos
 import kotlin.math.withSign
 import org.ghrobotics.lib.mathematics.units.SIKey
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.derived.AngularVelocity
 import org.ghrobotics.lib.mathematics.units.derived.Radian
-import org.ghrobotics.lib.mathematics.units.derived.degree
+import org.ghrobotics.lib.mathematics.units.derived.degrees
 import org.ghrobotics.lib.mathematics.units.nativeunit.* // ktlint-disable no-wildcard-imports
 import org.ghrobotics.lib.motors.ctre.FalconSRX
 import org.team5940.pantry.lib.* // ktlint-disable no-wildcard-imports
@@ -21,14 +22,14 @@ import org.team5940.pantry.lib.* // ktlint-disable no-wildcard-imports
 object Proximal : ConcurrentFalconJoint<Radian, FalconSRX<Radian>>() {
 
     fun resetPosition(position: SIUnit<Radian>) {
-        val ticks = (position).toNativeUnitPosition(motor.master.model)
+        val ticks = (position).toNativeUnitPosition(Ports.SuperStructurePorts.ProximalPorts.ROTATION_MODEL)
         canifier.setQuadraturePosition(ticks.value.toInt(), 0)
     }
 
     val activeTrajectoryPosition: SIUnit<Radian>
         get() {
             val nativeTrajectoryPos = motor.master.talonSRX.activeTrajectoryPosition.nativeUnits
-            return motor.master.model.fromNativeUnitPosition(nativeTrajectoryPos)
+            return Ports.SuperStructurePorts.ProximalPorts.ROTATION_MODEL.fromNativeUnitPosition(nativeTrajectoryPos)
         }
 
     fun configureThrust(thrustVelocity: SIUnit<AngularVelocity>) {
@@ -36,7 +37,7 @@ object Proximal : ConcurrentFalconJoint<Radian, FalconSRX<Radian>>() {
     }
 
     val canifier = CANifier(34)
-    val absoluteEncoder = canifier.asPWMSource(1131.0 to (-90).degree, 677.0 to 0.degree,
+    val absoluteEncoder = canifier.asPWMSource(1131.0 to (-90).degrees, 677.0 to 0.degrees,
             CANifier.PWMChannel.PWMChannel0)
 
     fun zero() = resetPosition(absoluteEncoder())
@@ -68,7 +69,7 @@ object Proximal : ConcurrentFalconJoint<Radian, FalconSRX<Radian>>() {
             master.talonSRX.configSelectedFeedbackSensor(RemoteFeedbackDevice.RemoteSensor0, 0, 100)
 
             master.outputInverted = Ports.SuperStructurePorts.ProximalPorts.TALON_INVERTED
-            master.feedbackSensor = Ports.SuperStructurePorts.ProximalPorts.SENSOR
+            master.talonSRX.configSelectedFeedbackSensor(Ports.SuperStructurePorts.ProximalPorts.SENSOR)
             master.talonSRX.setSensorPhase(Ports.SuperStructurePorts.ProximalPorts.TALON_SENSOR_PHASE)
             master.talonSRX.configClosedLoopPeakOutput(0, 1.0)
             master.talonSRX.configPeakOutputForward(1.0)
@@ -103,6 +104,18 @@ object Proximal : ConcurrentFalconJoint<Radian, FalconSRX<Radian>>() {
                     0.5 * 1.2, 6.0, ff = 0.45 // used to be p = 0.85, got oscolation
             )
         }
+
+        override var softLimitForward: SIUnit<Radian>
+            get() = master.softLimitForward
+            set(value) {
+                master.softLimitForward = value
+            }
+
+        override var softLimitReverse: SIUnit<Radian>
+            get() = master.softLimitReverse
+            set(value) {
+                master.softLimitReverse = value
+            }
     }
 
     fun setClimbPositionMode() = motor.run {

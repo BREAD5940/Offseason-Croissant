@@ -2,6 +2,8 @@
 
 package frc.robot.subsystems.drive
 
+import edu.wpi.first.wpilibj.geometry.Pose2d
+import edu.wpi.first.wpilibj.geometry.Rotation2d
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder
 import frc.robot.Network
 import frc.robot.subsystems.sensors.LimeLight
@@ -10,13 +12,8 @@ import frc.robot.subsystems.superstructure.LEDs
 import frc.robot.vision.TargetTracker
 import kotlin.math.absoluteValue
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
-import org.ghrobotics.lib.mathematics.twodim.geometry.Rotation2d
-import org.ghrobotics.lib.mathematics.units.derived.degree
-import org.ghrobotics.lib.mathematics.units.derived.radian
-import org.ghrobotics.lib.mathematics.units.derived.toRotation2d
-import org.ghrobotics.lib.mathematics.units.feet
-import org.ghrobotics.lib.mathematics.units.inch
-import org.ghrobotics.lib.mathematics.units.meter
+import org.ghrobotics.lib.mathematics.units.* // ktlint-disable no-wildcard-imports
+import org.ghrobotics.lib.mathematics.units.derived.* // ktlint-disable no-wildcard-imports
 
 class OpenLoopVisionDriveCommand(private val isFront: Boolean, private val skewCorrect: Boolean = true) : ManualDriveCommand() {
 
@@ -52,44 +49,44 @@ class OpenLoopVisionDriveCommand(private val isFront: Boolean, private val skewC
             super.execute()
         } else {
 //            ElevatorSubsystem.wantedVisionMode = false
-            val transform = lastKnownTargetPose inFrameOfReferenceOf DriveSubsystem.robotPosition
-            var angle = Rotation2d(transform.translation.x.meter, transform.translation.y.meter, true)
-            val distance = transform.translation.norm.feet.absoluteValue
+            val transform = lastKnownTargetPose.relativeTo(DriveSubsystem.robotPosition)
+            var angle = Rotation2d(transform.translation.x, transform.translation.y)
+            val distance = transform.translation.norm.absoluteValue / kFeetToMeter
 
             // limit linear speed based on elevator height, linear function with height above stowed
             val elevator = Elevator.currentState.position
-            if (elevator > 32.inch && elevator < 55.inch) {
+            if (elevator > 32.inches && elevator < 55.inches) {
                 // y = mx + b, see https://www.desmos.com/calculator/quelminicu
                 source *= (-0.0216 * elevator.inch + 1.643)
             }
 
             if (distance < 6) {
-                source *= (distance + 1) / 6.0
+                source *= (distance + 1.0) / 6.0
             }
 
-            val offset = if (!skewCorrect) 0.degree else {
+            val offset = if (!skewCorrect) 0.degrees else {
                 var skew = LimeLight.lastSkew
-                if (skew > (-45).degree) skew = skew.absoluteValue else skew += 90.degree
-                if (skew > 5.degree) {
-                    0.05.degree * (if (LimeLight.targetToTheLeft) 1 else -1) * (skew.degree / 13)
-                } else 0.degree
+                if (skew > (-45).degrees) skew = skew.absoluteValue else skew += 90.degrees
+                if (skew > 5.degrees) {
+                    0.05.degrees * (if (LimeLight.targetToTheLeft) 1 else -1) * (skew.degree / 13)
+                } else 0.degrees
             }
             angle -= offset.toRotation2d()
 
-            Network.visionDriveAngle.setDouble(angle.degree)
+            Network.visionDriveAngle.setDouble(angle.degrees)
             Network.visionDriveActive.setBoolean(true)
 
-            val angleError = angle + if (isFront) 0.degree.toRotation2d() else Math.PI.radian.toRotation2d() - 1.7.degree.toRotation2d()
+            val angleError = angle + if (isFront) 0.degrees.toRotation2d() else Math.PI.radians.toRotation2d() - 1.7.degrees.toRotation2d()
 
 //            if (angleError.degree.absoluteValue > 45) {
 //                // plz no disable us when going to loading station, kthx
 //                this.lastKnownTargetPose = null
 //            }
 
-            val error = angleError.radian
+            val error = angleError.radians
 
             val turn = kCorrectionKp * error + kCorrectionKd * (error - prevError)
-            DriveSubsystem.tankDrive(source - turn, source + turn)
+            DriveSubsystem.setPercent(source - turn, source + turn)
 
             prevError = error
         }

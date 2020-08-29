@@ -18,9 +18,10 @@ import frc.robot.subsystems.superstructure.* // ktlint-disable no-wildcard-impor
 import org.ghrobotics.lib.commands.FalconCommand
 import org.ghrobotics.lib.commands.parallel
 import org.ghrobotics.lib.commands.sequential
-import org.ghrobotics.lib.mathematics.units.derived.degree
+import org.ghrobotics.lib.mathematics.units.derived.degrees
 import org.ghrobotics.lib.mathematics.units.derived.volt
 import org.ghrobotics.lib.mathematics.units.inch
+import org.ghrobotics.lib.mathematics.units.inches
 import org.ghrobotics.lib.wrappers.hid.* // ktlint-disable no-wildcard-imports
 import org.team5940.pantry.lib.Updatable
 
@@ -36,9 +37,9 @@ object Controls : Updatable {
         registerEmergencyMode()
 
         button(kX).changeOn(TestRoutine()())
-        button(kY).changeOn(DriveSubsystem.followTrajectory(TrajectoryFactory.testTrajectory2).beforeStarting {
-            DriveSubsystem.robotPosition = TrajectoryFactory.testTrajectory2.firstState.state.pose
-        })
+//        button(kY).changeOn(DriveSubsystem.followTrajectory(TrajectoryFactory.testTrajectory2).beforeStarting {
+//            DriveSubsystem.robotPosition = TrajectoryFactory.testTrajectory2.states.first().poseMeters
+//        })
 
         // Shifting
         if (Constants.kIsRocketLeague) {
@@ -125,12 +126,12 @@ object Controls : Updatable {
         }
         state({ isClimbing}) {
             lessThanAxisButton(1, 0.8).changeOn { ClimbSubsystem
-                    .currentHab3Offset = (ClimbSubsystem.currentHab3Offset + 0.5.inch).coerceIn((-2).inch, 2.inch) }
+                    .currentHab3Offset = (ClimbSubsystem.currentHab3Offset + 0.5.inches).coerceIn((-2).inches, 2.inches) }
             greaterThanAxisButton(1, 0.8).changeOn { ClimbSubsystem
-                    .currentHab3Offset = (ClimbSubsystem.currentHab3Offset - 0.5.inch).coerceIn((-2).inch, 2.inch) }
+                    .currentHab3Offset = (ClimbSubsystem.currentHab3Offset - 0.5.inches).coerceIn((-2).inches, 2.inches) }
         }
-        lessThanAxisButton(0, 0.8).changeOn { Wrist.offset += 4.degree }
-        greaterThanAxisButton(0, 0.8).changeOn { Wrist.offset -= 4.degree }
+        lessThanAxisButton(0, 0.8).changeOn { Wrist.offset += 4.degrees }
+        greaterThanAxisButton(0, 0.8).changeOn { Wrist.offset -= 4.degrees }
 
         // boring intake
         lessThanAxisButton(5).change(IntakeHatchCommand(releasing = true, shouldMutateArms = false))
@@ -218,6 +219,8 @@ object Controls : Updatable {
         operatorFalconXbox.update()
     }
 }
+
+private fun Command.beforeStarting(function: () -> Unit) = this.beforeStarting(Runnable(function))
 
 private fun Command.andThen(block: () -> Unit) = sequential { +this@andThen ; +InstantCommand(Runnable(block)) }
 

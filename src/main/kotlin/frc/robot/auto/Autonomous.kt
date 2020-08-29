@@ -1,5 +1,6 @@
 package frc.robot.auto
 
+import edu.wpi.first.wpilibj.geometry.Pose2d
 import edu.wpi.first.wpilibj2.command.CommandBase
 import edu.wpi.first.wpilibj2.command.InstantCommand
 import frc.robot.Network
@@ -9,7 +10,7 @@ import frc.robot.auto.routines.BottomRocketRoutine2
 import frc.robot.auto.routines.CargoShipRoutine
 import frc.robot.auto.routines.HybridRoutine
 import frc.robot.subsystems.drive.DriveSubsystem
-import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
+import org.ghrobotics.lib.mathematics.twodim.geometry.mirror
 import org.ghrobotics.lib.utils.Source
 import org.ghrobotics.lib.utils.and
 import org.ghrobotics.lib.utils.monitor
@@ -43,7 +44,7 @@ object Autonomous : Updatable {
     // Update the autonomous listener.
     override fun update() {
         // Update localization.
-        startingPositionMonitor.onChange { if (!Robot.isEnabled) DriveSubsystem.localization.reset(it.pose) }
+        startingPositionMonitor.onChange { if (!Robot.isEnabled) DriveSubsystem.odometry.resetPosition(it.pose, DriveSubsystem.gyro()) }
 
         // update our selected auto mode
         selectedAutonomous = possibleAutos[autoMode()] ?: doNothing
@@ -79,10 +80,10 @@ object Autonomous : Updatable {
     private val robotModeMonitor = { Robot.currentMode }.monitor
 
     enum class StartingPositions(val pose: Pose2d) {
-        LEFT(TrajectoryWaypoints.kSideStart.mirror),
+        LEFT(TrajectoryWaypoints.kSideStart.mirror()),
         CENTER(TrajectoryWaypoints.kCenterStart),
         RIGHT(TrajectoryWaypoints.kSideStart),
-        LEFT_REVERSED(TrajectoryWaypoints.kSideStartReversed.mirror),
+        LEFT_REVERSED(TrajectoryWaypoints.kSideStartReversed.mirror()),
         RIGHT_REVERSED(TrajectoryWaypoints.kSideStartReversed)
     }
 

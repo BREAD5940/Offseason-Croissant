@@ -12,10 +12,9 @@ import frc.robot.subsystems.superstructure.Superstructure
 import org.ghrobotics.lib.commands.parallel
 import org.ghrobotics.lib.commands.parallelRace
 import org.ghrobotics.lib.commands.sequential
-import org.ghrobotics.lib.mathematics.twodim.trajectory.types.duration
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.Second
-import org.ghrobotics.lib.mathematics.units.derived.degree
+import org.ghrobotics.lib.mathematics.units.derived.degrees
 import org.ghrobotics.lib.mathematics.units.derived.toRotation2d
 import org.ghrobotics.lib.mathematics.units.feet
 import org.ghrobotics.lib.mathematics.units.second
@@ -56,7 +55,7 @@ class HybridRoutine : AutoRoutine() {
                             Autonomous.isStartingOnLeft
                     )
                     +PointTurnCommand {
-                        90.degree.toRotation2d() * if (Autonomous.isStartingOnLeft()) -1.0 else 1.0
+                        90.degrees.toRotation2d() * if (Autonomous.isStartingOnLeft()) -1.0 else 1.0
                     }
                     // drive forward
                     +super.followVisionAssistedTrajectory(
@@ -107,7 +106,7 @@ class HybridRoutine : AutoRoutine() {
                 +path3_
                 +Superstructure.kPokedStowed
                 +sequential {
-                    +WaitCommand(path3.duration.second - 2.5)
+                    +WaitCommand(path3.totalTimeSeconds - 2.5)
                     +IntakeHatchCommand(false).withExit { path3_.isFinished }
                 }
             }
@@ -119,7 +118,7 @@ class HybridRoutine : AutoRoutine() {
                 +Superstructure.kStowed
                 +DriveSubsystem.followTrajectory(path4, pathMirrored)
             }
-            +PointTurnCommand { (-143 - 8).degree.toRotation2d() * if (Autonomous.isStartingOnLeft()) -1.0 else 1.0 }
+            +PointTurnCommand { (-143 - 8).degrees.toRotation2d() * if (Autonomous.isStartingOnLeft()) -1.0 else 1.0 }
 
             +super.followVisionAssistedTrajectory(
                     path5,
@@ -130,7 +129,7 @@ class HybridRoutine : AutoRoutine() {
 
             +parallel {
                 +IntakeHatchCommand(true).withTimeout(1.0)
-                +RunCommand(Runnable { DriveSubsystem.tankDrive(-0.3, -0.3) }).withTimeout(1.0)
+                +RunCommand(Runnable { DriveSubsystem.setPercent(-0.3, -0.3) }).withTimeout(1.0)
             }
         }
 }

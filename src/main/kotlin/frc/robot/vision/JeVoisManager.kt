@@ -14,6 +14,7 @@ import kotlin.concurrent.fixedRateTimer
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.Second
 import org.ghrobotics.lib.mathematics.units.second
+import org.ghrobotics.lib.mathematics.units.seconds
 
 object JeVoisManager {
 
@@ -30,7 +31,7 @@ object JeVoisManager {
     init {
 
         fixedRateTimer(name = "JevoisManager", period = 3000L) {
-            val currentTime = Timer.getFPGATimestamp().second
+            val currentTime = Timer.getFPGATimestamp().seconds
 
             var connect = ""
             connectedJeVoisCameras.forEach {
@@ -132,11 +133,11 @@ object JeVoisManager {
 
 //            serialPort.addDataListener(TestListener())
 
-            lastMessageReceived = Timer.getFPGATimestamp().second
+            lastMessageReceived = Timer.getFPGATimestamp().seconds
         }
 
         fun processMessage(message: String) {
-            lastMessageReceived = Timer.getFPGATimestamp().second
+            lastMessageReceived = Timer.getFPGATimestamp().seconds
             if (!message.startsWith('{')) return
             try {
                 val jsonData = kJevoisGson.fromJson<JsonObject>(message)

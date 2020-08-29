@@ -1,6 +1,8 @@
 package frc.robot.subsystems.drive
 
-import com.team254.lib.physics.DifferentialDrive
+import edu.wpi.first.wpilibj.geometry.Pose2d
+import edu.wpi.first.wpilibj.geometry.Rotation2d
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import frc.robot.Network
@@ -10,20 +12,16 @@ import frc.robot.subsystems.superstructure.LEDs
 import frc.robot.vision.TargetTracker
 import kotlin.math.absoluteValue
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
-import org.ghrobotics.lib.mathematics.twodim.geometry.Rotation2d
-import org.ghrobotics.lib.mathematics.units.derived.degree
-import org.ghrobotics.lib.mathematics.units.derived.radian
+import org.ghrobotics.lib.mathematics.units.* // ktlint-disable no-wildcard-imports
+import org.ghrobotics.lib.mathematics.units.derived.degrees
+import org.ghrobotics.lib.mathematics.units.derived.toRotation2d
 import org.ghrobotics.lib.mathematics.units.derived.velocity
-import org.ghrobotics.lib.mathematics.units.feet
-import org.ghrobotics.lib.mathematics.units.inch
-import org.ghrobotics.lib.mathematics.units.kFeetToMeter
-import org.ghrobotics.lib.mathematics.units.meter
 
 class ClosedLoopVisionDriveCommand(private val isFront: Boolean, private val skewCorrect: Boolean = false) : ManualDriveCommand() {
 
     override fun isFinished() = false
 
-    private var referencePose = Pose2d()
+    private var referencePose = Pose2d(0.0.inches, 0.0.inches, 0.degrees.toRotation2d())
 
     private var prevError = 0.0
 
@@ -53,11 +51,11 @@ class ClosedLoopVisionDriveCommand(private val isFront: Boolean, private val ske
 //            ElevatorSubsystem.wantedVisionMode = true
             super.execute()
         } else {
-            val transform = lastKnownTargetPose inFrameOfReferenceOf DriveSubsystem.robotPosition
-            var angle = Rotation2d(transform.translation.x.meter, transform.translation.y.meter, true)
+            val transform = lastKnownTargetPose.relativeTo(DriveSubsystem.robotPosition)
+            var angle = Rotation2d(transform.translation.x, transform.translation.y)
             var linear = -ManualDriveCommand.speedSource()
 
-            if (angle.degree.absoluteValue > 45) {
+            if (angle.degrees.absoluteValue > 45) {
                 // plz no disable us when going to loading station, kthx
                 this.lastKnownTargetPose = null
                 super.execute()
@@ -65,12 +63,12 @@ class ClosedLoopVisionDriveCommand(private val isFront: Boolean, private val ske
 
 //            val angle = LimeLight.lastYaw
 
-            Network.visionDriveAngle.setDouble(angle.degree)
+            Network.visionDriveAngle.setDouble(angle.degrees)
             Network.visionDriveActive.setBoolean(true)
 
             // limit linear speed based on elevator height, linear function with height above stowed
             val elevator = Elevator.currentState.position
-            if (elevator > 32.inch) {
+            if (elevator > 32.inches) {
                 // y = mx + b, see https://www.desmos.com/calculator/quelminicu
                 // y=\left(\frac{0.35-1}{69-32}\right)\left(x-32\right)+1
                 linear *= (-0.0208108 * elevator.inch + 1.66696)
@@ -83,7 +81,7 @@ class ClosedLoopVisionDriveCommand(private val isFront: Boolean, private val ske
 //            if (skew > (-45).degree) skew = skew.absoluteValue else skew += 90.degree
 //            if (skew > 5.degree && skewCorrect) offset = 0.05.degree * (if (LimeLight.targetToTheLeft) 1 else -1) * (skew.degree / 13)
 
-            val error = angle.radian // - offset.radian
+            val error = angle.radians // - offset.radian
 
             // at 0 speed this should be 1, and at 10ft/sec it should be 2
             // so (0, 1) and (10, 2)
@@ -92,7 +90,7 @@ class ClosedLoopVisionDriveCommand(private val isFront: Boolean, private val ske
                 leftMotor.encoder.velocity + rightMotor.encoder.velocity
             }).absoluteValue / 2.0
             val scaler = velocity.value * (/* max scaler */ 4.0 - /* min scaler */ 1.0) /
-                    (/* velocity at max scaler */10.feet.meter) + 1.0
+                    (/* velocity at max scaler */10.feet.inMeters()) + 1.0
             var kp = (kCorrectionKp * scaler)
             if (kp > 0.7) kp = 0.7
 //            val kp = kCorrectionKp
@@ -104,7 +102,7 @@ class ClosedLoopVisionDriveCommand(private val isFront: Boolean, private val ske
 
 //            val wheelState = curvatureDrive(linear, turn, false)
 
-            DriveSubsystem.setWheelVelocities(DifferentialDrive.WheelState((linear - turn) * multiplier, (linear + turn) * multiplier))
+            DriveSubsystem.setWheelVelocities(DifferentialDriveWheelSpeeds((linear - turn) * multiplier, (linear + turn) * multiplier))
 
             prevError = error
         }
@@ -124,7 +122,7 @@ class ClosedLoopVisionDriveCommand(private val isFront: Boolean, private val ske
     companion object {
         var kCorrectionKp = 0.35
         var kCorrectionKd = 0.0
-        val maxTurn = 90.degree.velocity
+        val maxTurn = 90.degrees.velocity
         var isActive = false
             private set
     }

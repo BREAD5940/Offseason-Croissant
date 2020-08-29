@@ -3,8 +3,8 @@ package frc.robot.subsystems.superstructure
 import org.ghrobotics.lib.commands.FalconCommand
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.derived.Radian
-import org.ghrobotics.lib.mathematics.units.derived.degree
-import org.ghrobotics.lib.mathematics.units.inch
+import org.ghrobotics.lib.mathematics.units.derived.degrees
+import org.ghrobotics.lib.mathematics.units.inches
 import org.ghrobotics.lib.utils.Source
 import org.team5940.pantry.lib.WantedState
 
@@ -23,7 +23,7 @@ class ClosedLoopElevatorMove(private val target: Source<Length>) : FalconCommand
         }
     }
 
-    override fun isFinished() = Elevator.isWithTolerance(1.inch)
+    override fun isFinished() = Elevator.isWithTolerance(1.inches)
 
     // : Boolean {
 //        val error = abs(target - Elevator.currentState.position) / SILengthConstants.kInchToMeter
@@ -44,7 +44,7 @@ class ClosedLoopProximalMove(private val target: SIUnit<Radian>) : FalconCommand
         }
     }
 
-    override fun isFinished() = Proximal.isWithTolerance(3.0.degree) // toDegrees(abs(target - Proximal.currentState.position)) < 5.0
+    override fun isFinished() = Proximal.isWithTolerance(3.0.degrees) // toDegrees(abs(target - Proximal.currentState.position)) < 5.0
 }
 
 class ClosedLoopSourceProximalMove(private val endState: SIUnit<Radian>, private val target: Source<SIUnit<Radian>>) : FalconCommand(Proximal) {
@@ -60,7 +60,7 @@ class ClosedLoopSourceProximalMove(private val endState: SIUnit<Radian>, private
         }
     }
 
-    override fun isFinished() = (endState - Proximal.currentState.position).absoluteValue < 5.degree
+    override fun isFinished() = (endState - Proximal.currentState.position).absoluteValue < 5.degrees
     // Proximal.isWithTolerance(3.0.degree) // toDegrees(abs(target - Proximal.currentState.position)) < 5.0
 }
 
@@ -77,7 +77,7 @@ class ClosedLoopWristMove(private val target: SIUnit<Radian>) : FalconCommand(Wr
         }
     }
 
-    override fun isFinished() = Wrist.isWithToleranceWithOffset(5.0.degree) // toDegrees(abs(target - Wrist.currentState.position)) < 5.
+    override fun isFinished() = Wrist.isWithToleranceWithOffset(5.0.degrees) // toDegrees(abs(target - Wrist.currentState.position)) < 5.
 //    {
 //        val currentState = Wrist.currentState.position
 //        val offset = Wrist.offset

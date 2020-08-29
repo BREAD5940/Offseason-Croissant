@@ -11,13 +11,14 @@ import org.ghrobotics.lib.mathematics.twodim.geometry.Translation2d
 import org.ghrobotics.lib.mathematics.units.* // ktlint-disable no-wildcard-imports
 import org.ghrobotics.lib.mathematics.units.derived.Radian
 import org.ghrobotics.lib.mathematics.units.derived.degree
+import org.ghrobotics.lib.mathematics.units.derived.degrees
 import org.ghrobotics.lib.mathematics.units.derived.toRotation2d
-import org.ghrobotics.lib.subsystems.EmergencyHandleable
+import org.ghrobotics.lib.subsystems.SensorlessCompatibleSubsystem
 import org.team5940.pantry.lib.* // ktlint-disable no-wildcard-imports
 
 typealias Length = SIUnit<Meter>
 
-object Superstructure : FalconSubsystem(), EmergencyHandleable, ConcurrentlyUpdatingComponent {
+object Superstructure : FalconSubsystem(), SensorlessCompatibleSubsystem, ConcurrentlyUpdatingComponent {
 
     init {
         // force instantiation of subsystems
@@ -27,32 +28,32 @@ object Superstructure : FalconSubsystem(), EmergencyHandleable, ConcurrentlyUpda
     }
 
     val kStowed
-        get() = everythingMoveTo(30.25.inch + 1.2.inch - 0.75.inch, (-70).degree, 40.degree)
+        get() = everythingMoveTo(30.25.inches + 1.2.inches - 0.75.inches, (-70).degrees, 40.degrees)
 
     val kPokedStowed get() = everythingMoveTo(31.45.inch - 2.2.inch - 1.5.inch + 1.inch - 1.8.inch, (-40).degree, 30.degree)
 
     val kMatchStartToStowed get() = sequential {
         +parallel {
-            +ClosedLoopProximalMove((-70).degree)
-            +ClosedLoopWristMove(40.degree)
+            +ClosedLoopProximalMove((-70).degrees)  
+            +ClosedLoopWristMove(40.degrees)
         }
-        +ClosedLoopElevatorMove(30.25.inch)
+        +ClosedLoopElevatorMove(30.25.inches)
         +kStowed
     }
     val kBackHatchFromLoadingStation get() = SyncedMove.frontToBack
-    val kHatchLow get() = everythingMoveTo(19.inch, 0.degree, 4.degree)
-    val kHatchMid get() = everythingMoveTo(43.inch, 0.degree, 4.degree)
-    val kHatchHigh get() = everythingMoveTo(65.25.inch, (6).degree, 6.5.degree)
+    val kHatchLow get() = everythingMoveTo(19.inches, 0.degrees, 4.degrees)
+    val kHatchMid get() = everythingMoveTo(43.inches, 0.degrees, 4.degrees)
+    val kHatchHigh get() = everythingMoveTo(65.25.inches, (6).degrees, 6.5.degrees)
 
-    val kCargoIntake get() = everythingMoveTo(25.0.inch, (-44).degree, (-20).degree)
-    val kCargoShip get() = everythingMoveTo(47.5.inch, (-5).degree, (-50).degree)
+    val kCargoIntake get() = everythingMoveTo(25.0.inches, (-44).degrees, (-20).degrees)
+    val kCargoShip get() = everythingMoveTo(47.5.inches, (-5).degrees, (-50).degrees)
 //    val kCargoShip get() = everythingMoveTo(30.25.inch + 1.2.inch + 24.inch, (-70).degree, 0.degree)
 
-    val kCargoLow get() = everythingMoveTo(20.5.inch, 6.degree, 16.degree)
-    val kCargoMid get() = everythingMoveTo(45.inch, 6.degree, 6.degree)
-    val kCargoHigh get() = everythingMoveTo(64.5.inch, 7.degree, 30.degree)
+    val kCargoLow get() = everythingMoveTo(20.5.inches, 6.degrees, 16.degrees)
+    val kCargoMid get() = everythingMoveTo(45.inches, 6.degrees, 6.degrees)
+    val kCargoHigh get() = everythingMoveTo(64.5.inches, 7.degrees, 30.degrees)
 
-    val kStraightDown get() = everythingMoveTo(32.inch, (-70).degree, (-51).degree) // sequential {
+    val kStraightDown get() = everythingMoveTo(32.inches, (-70).degrees, (-51).degrees) // sequential {
 //        +kHatchMid
 //        +ClosedLoopElevatorMove(35.5.inch)
 //        +parallel {
@@ -78,15 +79,15 @@ object Superstructure : FalconSubsystem(), EmergencyHandleable, ConcurrentlyUpda
     fun getDumbWrist(smartWrist: Double, relevantProx: Double) =
             smartWrist - (relevantProx / 2)
 
-    override fun activateEmergency() {
-        Elevator.activateEmergency()
-        Proximal.activateEmergency()
-        Wrist.activateEmergency() }
+    override fun disableClosedLoopControl() {
+        Elevator.disableClosedLoopControl()
+        Proximal.disableClosedLoopControl()
+        Wrist.disableClosedLoopControl() }
 
-    override fun recoverFromEmergency() {
-        Elevator.recoverFromEmergency()
-        Proximal.recoverFromEmergency()
-        Wrist.recoverFromEmergency() }
+    override fun enableClosedLoopControl() {
+        Elevator.enableClosedLoopControl()
+        Proximal.enableClosedLoopControl()
+        Wrist.enableClosedLoopControl() }
 
     override fun setNeutral() {
         Elevator.wantedState = WantedState.Nothing
@@ -137,7 +138,7 @@ object Superstructure : FalconSubsystem(), EmergencyHandleable, ConcurrentlyUpda
 
     override fun initSendable(builder: SendableBuilder) {
         builder.addStringProperty("cState", { currentState.asString() }, { })
-        builder.addDoubleProperty("cProxTranslation", { currentState.proximalTranslation().y.inch }, { })
+        builder.addDoubleProperty("cProxTranslation", { currentState.proximalTranslation().y / kInchToMeter }, { })
         super.initSendable(builder)
     }
 
@@ -149,14 +150,14 @@ object Superstructure : FalconSubsystem(), EmergencyHandleable, ConcurrentlyUpda
             val elevator: SIUnit<Meter>,
             val proximal: SIUnit<Radian>,
             val wrist: SIUnit<Radian>,
-            val isPassedThrough: Boolean = proximal < (-135).degree,
+            val isPassedThrough: Boolean = proximal < (-135).degrees,
             val isWristUnDumb: Boolean = false
         ) : State() {
 
-            constructor() : this(20.inch, (-90).degree, (-45).degree) // semi-sane numbers?
+            constructor() : this(20.inches, (-90).degrees, (-45).degrees) // semi-sane numbers?
 
             fun proximalTranslation() =
-                    Translation2d(kProximalLen, proximal.toRotation2d()) + Translation2d(0.meter, elevator)
+                    Translation2d(kProximalLen, proximal.toRotation2d()) + Translation2d(0.meters, elevator)
 
             fun dumbState() = if (!isWristUnDumb) this else Position(elevator, proximal, getDumbWrist(wrist, proximal))
             fun trueState() = if (isWristUnDumb) this else Position(elevator, proximal, getUnDumbWrist(wrist, proximal))
